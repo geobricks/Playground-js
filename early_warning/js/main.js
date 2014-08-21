@@ -11,13 +11,12 @@ require.config({
         loglevel        :   'logger/loglevel.min',
         mustache        :   '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache',
         navbar          :   '../navbar/geobricks_navbar',
-        browse          :   '../browse/geobricks_browse',
-        download        :   '../download/geobricks_download',
+        early_warning          :   '../early_warning/early_warning',
         underscore      :   '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min',
 
         // fenix-map-js
         'import-dependencies'   :   '//fenixapps.fao.org/repository/js/FENIX/utils/import-dependencies-1.0',
-        'leaflet'               :   '//fenixapps.fao.org/repository/js/leaflet/0.7.2/leaflet',
+        'leaflet'               :   '//fenixapps.fao.org/repository/js/leaflet/0.7.3/leaflet',
         'jquery.power.tip'      :   '//fenixapps.fao.org/repository/js/jquery.power.tip/1.1.0/jquery.powertip.min',
         'jquery-ui'             :   '//fenixapps.fao.org/repository/js/jquery-ui/1.10.3/jquery-ui-1.10.3.custom.min',
         'jquery.i18n.properties':   '//fenixapps.fao.org/repository/js/jquery/1.0.9/jquery.i18n.properties-min',
@@ -44,7 +43,12 @@ require.config({
         'jquery.i18n.properties': ['jquery'],
         'jquery.hoverIntent': ['jquery'],
         'fenix-map':  {
-            deps: ['jquery', 'leaflet', 'jquery-ui', 'fenix-map-config', 'import-dependencies', 'jquery.power.tip', 'jquery.i18n.properties', 'jquery.hoverIntent', 'chosen']
+            deps: ['jquery',
+                'leaflet',
+                'jquery-ui',
+                'fenix-map-config', 'import-dependencies',
+                'jquery.power.tip', 'jquery.i18n.properties',
+                'jquery.hoverIntent', 'chosen']
         }
     }
 
@@ -62,6 +66,7 @@ require(['jquery',
 
     log.setLevel(0);
 
+
     var ApplicationRouter = Backbone.Router.extend({
 
         isRendered: false,
@@ -70,45 +75,25 @@ require(['jquery',
             Backbone.history.start();
         },
 
+
+
         routes: {
-            '(/)home(/):lang': 'home',
-            '(/)home(/)': 'home',
-            '(/)browse(/):lang': 'browse',
-            '(/)browse(/)': 'browse',
-            '(/)download(/):lang': 'download',
-            '(/)download(/)': 'download',
-            '(/)configuration(/):lang': 'configuration',
-            '(/)configuration(/)': 'configuration',
-            '': 'home'
+            '(/)early_warning(/):lang': 'early_warning',
+            '': 'early_warning'
         },
 
-        home: function (lang) {
+        early_warning: function(lang) {
             this._init(lang);
-            $('#main_content_placeholder').html('home');
-        },
-
-        browse: function (lang) {
-            this._init(lang);
-            require(['browse'], function() {
-                GBBrowse().build({lang: lang});
+            require(['early_warning'], function() {
+                Early_warning().build({lang: lang});
             });
-        },
-
-        download: function(lang) {
-            this._init(lang);
-            require(['download'], function() {
-                DWLD().init({lang: lang});
-            });
-        },
-
-        configuration: function(lang) {
-
         },
 
         _init: function (lang) {
 
-            if (lang)
+            if (lang) {
                 this._initLanguage(lang)
+            }
 
             if (!this.isRendered) {
                 this.isRendered = true;

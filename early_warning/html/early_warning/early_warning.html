@@ -1,15 +1,46 @@
-
-<div>
-
-    <div class='row'>
-
-        <div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
-
-            <div id='map' class='fm-box' style='overflow: hidden; margin: 0 auto; text-align: left; height: 600px;'></div>
-
-
-        </div>
-
+<div class='row'>
+    <div class='col-xs-3 col-sm-3 col-md-3 col-lg-3'>
+        <h3 class="text-primary">Select a layer</h3>
+        <div id="ew_dropdown_layers"></div>
     </div>
 
+    <div class='col-xs-3 col-sm-3 col-md-3 col-lg-3'>
+        <h3 class="text-primary">Select a country</h3>
+        <div id="ew_drowdown_gaul"></div>
+        <!--<input id="ew_drowdown_gaul" type="text" class="form-control" placeholder="Input country">-->
+    </div>
+
+    <div class='col-xs-3 col-sm-3 col-md-3 col-lg-3'>
+        <h3 class="text-primary">Threshold (%)</h3>
+        <!--<div id="ew_drowdown_gaul"></div>-->
+        <input id="ew_threshold" type="text" class="form-control" value="0.05" placeholder="0.05">
+    </div>
+
+    <div class='col-xs-3 col-sm-3 col-md-3 col-lg-3'>
+        <h3>&nbsp</h3>
+        <button type="button" class="btn btn-primary btn-md" id="ew_button">
+            <span class="glyphicon glyphicon-th-list"></span> Stats
+        </button>
+    </div>
 </div>
+
+
+<div style="height:25px;"></div>
+
+<div class='row'>
+    <div class='col-xs-10 col-sm-8 col-md-8 col-lg-10'>
+        <div id='ew_map' class='fm-box' style='overflow: hidden; margin: 0 auto; text-align: left; height: 470px;'></div>
+    </div>
+    <!--<div class='row' style="display:none" id='ew_stats'>-->
+        <div style="display:none" class='col-xs-4 col-sm-4 col-md-4 col-lg-2'  id='ew_stats'>
+            <h4 class="text-info">Statistics</h4>
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <div id='ew_stats_content'></div>
+                </div>
+            </div>
+        </div>
+    <!--</div>-->
+</div>
+

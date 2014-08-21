@@ -21,11 +21,7 @@ define(['jquery',
             require(['i18n!nls/translate'], function (translate) {
                 var template = $(templates).filter('#' + CONFIG.template_id).html();
                 var view = {
-                    company: translate.company,
-                    browse: translate.browse,
-                    download: translate.download,
-                    configuration: translate.configuration,
-                    login: translate.login
+                    early_warning: translate.early_warning
                 };
                 var render = Mustache.render(template, view);
                 $('#' + CONFIG.placeholder).html(render);
