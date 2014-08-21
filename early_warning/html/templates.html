@@ -1,0 +1,219 @@
+<!--
+    Main structure for all modules.
+-->
+<div id='structure'>
+
+    <div class='row' id='banner_row'>
+
+        <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2'>
+
+            <div class='fs-head'>
+                <div class='fs-logo-holder'>
+                    <div class='fs-logo'></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class='col-xs-12 col-sm-6 col-md-6 col-lg-6' id='organization_cell'>
+
+            <div class='fs-head'>
+                <div class='fs-united'>
+                    <p id='fs-fao' style='text-transform:uppercase;'>
+                        Food and Agriculture Organization of the United Nations
+                    </p>
+                    <p class='fs-bold fs-statistics-division' style='text-transform:uppercase;'>
+                        Statistics Division
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class='col-xs-12 col-sm-4 col-md-4 col-lg-4' id='language_cell'>
+
+            <div class='fs-head'>
+                <div class='fs-languages'>
+                    <span>ENGLISH</span>
+                    |
+                    <span>ITALIANO</span>
+                    |
+                    <span class='fs-lan-selected'>Português</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id='navbar_placeholder'>
+
+    </div>
+
+    <div id='main_content_placeholder'>
+
+    </div>
+
+    <div class='row'>
+        <div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
+            <div class='gb-footer'>
+                <div style='margin-left: 16px;'>
+                    © FAO 2014
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!--
+    Tabs structure for the download module.
+-->
+<div id='download_tabs'>
+    <ul class='nav nav-tabs' role='tablist'>
+        <li class='active'>
+            <a role='tab' data-toggle='tab' href='#tab_selectors'>
+                {{selectors_label}}
+            </a>
+        </li>
+        <li>
+            <a role='tab' data-toggle='tab' href='#tab_progress'>
+                {{progress_label}}
+            </a>
+        </li>
+    </ul>
+    <div class='tab-content'>
+        <div class='tab-pane active' id='tab_selectors'>
+            <div id='data_providers_placeholder'></div>
+            <div id='selectors_placeholder'></div>
+            <div id='buttons_placeholder'></div>
+        </div>
+        <div class='tab-pane' id='tab_progress'>
+            Progress....
+        </div>
+    </div>
+</div>
+
+<!--
+    Navigation bar, common to all modules.
+-->
+<div id='navbar'>
+
+    <div class='row'>
+
+        <div class='col-xs-12 col-sm-12 col-md-12 col-lg-12' style='cursor: pointer;'>
+
+            <nav class='navbar navbar-default' role='navigation'>
+                <div class='container-fluid'>
+                    <div class='navbar-header'>
+                        <button type='button' class='navbar-toggle' data-toggle='collapse' data-target='#bs-example-navbar-collapse-1'>
+                            <span class='sr-only'>Toggle navigation</span>
+                            <span class='icon-bar'></span>
+                            <span class='icon-bar'></span>
+                            <span class='icon-bar'></span>
+                        </button>
+                    </div>
+                    <div class='collapse navbar-collapse' id='bs-example-navbar-collapse-1'>
+                        <ul class='nav navbar-nav'>
+                            <li>
+                                <a onclick="Backbone.history.navigate('home/en', true);">
+                                    <i class='fa fa-home'></i> {{company}}
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="Backbone.history.navigate('browse/en', true);">
+                                    <i class='fa fa-search'></i> {{browse}}
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="Backbone.history.navigate('download/en', true);">
+                                    <i class='fa fa-clock-o'></i> {{download}}
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="Backbone.history.navigate('configuration/en', true);">
+                                    <i class='fa fa-cog'></i> {{configuration}}
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class='nav navbar-nav navbar-right'>
+                            <li>
+                                <a>
+                                    <i class='fa fa-key'></i> {{login}}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!--
+    Data providers drop-down, download module.
+-->
+<div id='data_providers_template'>
+    <div class='row' style='margin-top: 20px;'>
+        <div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
+            <label for='data_providers'>
+                {{data_providers_label}}
+            </label>
+            <select id='data_providers' style='width: 100%;'>
+            </select>
+        </div>
+    </div>
+</div>
+
+<!--
+    Single choice drop-down, download module.
+-->
+<div id='single_generic_dropdown_template'>
+    <div id='{{single_generic_dropdown_container_id}}'>
+        <div class='row' style='margin-top: 20px;'>
+            <div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
+                <label for='{{single_generic_dropdown_id}}'>
+                    {{single_generic_dropdown_label}}
+                </label>
+                <select id='{{single_generic_dropdown_id}}' style='width: 100%;'>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    Multiple choice drop-down, download module.
+-->
+<div id='multiple_generic_dropdown_template'>
+    <div id='{{multiple_generic_dropdown_container_id}}'>
+        <div class='row' style='margin-top: 20px;'>
+            <div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
+                <label for='{{multiple_generic_dropdown_id}}'>
+                    {{multiple_generic_dropdown_label}}
+                </label>
+                <select multiple='' id='{{multiple_generic_dropdown_id}}' style='width: 100%;'>
+                    <option>Test</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+    Download button, download module.
+-->
+<div id='download_button_template'>
+    <div id='download_button_container'>
+        <div class='row' style='margin-top: 20px;'>
+            <div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
+                <button style='width: 100%; height: 50px;' class='btn btn-primary'>
+                    <i class='fa fa-cloud-download'></i> {{download_label}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

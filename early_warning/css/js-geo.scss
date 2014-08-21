@@ -1,0 +1,79 @@
+$font-stack:    'Roboto Condensed',sans-serif;
+$primary-color: #174C74;
+$banner-color:  #379bce;
+
+* {
+  font-family: $font-stack;
+  font-size: 14px;
+  margin: 0;
+}
+
+.fs-logo {
+  background-image: url('../images/fs-logo.png');
+  background-repeat: no-repeat;
+  background-size: 160px 34px;
+  height: 34px;
+  width: 160px;
+}
+
+.fs-logo-holder {
+  background-color: $primary-color;
+  float: left;
+  height: 50px;
+  padding: 7px 0 0 20px;
+  width: 200px;
+}
+
+.fs-head {
+  background-color: $banner-color;
+  height: 50px;
+}
+
+.fs-united {
+  background-color: $banner-color;
+  color: white;
+  float: left;
+  height: 50px;
+  padding: 14px 0 0 65px;
+}
+
+.fs-languages {
+  background-color: $banner-color;
+  color: white;
+  float: right;
+  height: 100%;
+  padding: 15px 20px 0 0;
+}
+
+.fs-languages span.fs-lan-selected {
+  text-decoration: underline;
+}
+
+.fs-united p {
+  height: 6px;
+  line-height: 7px;
+}
+
+.fs-bold {
+  font-weight: 700;
+}
+
+.gb-footer {
+  height: 100px;
+  line-height: 100px;
+  background-color: $primary-color;
+  margin-top: 250px;
+}
+
+#banner_row {
+  background-color: $banner-color;
+}
+
+.chosen-single {
+  height: 35px !important;
+  line-height: 35px !important;
+}
+
+.chosen-container-single .chosen-single div {
+  top: 6px !important;
+}
