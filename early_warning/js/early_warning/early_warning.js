@@ -4,6 +4,8 @@ define(['jquery',
     'loglevel',
     'fenix-map',
     'fenix-map',
+    'highcharts',
+    'early_warning_chart',
     'bootstrap'], function ($, Mustache, templates, log) {
 
     var global = this;
@@ -11,7 +13,15 @@ define(['jquery',
 
         var loadingWindow;
         loadingWindow = loadingWindow || (function () {
-            var pleaseWaitDiv = $('<div class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
+            var pleaseWaitDiv = $('' +
+                '<div class="modal" id="pleaseWaitDialog" style="background-color: rgba(54, 25, 25, 0.1);" data-backdrop="static" data-keyboard="false">' +
+                '<div class="modal-body text-success"><h1>Processing...</h1><i class="fa fa-refresh fa-spin fa-5x"></i></div>' +
+//                '<div class="modal-body">' +
+//                '<div class="progress progress-striped active">' +
+//                '<div class="bar" style="width: 100%;">' +
+//                '</div></div>' +
+//                '</div>' +
+                '</div>');
             return {
                 showPleaseWait: function() {
                     pleaseWaitDiv.modal();
@@ -29,9 +39,15 @@ define(['jquery',
 
             url_geoserver_wms: 'http://localhost:9090/geoserver/wms',
 
+            url_search_layer_product: "http://localhost:5005/search/layer/product/",
+
+            url_search_layer_product_type: "http://localhost:5005/search/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
+
             url_spatialquery: "http://127.0.0.1:5005/spatialquery/db/spatial/",
 
             url_stats_raster: "http://localhost:5005/stats/raster/spatial_query",
+            url_stats_rasters: "http://localhost:5005/stats/rasters/spatial_query",
+
 
             // default layer and map
             m : null,
@@ -56,7 +72,7 @@ define(['jquery',
                         "query_condition": {
                             "select": "adm1_code, adm1_name",
                             "from": "{{SCHEMA}}.gaul1_3857_test",
-                            "where": "adm0_code IN ('{{ADM0_CODE}}') GROUP BY adm1_code, adm1_name "
+                            "where": "adm0_code IN ('{{ADM0_CODE}}') GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
                         },
                         "column_filter": "adm1_code",
                         "stats_columns": {
@@ -73,6 +89,36 @@ define(['jquery',
                         "histogram": {
                             "buckets": 256,
                             "include_out_of_range": 0,
+                            "force": true
+                        }
+                    }
+                }
+            },
+
+            json_stats_gaul1 : {
+                "raster": {
+                    "name": null,
+                    "uids": []
+                },
+                "vector": {
+                    "name": "gaul1",
+                    "type": "database",
+                    "options": {
+                        "query_condition": {
+                            "select": "adm1_code, adm1_name",
+                            "from": "{{SCHEMA}}.gaul1_3857_test",
+                            "where": "adm1_code IN ('{{ADM1_CODE}}') GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
+                        },
+                        "column_filter": "adm1_code",
+                        "stats_columns": {
+                            "polygon_id": "adm1_code",
+                            "label_en": "adm1_name"
+                        }
+                    }
+                },
+                "stats": {
+                    "raster_stats": {
+                        "descriptive_stats": {
                             "force": true
                         }
                     }
@@ -98,10 +144,10 @@ define(['jquery',
 
                 $("#ew_button").bind( "click", function() {
                     // stats based on the selected layer and the selected country on the Dropdown
-                    var gaul = $("#ew_drowdown_gaul_select").chosen().val();
-                    var threshold = $("#ew_threshold").val();
-                    build_stats(CONFIG.l.layer.layers, gaul, threshold, "ew_stats")
+                    collector_to_build_stats()
                 });
+
+                //get_statistics(305, "Albania", "TRMM")
             });
         }
 
@@ -140,6 +186,8 @@ define(['jquery',
                         layer.openlegend= true;
                         CONFIG.l = new FM.layer(layer);
                         CONFIG.m.addLayer(CONFIG.l);
+
+                        collector_to_build_stats()
                     });
                 },
                 error : function(err, b, c) {}
@@ -169,6 +217,10 @@ define(['jquery',
                     try {
                         $('#' + dropdowndID).chosen({disable_search_threshold:6, width: '100%'});
                     }  catch (e) {}
+
+                    $( "#" + dropdowndID ).change({},  function (event) {
+                        collector_to_build_stats()
+                    });
                 },
                 error : function(err, b, c) {}
             });
@@ -207,6 +259,17 @@ define(['jquery',
             CONFIG.m.addLayer(CONFIG.l_gaul0);
         }
 
+        var collector_to_build_stats = function() {
+            var gaul = $("#ew_drowdown_gaul_select").chosen().val();
+            var threshold = $("#ew_threshold").val();
+            // TODO: check threshold
+            console.log(gaul);
+            // TODO: function
+            if ( CONFIG.l.layer.layers && gaul.length > 0) {
+                build_stats(CONFIG.l.layer.layers, gaul, threshold, "ew_stats")
+            }
+        }
+
         var build_stats = function(uid, adm0_code, threshold, output_id) {
             loadingWindow.showPleaseWait()
             var json_stats = JSON.parse(JSON.stringify(CONFIG.json_stats));
@@ -224,7 +287,7 @@ define(['jquery',
                     build_stats_response(response, threshold, output_id)
                 },
                 error : function(err, b, c) {
-                    loading.hidePleaseWait()
+                    loadingWindow.hidePleaseWait()
                     console.log(err);
                 }
             });
@@ -235,26 +298,16 @@ define(['jquery',
             var html = ""
             var codes = ""
 
-
-//            var values = []
-//            for(var i=0; i < response.length; i++) {
-//                var mean = response[i].data.stats[0].mean * 100
-//                if ( mean >= threshold) {
-//                    var label = response[i].label;
-//                    var obj = {}
-//                    obj[label] = response[i]
-//                    values.push(obj)
-//                }
-//            }
-//            console.log(values.sort());
-
-
             var ids = []
             // TODO: Sort by name
             var suddifx_id = "ew_gaul1_"
             html += "<div class='row'>" +
-                "<div class='col-xs-8 col-sm-8 col-md-8 col-lg-8 text-primary' id='" + id + "'><h4>Adm. Unit<h4></div>" +
-                "<div class='col-xs-4 col-sm-4 col-md-4 col-lg-4'><small>Mean</small></div>" +
+                "<div class='col-xs-8 col-sm-8 col-md-8 col-lg-8 text-primary'>" +
+                    "<h4>Adm. Unit</h4>" +
+                "</div>" +
+                "<div class='col-xs-4 col-sm-4 col-md-4 col-lg-4' style='margin-left:-15px;'>" +
+                    "<h4><small>Mean</small></h4>" +
+                "</div>" +
                 "</div>"
             for(var i=0; i < response.length; i++) {
                 try {
@@ -265,12 +318,12 @@ define(['jquery',
                         codes += response[i].code + ","
                         var id = suddifx_id + response[i].code;
                         html += "<div class='row'>" +
-                                "<div style='cursor:pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' class='col-xs-8 col-sm-8 col-md-8 col-lg-8 text-primary' id='" + id + "'><h7><a>"+ label +"</a></h7></div>" +
-                                "<div class='col-xs-4 col-sm-4 col-md-4 col-lg-4'><small>"+ mean +"%</small></div>" +
+                                "<div style='cursor:pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' class='col-xs-8 col-sm-8 col-md-8 col-lg-8 text-primary'><h7><a id='" + id + "' data-toggle='tooltip' title='"+ label +"'>"+ label +"</a></h7></div>" +
+                                "<div class='col-xs-4 col-sm-4 col-md-4 col-lg-4' style='margin-left:-15px;'><small>"+ mean +"%</small></div>" +
                                 "</div>"
 
 //                        html += "<h6><a style='cursor:pointer' class='text-primary' id='" + id + "'>" + label + "<small> " + mean + "%<small></a></h6>"
-                        ids.push(response[i].code)
+                        ids.push( { "code" : response[i].code, "label" : response[i].label })
                     }
                 }
                 catch(err) { }
@@ -279,10 +332,12 @@ define(['jquery',
             $("#" + output_id + "_content").html(html);
             $("#" + output_id).show();
 
+
             // bind on hover and click
             for(var i=0; i < ids.length; i++) {
-                $("#" + suddifx_id + ids[i]).bind("click", { id: ids[i]}, function(event) {
-                    zoom_to(event.data.id);
+                $("#" + suddifx_id + ids[i].code).bind("click", { id: ids[i]}, function(event) {
+                    zoom_to(event.data.id.code);
+                    get_statistics(event.data.id.code, event.data.id.label, "TRMM")
                 });
             }
 
@@ -341,6 +396,130 @@ define(['jquery',
             });
         }
 
+        var get_statistics = function(gaul_code, gaul_label, layer_code) {
+
+            // adding title and rainfall data
+            $("#ew_chart_title").html(gaul_label + " Rainfall timeserie")
+            $("#ew_chart").empty()
+            $("#ew_chart").append('<i class="text-primary fa fa-refresh fa-spin fa-2x"></i>')
+
+
+            var url = CONFIG.url_search_layer_product_type
+            url = url.replace("{{PRODUCT}}", layer_code)
+            url = url.replace("{{TYPE}}", "none")
+            console.log("URL: " + url);
+            console.log("URL2: " + CONFIG.url_search_layer_product_type);
+            $.ajax({
+                type : 'GET',
+                url : url,
+                success : function(response) {
+                    response = (typeof response === 'string')? $.parseJSON(response): response;
+                    console.log(response);
+                    var uids = []
+                    for(var i=0; i < response.length; i++) {
+                        var layer = response[i]
+                        uids.push(response[i].uid)
+                    }
+                    var json_stats_gaul1 = JSON.parse(JSON.stringify(CONFIG.json_stats_gaul1));
+                    json_stats_gaul1.raster.uids = uids
+                    json_stats_gaul1.raster.name = layer.title
+                    json_stats_gaul1.vector.options.query_condition.where = json_stats_gaul1.vector.options.query_condition.where.replace("{{ADM1_CODE}}", gaul_code)
+                    console.log(json_stats_gaul1);
+                    var url = CONFIG.url_stats_rasters
+
+                    var LAYERS = response;
+                    $.ajax({
+                        type : 'POST',
+                        url : url,
+                        data: JSON.stringify(json_stats_gaul1),
+                        contentType: 'application/json;charset=UTF-8',
+                        success : function(response) {
+                            response = (typeof response == 'string')? $.parseJSON(response): response;
+                            //build_stats_response(response, threshold, output_id)
+                            console.log(response);
+                            var STATS = response;
+
+                            create_chart_stats(LAYERS, STATS)
+
+                        },
+                        error : function(err, b, c) {
+                            console.log(err);
+                        }
+                    });
+                },
+                error : function(err, b, c) {
+                    alert(err)
+                }
+            });
+        }
+
+
+        var create_chart_stats = function(layers, stats) {
+            var series = []
+            var mean = {}
+            mean.name = "Mean"
+            mean.data = []
+            var sd = {}
+            sd.name = "Standard_Deviation"
+            sd.data = []
+            var min = {}
+            min.name = "Minimum"
+            min.data = []
+            var max = {}
+            max.name = "Maximum"
+            max.data = []
+
+            var categories = []
+            for (var i=0; i< layers.length; i++) {
+                console.log(layers[i]);
+                for (var j=0; j < stats.length; j++) {
+                    if ( stats[j][layers[i].uid]) {
+                        try {
+                            console.log(stats[j][layers[i].uid]);
+                            var data = stats[j][layers[i].uid][0];
+                            console.log(data);
+                            mean.data.push(data.data.stats[0].mean);
+                            sd.data.push(data.data.stats[0].sd);
+                            min.data.push(data.data.stats[0].min);
+                            max.data.push(data.data.stats[0].max);
+                            console.log(layers[i].meContent.seCoverage.coverageTime.from);
+                            var date = timeConverter(layers[i].meContent.seCoverage.coverageTime.from, false)
+                            console.log(date)
+                            categories.push(date)
+                            break;
+                        }catch (e) {
+                            console.log("Exception:" + e);
+                        }
+                    }
+
+                }
+            }
+            if ( mean.data.length > 0 ) series.push(mean)
+            if ( sd.data.length > 0 ) series.push(sd)
+            if ( min.data.length > 0 ) series.push(min)
+            if ( max.data.length > 0 )  series.push(max)
+
+            var chart = {
+                "categories" : categories,
+                "series" : series
+            }
+            EW_CHART.createTimeserie(chart, "ew_chart", "line")
+        }
+
+        var timeConverter = function (UNIX_timestamp, addDay){
+            var a = new Date(UNIX_timestamp*1000);
+            var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            var year = a.getFullYear();
+            var month = months[a.getMonth() - 1];
+            var date = a.getDate();
+            //var hour = a.getHours();
+//            var min = a.getMinutes();
+//            var sec = a.getSeconds();
+            if ( addDay )
+                return date + '-' + month + '-' + year
+            else
+                return month + '/' + year
+        }
 
         // public instance methods
         return {

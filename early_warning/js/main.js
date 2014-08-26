@@ -11,7 +11,6 @@ require.config({
         loglevel        :   'logger/loglevel.min',
         mustache        :   '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache',
         navbar          :   '../navbar/geobricks_navbar',
-        early_warning          :   '../early_warning/early_warning',
         underscore      :   '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min',
 
         // fenix-map-js
@@ -23,7 +22,10 @@ require.config({
         'jquery.hoverIntent'    :   '//fenixapps.fao.org/repository/js/jquery.hoverIntent/1.0/jquery.hoverIntent',
 
         'fenix-map'             :   '//localhost:7070/fenix-map-js/fenix-map-min',
-        'fenix-map-config'      :   '//localhost:7070/fenix-map-js/fenix-map-config'
+        'fenix-map-config'      :   '//localhost:7070/fenix-map-js/fenix-map-config',
+
+        early_warning           :   '../early_warning/early_warning',
+        early_warning_chart     :   '../early_warning/early_warning_chart'
     },
 
     shim: {
@@ -61,7 +63,7 @@ require(['jquery',
          'loglevel',
          'chosen',
          'navbar',
-         'bootstrap',
+         'bootstrap',,
          'domReady!'], function($, Mustache, templates, Backbone, log) {
 
     log.setLevel(0);

@@ -28,19 +28,25 @@
 <div style="height:25px;"></div>
 
 <div class='row'>
-    <div class='col-xs-10 col-sm-8 col-md-8 col-lg-10'>
-        <div id='ew_map' class='fm-box' style='overflow: hidden; margin: 0 auto; text-align: left; height: 470px;'></div>
+    <div class='col-xs-10 col-sm-8 col-md-8 col-lg-10' style="height: 490px;">
+        <div id='ew_map' class='fm-box' style='overflow: hidden; margin: 0 auto; text-align: left;'></div>
     </div>
     <!--<div class='row' style="display:none" id='ew_stats'>-->
-        <div style="display:none" class='col-xs-4 col-sm-4 col-md-4 col-lg-2'  id='ew_stats'>
+        <div style="display:none;" class='col-xs-4 col-sm-4 col-md-4 col-lg-2'  id='ew_stats'>
             <h4 class="text-info">Statistics</h4>
             <div class="panel panel-default">
-                <div class="panel-body">
-
+                <div class="panel-body" style="height:450px;overflow-y:auto;overflow-x: hidden;">
                     <div id='ew_stats_content'></div>
                 </div>
             </div>
         </div>
     <!--</div>-->
+</div>
+
+<div class='row'>
+    <div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
+        <h4 class="text-info" id="ew_chart_title"></h4>
+        <div id='ew_chart' class="height:300px;"></div>
+    </div>
 </div>
 
