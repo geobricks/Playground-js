@@ -129,6 +129,8 @@ define(['jquery',
         var build = function(config) {
             CONFIG = $.extend(true, {}, CONFIG, config);
 
+            console.log($("#ew_chart_title").text())
+
             require(['i18n!nls/translate'], function (translate) {
                 var template = $(templates).filter('#' + CONFIG.template_id).html();
                 $('#' + CONFIG.placeholder).html(templates);
@@ -187,7 +189,7 @@ define(['jquery',
                         CONFIG.l = new FM.layer(layer);
                         CONFIG.m.addLayer(CONFIG.l);
 
-                        collector_to_build_stats()
+//                        collector_to_build_stats()
                     });
                 },
                 error : function(err, b, c) {}
@@ -219,7 +221,7 @@ define(['jquery',
                     }  catch (e) {}
 
                     $( "#" + dropdowndID ).change({},  function (event) {
-                        collector_to_build_stats()
+//                        collector_to_build_stats()
                     });
                 },
                 error : function(err, b, c) {}
@@ -399,6 +401,7 @@ define(['jquery',
         var get_statistics = function(gaul_code, gaul_label, layer_code) {
 
             // adding title and rainfall data
+            $("#ew_chart_panel").show()
             $("#ew_chart_title").html(gaul_label + " Rainfall timeserie")
             $("#ew_chart").empty()
             $("#ew_chart").append('<i class="text-primary fa fa-refresh fa-spin fa-2x"></i>')
@@ -507,11 +510,11 @@ define(['jquery',
         }
 
         var timeConverter = function (UNIX_timestamp, addDay){
-            var a = new Date(UNIX_timestamp*1000);
+            var t = new Date(UNIX_timestamp*1000);
             var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-            var year = a.getFullYear();
-            var month = months[a.getMonth() - 1];
-            var date = a.getDate();
+            var year = t.getFullYear();
+            var month = months[t.getMonth()];
+            var date = t.getDate();
             //var hour = a.getHours();
 //            var min = a.getMinutes();
 //            var sec = a.getSeconds();
