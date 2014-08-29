@@ -31,13 +31,13 @@ define(['jquery',
             placeholder: 'main_content_placeholder',
             template_id: 'map',
 
-            url_geoserver_wms: 'http://localhost:9090/geoserver/wms',
+            url_geoserver_wms: 'http://168.202.28.214:9090/geoserver/wms',
 
-            url_search_all_products: "http://localhost:5005/search/layer/distinct/layers/",
+            url_search_all_products: "http://168.202.28.214:5005/search/layer/distinct/layers/",
 
-            url_search_layer_product: "http://localhost:5005/search/layer/product/",
+            url_search_layer_product: "http://168.202.28.214:5005/search/layer/product/",
 
-            url_spatialquery: "http://127.0.0.1:5005/spatialquery/db/spatial/",
+            url_spatialquery: "http://168.202.28.214:5005/spatialquery/db/spatial/",
 
             // default layer and map
             m : null,
@@ -46,11 +46,11 @@ define(['jquery',
             l_gaul0_highlight: null,
 
             // distribution query
-            url_distribution_raster: "http://localhost:5005/distribution/raster/spatial_query",
+            url_distribution_raster: "http://168.202.28.214:5005/distribution/raster/spatial_query",
             spatial_query: '{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})"}'
 
 
-//            url_distribution_raster: "http://localhost:5005/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
+//            url_distribution_raster: "http://168.202.28.214:5005/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
 //            spatial_query: '{"vector":{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})"}}'
 
         }
@@ -74,8 +74,8 @@ define(['jquery',
                  $("#pgeo_dist_export_button").bind( "click", function() {
                      var areas = $("#pgeo_dist_areas_select").chosen().val();
                      var uids =  $("#pgeo_dist_layers_select").chosen().val();
+                     if ( uids[0] == "") uids.splice(0, 1)
                      var codes = get_string_codes(areas)
-//                     var uids = get_string_uids(layers)
                      var email_address = $("#pgeo_dist_email_address").val();
                      export_layers(uids, codes, email_address)
                 });
@@ -143,6 +143,19 @@ define(['jquery',
                             CONFIG.l = new FM.layer(layer);
                             CONFIG.m.addLayer(CONFIG.l);
                         }
+                    });
+
+                    console.log("#" + id);
+                    var select_all = id.replace("_select", "_select_all")
+                    var deselect_all = id.replace("_select", "_deselect_all")
+                    $("#"+ select_all ).bind("click", function() {
+                        $("#" + id + ">option").prop('selected', true);
+                        $('#' + id).trigger("chosen:updated");
+                    });
+
+                    $("#" + deselect_all).bind("click", function() {
+                        $("#" + id + ">option").prop('selected', false);
+                        $('#' + id).trigger("chosen:updated");
                     });
                 },
                 error : function(err, b, c) {}
