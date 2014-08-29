@@ -189,7 +189,6 @@ define(['jquery',
                         CONFIG.l = new FM.layer(layer);
                         CONFIG.m.addLayer(CONFIG.l);
 
-//                        collector_to_build_stats()
                     });
                 },
                 error : function(err, b, c) {}

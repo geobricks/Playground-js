@@ -3,15 +3,15 @@ require.config({
     baseUrl: 'js/libs',
 
     paths: {
-        bootstrap       :   '//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min',
-        backbone        :   '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min',
-        chosen          :   '//fenixapps.fao.org/repository/js/chosen/1.0.0/chosen.jquery.min',
-        highcharts      :   '//code.highcharts.com/highcharts',
-        jquery          :   '//code.jquery.com/jquery-1.10.1.min',
-        loglevel        :   'logger/loglevel.min',
-        mustache        :   '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache',
-        navbar          :   '../navbar/geobricks_navbar',
-        underscore      :   '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min',
+        bootstrap               :   '//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min',
+        backbone                :   '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min',
+        chosen                  :   '//fenixapps.fao.org/repository/js/chosen/1.0.0/chosen.jquery.min',
+        highcharts              :   '//code.highcharts.com/highcharts',
+        jquery                  :   '//code.jquery.com/jquery-1.10.1.min',
+        loglevel                :   'logger/loglevel.min',
+        mustache                :   '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache',
+        navbar                  :   '../navbar/geobricks_navbar',
+        underscore              :   '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min',
 
         // fenix-map-js
         'import-dependencies'   :   '//fenixapps.fao.org/repository/js/FENIX/utils/import-dependencies-1.0',
@@ -25,7 +25,8 @@ require.config({
         'fenix-map-config'      :   '//localhost:7070/fenix-map-js/fenix-map-config',
 
         early_warning           :   '../early_warning/early_warning',
-        early_warning_chart     :   '../early_warning/early_warning_chart'
+        early_warning_chart     :   '../early_warning/early_warning_chart',
+        distribution            :   '../distribution/distribution'
     },
 
     shim: {
@@ -81,6 +82,7 @@ require(['jquery',
 
         routes: {
             '(/)early_warning(/):lang': 'early_warning',
+            '(/)distribution(/):lang': 'distribution',
             '': 'early_warning'
         },
 
@@ -88,6 +90,13 @@ require(['jquery',
             this._init(lang);
             require(['early_warning'], function() {
                 Early_warning().build({lang: lang});
+            });
+        },
+
+        distribution: function(lang) {
+            this._init(lang);
+            require(['distribution'], function() {
+                Distribution().build({lang: lang});
             });
         },
 
