@@ -46,8 +46,12 @@ define(['jquery',
             l_gaul0_highlight: null,
 
             // distribution query
-            url_distribution_raster: "http://localhost:5005/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
-            spatial_query: '{"vector":{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})"}}'
+            url_distribution_raster: "http://localhost:5005/distribution/raster/spatial_query",
+            spatial_query: '{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})"}'
+
+
+//            url_distribution_raster: "http://localhost:5005/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
+//            spatial_query: '{"vector":{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})"}}'
 
         }
 
@@ -69,10 +73,11 @@ define(['jquery',
 
                  $("#pgeo_dist_export_button").bind( "click", function() {
                      var areas = $("#pgeo_dist_areas_select").chosen().val();
-                     var layers =  $("#pgeo_dist_layers_select").chosen().val();
+                     var uids =  $("#pgeo_dist_layers_select").chosen().val();
                      var codes = get_string_codes(areas)
-                     var uids = get_string_uids(layers)
-                    export_layers(uids, codes)
+//                     var uids = get_string_uids(layers)
+                     var email_address = $("#pgeo_dist_email_address").val();
+                     export_layers(uids, codes, email_address)
                 });
             });
         }
@@ -229,16 +234,25 @@ define(['jquery',
             }
         }
 
-        var export_layers = function(uids, codes) {
+        var export_layers = function(uids, codes, email_address) {
             loadingWindow.showPleaseWait()
             var url = CONFIG.url_distribution_raster
-            url = url.replace(/{{LAYERS}}/gi, uids)
-            var json = CONFIG.spatial_query
-            json = json.replace(/{{CODES}}/gi, codes)
-            url =url.replace(/{{SPATIAL_QUERY}}/gi, json)
+            var spatial_query = CONFIG.spatial_query
+            spatial_query = spatial_query.replace(/{{CODES}}/gi, codes)
+            var data = {
+                "raster" : {
+                    "uids" : uids
+                },
+                "vector" : spatial_query
+            }
+            // TODO: check if is a valid email address
+            if (email_address != "") {
+                data.email_address = email_address
+            }
             $.ajax({
-                type : 'GET',
+                type : 'POST',
                 url : url,
+                data: JSON.stringify(data),
                 contentType: 'application/json;charset=UTF-8',
                 success : function(response) {
                     loadingWindow.hidePleaseWait()
