@@ -43,6 +43,7 @@ $banner-color:  #379bce;
   float: right;
   height: 100%;
   padding: 15px 20px 0 0;
+  text-transform: uppercase;
 }
 
 .fs-languages span.fs-lan-selected {
@@ -74,6 +75,42 @@ $banner-color:  #379bce;
   line-height: 35px !important;
 }
 
+.chosen-container .chosen-container-multi {
+  height: 35px !important;
+  line-height: 35px !important;
+}
+
+.search-field {
+  .default {
+    height: 35px !important;
+    line-height: 35px !important;
+  }
+}
+
+.chosen-choices {
+  .search-choice {
+    height: 35px !important;
+    line-height: 35px !important;
+  }
+}
+
 .chosen-container-single .chosen-single div {
   top: 6px !important;
+}
+
+.search-choice {
+  padding-top: 0px;
+}
+
+.search-choice-close {
+  top: 12px;
+}
+
+.nav.navbar-nav {
+  li.selected {
+    background-color: #777777;
+    a {
+      color: #F8F8F8;
+    }
+  }
 }
