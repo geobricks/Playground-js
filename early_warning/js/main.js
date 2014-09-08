@@ -21,12 +21,22 @@ require.config({
         'jquery.i18n.properties':   '//fenixapps.fao.org/repository/js/jquery/1.0.9/jquery.i18n.properties-min',
         'jquery.hoverIntent'    :   '//fenixapps.fao.org/repository/js/jquery.hoverIntent/1.0/jquery.hoverIntent',
 
-        'fenix-map'             :   '//localhost:7070/fenix-map-js/fenix-map-min',
-        'fenix-map-config'      :   '//localhost:7070/fenix-map-js/fenix-map-config',
+        // fenix-map-scatter
+        'csvjson'               :   'http://fenixapps.fao.org/repository/js/csvjson/1.0/csvjson.min.1.0',
+        'FMChartLibrary'        :   'http://168.202.28.214:7070/fenix-map-js/plugins/ChartLibrary',
+        'FMChartScatter'        :   'http://168.202.28.214:7070/fenix-map-js/plugins/FMChartScatterRefactoring',
+        'regression'            :   'http://fenixapps.fao.org/repository/js/highcharts/plugins/regression/1.0/regression',
+        // TODO: change link
+        'wkt'                   :   'http://fenixapps.fao.org/repository/js/FENIX/fenix-map-js/2.1/wkt',
+
+        'fenix-map'             :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-min',
+        'fenix-map-config'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
+        'fenix-map-scatter-analysis'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
 
         early_warning           :   '../early_warning/early_warning',
         early_warning_chart     :   '../early_warning/early_warning_chart',
-        distribution            :   '../distribution/distribution'
+        distribution            :   '../distribution/distribution',
+        scatter_analysis                :   '../scatter_analysis/scatter_analysis'
     },
 
     shim: {
@@ -52,6 +62,13 @@ require.config({
                 'fenix-map-config', 'import-dependencies',
                 'jquery.power.tip', 'jquery.i18n.properties',
                 'jquery.hoverIntent', 'chosen']
+        },
+        'FMChartScatter' : {
+            deps: ['fenix-map',
+                'csvjson',
+                'FMChartLibrary',
+                'regression',
+                'wkt']
         }
     }
 
@@ -83,6 +100,7 @@ require(['jquery',
         routes: {
             '(/)early_warning(/):lang': 'early_warning',
             '(/)distribution(/):lang': 'distribution',
+            '(/)scatter_analysis(/):lang': 'scatter_analysis',
             '': 'early_warning'
         },
 
@@ -97,6 +115,13 @@ require(['jquery',
             this._init(lang);
             require(['distribution'], function() {
                 Distribution().build({lang: lang});
+            });
+        },
+
+        scatter_analysis: function(lang) {
+            this._init(lang);
+            require(['scatter_analysis'], function() {
+                Scatter_Analysis().build({lang: lang});
             });
         },
 

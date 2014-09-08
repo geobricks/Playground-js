@@ -22,7 +22,8 @@ define(['jquery',
                 var template = $(templates).filter('#' + CONFIG.template_id).html();
                 var view = {
                     early_warning: translate.early_warning,
-                    distribution: translate.distribution
+                    distribution: translate.distribution,
+                    scatter_analysis: translate.scatter_analysis
                 };
                 var render = Mustache.render(template, view);
                 $('#' + CONFIG.placeholder).html(render);

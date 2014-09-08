@@ -37,16 +37,16 @@ define(['jquery',
             placeholder: 'main_content_placeholder',
             template_id: 'map',
 
-            url_geoserver_wms: 'http://localhost:9090/geoserver/wms',
+            url_geoserver_wms: 'http://168.202.28.214:9090/geoserver/wms',
 
-            url_search_layer_product: "http://localhost:5005/search/layer/product/",
+            url_search_layer_product: "http://168.202.28.214:5005/search/layer/product/",
 
-            url_search_layer_product_type: "http://localhost:5005/search/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
+            url_search_layer_product_type: "http://168.202.28.214:5005/search/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
 
-            url_spatialquery: "http://127.0.0.1:5005/spatialquery/db/spatial/",
+            url_spatialquery: "http://168.202.28.214:5005/spatialquery/db/spatial/",
 
-            url_stats_raster: "http://localhost:5005/stats/raster/spatial_query",
-            url_stats_rasters: "http://localhost:5005/stats/rasters/spatial_query",
+            url_stats_raster: "http://168.202.28.214:5005/stats/raster/spatial_query",
+            url_stats_rasters: "http://168.202.28.214:5005/stats/rasters/spatial_query",
 
 
             // default layer and map
@@ -283,6 +283,7 @@ define(['jquery',
                 url : url,
                 data: JSON.stringify(json_stats),
                 contentType: 'application/json;charset=UTF-8',
+                dataType: "json",
                 success : function(response) {
                     response = (typeof response == 'string')? $.parseJSON(response): response;
                     build_stats_response(response, threshold, output_id)

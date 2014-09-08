@@ -1,7 +1,8 @@
 define({
     'root' : {
         'early_warning' : 'Early Warning',
-        'distribution' : 'distribution'
+        'distribution' : 'Distribution',
+        'scatter_analysis' : 'Scatter Analysis'
     },
     'it' : true,
     'pt' : true
