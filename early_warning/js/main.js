@@ -33,10 +33,15 @@ require.config({
         'fenix-map-config'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
         'fenix-map-scatter-analysis'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
 
-        early_warning           :   '../early_warning/early_warning',
-        early_warning_chart     :   '../early_warning/early_warning_chart',
-        distribution            :   '../distribution/distribution',
-        scatter_analysis                :   '../scatter_analysis/scatter_analysis'
+        early_warning            :   '../early_warning/early_warning',
+        early_warning_chart      :   '../early_warning/early_warning_chart',
+        distribution             :   '../distribution/distribution',
+        scatter_analysis         :   '../scatter_analysis/scatter_analysis',
+        early_warning_sadc       :   '../early_warning_sadc/early_warning_sadc',
+        early_warning_chart_sadc : '../early_warning_sadc/early_warning_chart_sadc',
+        ghg_fires                : '../ghg_fires/ghg_fires',
+        ghg_fires_chart          : '../ghg_fires/ghg_fires_chart'
+
     },
 
     shim: {
@@ -96,11 +101,12 @@ require(['jquery',
         },
 
 
-
         routes: {
+            '(/)early_warning_sadc(/):lang': 'early_warning_sadc',
             '(/)early_warning(/):lang': 'early_warning',
             '(/)distribution(/):lang': 'distribution',
             '(/)scatter_analysis(/):lang': 'scatter_analysis',
+            '(/)ghg_fires(/):lang': 'ghg_fires',
             '': 'early_warning'
         },
 
@@ -108,6 +114,13 @@ require(['jquery',
             this._init(lang);
             require(['early_warning'], function() {
                 Early_warning().build({lang: lang});
+            });
+        },
+
+        early_warning_sadc: function(lang) {
+            this._init(lang);
+            require(['early_warning_sadc'], function() {
+                Early_warning_sadc().build({lang: lang});
             });
         },
 
@@ -122,6 +135,13 @@ require(['jquery',
             this._init(lang);
             require(['scatter_analysis'], function() {
                 Scatter_Analysis().build({lang: lang});
+            });
+        },
+
+        ghg_fires: function(lang) {
+            this._init(lang);
+            require(['ghg_fires'], function() {
+                GHG_Fires().build({lang: lang});
             });
         },
 

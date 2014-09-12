@@ -406,7 +406,7 @@ var EW_CHART = (function() {
                 tickmarkPlacement: 'on',
                 labels: {
                     y: 25,
-                    rotation: -45,
+                    rotation: -90,
                     style: {
                         color: '#666666',
                         fontWeight: '300',

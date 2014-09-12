@@ -3,9 +3,9 @@
 -->
 <div id='structure'>
 
-    <div class='row' id='banner_row'>
+    <div class='row' id='banner_row' style="background-color:#ffffff">
 
-        <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2'>
+        <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2' style="background-color:#ffffff">
 
             <div class='fs-head'>
                 <div class='fs-logo-holder'>
@@ -15,7 +15,7 @@
 
         </div>
 
-        <div class='col-xs-12 col-sm-6 col-md-6 col-lg-6' id='organization_cell'>
+        <div class='col-xs-12 col-sm-6 col-md-6 col-lg-6' id='organization_cell' style="background-color:#379BCE">
 
             <div class='fs-head'>
                 <div class='fs-united'>
@@ -30,15 +30,15 @@
 
         </div>
 
-        <div class='col-xs-12 col-sm-4 col-md-4 col-lg-4' id='language_cell'>
+        <div class='col-xs-12 col-sm-4 col-md-4 col-lg-4' id='language_cell' style="background-color:#379BCE">
 
             <div class='fs-head'>
                 <div class='fs-languages'>
-                    <span>ENGLISH</span>
+                    <span class='fs-lan-selected'>ENGLISH</span>
                     |
                     <span>ITALIANO</span>
                     |
-                    <span class='fs-lan-selected'>Português</span>
+                    <span>Português</span>
                 </div>
             </div>
 
@@ -50,16 +50,12 @@
 
     </div>
 
-    <div id='main_content_placeholder'>
-
-    </div>
+    <div id='main_content_placeholder'></div>
 
     <div class='row'>
         <div class='col-xs-12 col-sm-12 col-md-12 col-lg-12'>
             <div class='gb-footer'>
-                <div style='margin-left: 16px;'>
-                    © FAO 2014
-                </div>
+                <div style='margin-left: 16px;color:#FFFFFF'>© FAO 2014</div>
             </div>
         </div>
     </div>
@@ -117,17 +113,22 @@
                         <ul class='nav navbar-nav'>
                             <li>
                                 <a onclick="Backbone.history.navigate('early_warning/en', true);">
-                                    <i class='fa fa-magic'></i> {{early_warning}}
+                                    <i class='fa fa-bell'></i> {{early_warning}}
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="Backbone.history.navigate('early_warning_sadc/en', true);">
+                                    <i class='fa fa-bell'></i> {{early_warning_sadc}}
                                 </a>
                             </li>
                             <li>
                                 <a onclick="Backbone.history.navigate('distribution/en', true);">
-                                    <i class='fa fa-magic'></i> {{distribution}}
+                                    <i class='fa fa-cloud-download'></i> {{distribution}}
                                 </a>
                             </li>
                             <li>
                                 <a onclick="Backbone.history.navigate('scatter_analysis/en', true);">
-                                    <i class='fa fa-magic'></i> {{scatter_analysis}}
+                                    <i class='fa fa-bar-chart'></i> {{scatter_analysis}}
                                 </a>
                             </li>
                         </ul>

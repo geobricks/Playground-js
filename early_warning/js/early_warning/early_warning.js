@@ -15,7 +15,7 @@ define(['jquery',
         loadingWindow = loadingWindow || (function () {
             var pleaseWaitDiv = $('' +
                 '<div class="modal" id="pleaseWaitDialog" style="background-color: rgba(54, 25, 25, 0.1);" data-backdrop="static" data-keyboard="false">' +
-                '<div class="modal-body text-success"><h1>Processing...</h1><i class="fa fa-refresh fa-spin fa-5x"></i></div>' +
+                '<div class="modal-body" style="color:#F0F0F0"><h1>Processing...</h1><i class="fa fa-refresh fa-spin fa-5x"></i></div>' +
 //                '<div class="modal-body">' +
 //                '<div class="progress progress-striped active">' +
 //                '<div class="bar" style="width: 100%;">' +
@@ -181,7 +181,7 @@ define(['jquery',
                         }
                         var layer = {};
                         layer.layers = $(this).val()
-                        layer.layertitle = $(this).val()
+                        layer.layertitle = $("#" + dropdowndID + " :selected").text();
                         layer.urlWMS = CONFIG.url_geoserver_wms
                         layer.opacity='1';
                         layer.defaultgfi = true;
@@ -262,16 +262,17 @@ define(['jquery',
 
         var collector_to_build_stats = function() {
             var gaul = $("#ew_drowdown_gaul_select").chosen().val();
-            var threshold = $("#ew_threshold").val();
+            var threshold_min = $("#ew_threshold_min").val();
+            var threshold_max = $("#ew_threshold_max").val();
             // TODO: check threshold
             console.log(gaul);
             // TODO: function
             if ( CONFIG.l.layer.layers && gaul.length > 0) {
-                build_stats(CONFIG.l.layer.layers, gaul, threshold, "ew_stats")
+                build_stats(CONFIG.l.layer.layers, gaul, threshold_min, threshold_max, "ew_stats")
             }
         }
 
-        var build_stats = function(uid, adm0_code, threshold, output_id) {
+        var build_stats = function(uid, adm0_code, threshold_min, threshold_max, output_id) {
             loadingWindow.showPleaseWait()
             var json_stats = JSON.parse(JSON.stringify(CONFIG.json_stats));
             json_stats.raster.uid = uid
@@ -286,7 +287,7 @@ define(['jquery',
                 dataType: "json",
                 success : function(response) {
                     response = (typeof response == 'string')? $.parseJSON(response): response;
-                    build_stats_response(response, threshold, output_id)
+                    build_stats_response(response, threshold_min, threshold_max, output_id)
                 },
                 error : function(err, b, c) {
                     loadingWindow.hidePleaseWait()
@@ -295,7 +296,7 @@ define(['jquery',
             });
         }
 
-        var build_stats_response = function (response, threshold, output_id) {
+        var build_stats_response = function (response, threshold_min, threshold_max, output_id) {
             log.info(response)
             var html = ""
             var codes = ""
@@ -311,10 +312,13 @@ define(['jquery',
                     "<h4><small>Mean</small></h4>" +
                 "</div>" +
                 "</div>"
+            console.log(threshold_min);
+            console.log(threshold_max);
             for(var i=0; i < response.length; i++) {
                 try {
                     var mean = response[i].data.stats[0].mean * 100
-                    if ( mean >= threshold) {
+                    console.log(mean);
+                    if ( mean >= threshold_min && mean <= threshold_max) {
                         mean = mean.toFixed(2);
                         var label = response[i].label
                         codes += response[i].code + ","

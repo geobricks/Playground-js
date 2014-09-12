@@ -12,7 +12,6 @@ var EW_CHART = (function() {
     ]
 
 
-
     function createPie(obj, data) {
 
         data = (typeof data == 'string') ? $.parseJSON(data) : data;

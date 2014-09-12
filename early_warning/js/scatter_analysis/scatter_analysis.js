@@ -14,7 +14,7 @@ define(['jquery',
         loadingWindow = loadingWindow || (function () {
             var pleaseWaitDiv = $('' +
                 '<div class="modal" id="pleaseWaitDialog" style="background-color: rgba(54, 25, 25, 0.1);" data-backdrop="static" data-keyboard="false">' +
-                '<div class="modal-body text-success"><h1>Processing...</h1><i class="fa fa-refresh fa-spin fa-5x"></i></div>' +
+                '<div class="modal-body" style="color:#F0F0F0"><h1>Processing...</h1><i class="fa fa-refresh fa-spin fa-5x"></i></div>' +
                 '</div>');
             return {
                 showPleaseWait: function() {
@@ -31,7 +31,7 @@ define(['jquery',
             placeholder: 'main_content_placeholder',
             template_id: 'map',
 
-            url_geoserver_wms: 'http://168.202.28.214:9090/geoserver/wms',
+            url_geoserver_wms: 'http://fenixapps2.fao.org/geoserver-demo',
 
             url_search_all_products: "http://168.202.28.214:5005/search/layer/distinct/layers/",
 
@@ -162,36 +162,6 @@ define(['jquery',
                     $('#' + id).append(html);
                     $('#' + id).trigger("chosen:updated");
 
-                    $( "#" + id ).change(function () {
-                        var values = $(this).val()
-                        if ( CONFIG.l ) {
-                            CONFIG.m.removeLayer(CONFIG.l)
-                        }
-                        if ( values ) {
-                            var layer = {};
-                            layer.layers = values[values.length - 1]
-                            layer.layertitle = values[values.length - 1]
-                            layer.urlWMS = CONFIG.url_geoserver_wms
-                            layer.opacity = '0.8';
-                            layer.defaultgfi = true;
-                            layer.openlegend = true;
-                            CONFIG.l = new FM.layer(layer);
-                            CONFIG.m.addLayer(CONFIG.l);
-                        }
-                    });
-
-                    console.log("#" + id);
-                    var select_all = id.replace("_select", "_select_all")
-                    var deselect_all = id.replace("_select", "_deselect_all")
-                    $("#"+ select_all ).bind("click", function() {
-                        $("#" + id + ">option").prop('selected', true);
-                        $('#' + id).trigger("chosen:updated");
-                    });
-
-                    $("#" + deselect_all).bind("click", function() {
-                        $("#" + id + ">option").prop('selected', false);
-                        $('#' + id).trigger("chosen:updated");
-                    });
                 },
                 error : function(err, b, c) {}
             });
@@ -249,7 +219,7 @@ define(['jquery',
             var layer = {};
             layer.layers = "fenix:gaul0_line_3857"
             layer.layertitle = "Boundaries"
-            layer.urlWMS = "http://fenix.fao.org/geo"
+            layer.urlWMS = CONFIG.url_geoserver_wms
             layer.styles = "gaul0_line"
             layer.opacity='0.7';
             layer.zindex= 550;
@@ -268,7 +238,7 @@ define(['jquery',
         }
 
         var scatter_analysis = function(uids, codes) {
-            //loadingWindow.showPleaseWait()
+            loadingWindow.showPleaseWait()
 
             var json_stats = JSON.parse(JSON.stringify(CONFIG.json_stats));
             json_stats.raster.uids = uids
@@ -282,21 +252,19 @@ define(['jquery',
                 data: JSON.stringify(json_stats),
                 contentType: 'application/json;charset=UTF-8',
                 success : function(response) {
-                    //build_stats_response(response, threshold, output_id)
-                    console.log(response);
-                    createScatter(response, "")
-
-                    //create_chart_stats(LAYERS, STATS)
+                    loadingWindow.hidePleaseWait()
+                    createScatter(response, "", codes)
 
                 },
                 error : function(err, b, c) {
+                    loadingWindow.hidePleaseWait()
                     console.log(err);
                 }
             });
         }
 
-        var zoom_to = function(codes) {
-            var query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), 4326)) FROM spatial.gaul0_3857_test WHERE adm0_code IN ("+ codes +")"
+        var zoom_to = function(fenixmap, codes) {
+            var query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), 4326)) FROM spatial.gaul1_3857_test WHERE adm0_code IN ("+ codes +")"
             var url = CONFIG.url_spatialquery
             url += query;
             $.ajax({
@@ -310,7 +278,7 @@ define(['jquery',
                     var minlon = coordinates[0][0][0]
                     var maxlat = coordinates[0][1][1]
                     var maxlon = coordinates[0][2][0]
-                    CONFIG.m.map.fitBounds([
+                    fenixmap.map.fitBounds([
                         [minlat, minlon],
                         [maxlat, maxlon]
                     ]);
@@ -337,9 +305,7 @@ define(['jquery',
             return codes.substring(0, codes.length - 1);
         }
 
-        var createScatter =  function(csv, obj) {
-            console.log(csv);
-
+        var createScatter =  function(csv, obj, codes) {
             var c = new FMChartScatter();
 
             $("#pgeo_dist_chart").empty()
@@ -357,11 +323,13 @@ define(['jquery',
 
             var fenixMap = createMap(mapID);
             var l = createLayer();
+            var layerHighlight = createHighlightLayer(fenixMap);
+
 
             map.id = mapID;
             map.fenixMap = fenixMap;
             map.layers = [];
-            map.layers.push({ l: l});
+            map.layers.push({ l: l, layerHighlight: layerHighlight});
             mapsArray.push(map);
 
             c.init({
@@ -369,6 +337,16 @@ define(['jquery',
                 maps: mapsArray
             });
 
+
+            var layer = {};
+            layer.layers = 'fenix:gaul0_line_3857'
+            layer.layertitle = 'Country Boundaries'
+            layer.urlWMS = CONFIG.url_geoserver_wms
+            layer.opacity='0.8';
+            var l = new FM.layer(layer);
+            fenixMap.addLayer(l);
+
+            zoom_to(fenixMap, codes)
         }
 
         var createMap = function(mapID) {
@@ -397,21 +375,14 @@ define(['jquery',
             var m = new FM.Map(mapID, options, mapOptions);
             m.createMap();
 
-            var layer = {};
-            layer.layers = 'fenix:gaul0_line_3857'
-            layer.layertitle = 'Country Boundaries'
-            layer.urlWMS = 'http://fenixapps.fao.org/geoserver'
-            layer.opacity='1';
-            var l = new FM.layer(layer);
-            //l.zindex = 124
-            m.addLayer(l);
-
             return m;
         }
 
         var createLayer = function() {
             var layer = FMDEFAULTLAYER.getLayer("GAUL1", true)
+            layer.urlWMS = CONFIG.url_geoserver_wms
             layer.layertitle="Scatter layer x/y"
+            layer.opacity='0.8'
             layer.joindata=''
             layer.addborders='true'
             layer.borderscolor='FFFFFF'
@@ -424,14 +395,9 @@ define(['jquery',
             layer.jointype='shaded';
             layer.defaultgfi = true;
             layer.openlegend = true;
-            //layer.geometrycolumn = 'the_geom'
             layer.intervals='5';
-            //layer.colors='965a00,e88a00,f3ab2d';
-            layer.colors='33CCff,00CCFF,0099FF,0066FF,0000FF';
-
-            //layer.colors='680000,D80000,FFFF00,00CC33,009900';
-            //layer.colors='FF0AFF,FF1EFF,D700D7,CD00CD';
-
+            layer.colorramp='YlOrRd';
+//            layer.colors='33CCff,00CCFF,0099FF,0066FF,0000FF';
 
             layer.formula = '(series[i].data[j].x / series[i].data[j].y)';
             //layer.formula = '';
@@ -439,7 +405,21 @@ define(['jquery',
             layer.reclassify = false;
 
             var l = new FM.layer(layer);
+            l.zindex = 100
             return l
+        }
+
+        function createHighlightLayer(m) {
+            var layer = FMDEFAULTLAYER.getLayer("GAUL1", true)
+            layer.urlWMS = CONFIG.url_geoserver_wms
+            layer.layertitle="Scatter Analysis (Highlight)"
+            layer.style = 'gaul_highlight_polygon';
+            layer.srs = 'EPSG:3857';
+            layer.opacity='0.9';
+            layer.cql_filter="";
+            var layerHighlight = new FM.layer(layer, m);
+            layerHighlight.zindex = 106
+            return layerHighlight;
         }
 
         // public instance methods
