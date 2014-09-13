@@ -56,7 +56,7 @@ var EW_CHART = (function() {
                 //showAxes: false, //Mostra gli assi quando le serie sono aggiunte dinamicamente
                 style: {
                     fontFamily: 'Roboto', // Font di tutto
-                    fontSize: '12px', // La dimensione qui vale solo per i titoli
+                    fontSize: '11px', // La dimensione qui vale solo per i titoli
                     fontWeight: 300 // Con Roboto è molto bello giocare con i pesi
                 },
                 zoomType: 'xy', //Attiva lo zoom e stabilisce in quale dimensione
@@ -75,7 +75,7 @@ var EW_CHART = (function() {
                         //r:0, //Smusso pulsante reset zoom
                         style: {
                             textAlign: 'center', //CSS style aggiunto da me per centrare il testo
-                            fontSize: 10
+                            fontSize: 9
                         },
                         states: {
                             hover: {
