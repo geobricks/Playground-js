@@ -154,7 +154,8 @@ define(['jquery',
                         "barren or sparsely vegetated"
                     ]
                     var series = []
-
+                    var series_values = []
+                    var pixel_constant = 250000
                     // check if there is at least one value
                     var check_serie = false;
                     for (var i=0; i < response[0].values.length; i++) {
@@ -165,10 +166,19 @@ define(['jquery',
                     }
 
                     if( check_serie ) {
-                        series.push({"name": "Land Type", "data": response[0].values })
+                        for (var i=0; i < response[0].values.length; i++) {
+                            series_values.push(response[0].values[i]*pixel_constant)
+                        }
+
+                        series.push({"name": "Land Type", "data": series_values })
                         var chart = {
                             "categories": categories,
-                            "series": series
+                            "series": series,
+                            "yAxis" : {
+                                "title" : {
+                                    "text" : "km^2"
+                                }
+                            }
                         }
                         console.log(chart);
                         $("#" + chart_id).css("height", "450px")

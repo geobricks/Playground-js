@@ -71,7 +71,7 @@ define(['jquery',
                     "options": {
                         "query_condition": {
                             "select": "adm1_code, adm1_name",
-                            "from": "{{SCHEMA}}.gaul1_3857_test",
+                            "from": "{{SCHEMA}}.gaul1_3857",
                             "where": "adm0_code IN ('{{ADM0_CODE}}') GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
                         },
                         "column_filter": "adm1_code",
@@ -106,7 +106,7 @@ define(['jquery',
                     "options": {
                         "query_condition": {
                             "select": "adm1_code, adm1_name",
-                            "from": "{{SCHEMA}}.gaul1_3857_test",
+                            "from": "{{SCHEMA}}.gaul1_3857",
                             "where": "adm1_code IN ('{{ADM1_CODE}}') GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
                         },
                         "column_filter": "adm1_code",
@@ -196,7 +196,7 @@ define(['jquery',
         }
 
         var build_dropdown_gaul = function(id) {
-            var query = "SELECT adm0_code, adm0_name FROM spatial.gaul0_3857_test WHERE disp_area = 'NO' ORDER BY adm0_name"
+            var query = "SELECT adm0_code, adm0_name FROM spatial.gaul0_3857 WHERE disp_area = 'NO' ORDER BY adm0_name"
             var url = CONFIG.url_spatialquery + query
             $.ajax({
                 type : 'GET',
@@ -239,7 +239,7 @@ define(['jquery',
             CONFIG.m.createMap();
 
             var layer = {};
-            layer.layers = "gaul1_3857_test"
+            layer.layers = "gaul1_3857"
             layer.layertitle = "Administrative unit1"
             layer.urlWMS = CONFIG.url_geoserver_wms
             layer.opacity='0.7';
@@ -367,9 +367,9 @@ define(['jquery',
         }
 
         var zoom_to = function(codes) {
-//            http://127.0.0.1:5005/spatialquery/db/spatial/SELECT%20ST_AsGeoJSON%28ST_Extent%28geom%29%29%20from%20spatial.gaul1_3857_test%20where%20adm1_code%20IN%20%2870073,70075,1503,1489,1506,1502,1485,1507,1498,1492,70072,1495,1501,1487,70074,1493,70080,1494,1509,1511,70081,70082,1505,1491,1504,1490,70079,1508,70077,70078,70076,1500%29
+//            http://127.0.0.1:5005/spatialquery/db/spatial/SELECT%20ST_AsGeoJSON%28ST_Extent%28geom%29%29%20from%20spatial.gaul1_3857%20where%20adm1_code%20IN%20%2870073,70075,1503,1489,1506,1502,1485,1507,1498,1492,70072,1495,1501,1487,70074,1493,70080,1494,1509,1511,70081,70082,1505,1491,1504,1490,70079,1508,70077,70078,70076,1500%29
             // TODO: POST and not GET
-            var query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), 4326)) FROM spatial.gaul1_3857_test WHERE adm1_code IN ("+ codes +")"
+            var query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), 4326)) FROM spatial.gaul1_3857 WHERE adm1_code IN ("+ codes +")"
             var url = CONFIG.url_spatialquery
             url += query;
             $.ajax({

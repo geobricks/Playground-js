@@ -440,8 +440,8 @@ var EW_CHART = (function() {
                 }
             },
             title: {
-                enabled: false,
-                    text: 'null'
+                enabled: true,
+                text: chart["yAxis"]["title"].text
             },
             plotLines: [
                 {
