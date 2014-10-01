@@ -72,7 +72,7 @@ define(['jquery',
                         "query_condition": {
                             "select": "adm1_code, adm1_name",
                             "from": "{{SCHEMA}}.gaul1_3857",
-                            "where": "adm0_code IN ('{{ADM0_CODE}}') GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
+                            "where": "adm0_code IN ({{ADM0_CODE}}) GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
                         },
                         "column_filter": "adm1_code",
                         "stats_columns": {
@@ -107,7 +107,7 @@ define(['jquery',
                         "query_condition": {
                             "select": "adm1_code, adm1_name",
                             "from": "{{SCHEMA}}.gaul1_3857",
-                            "where": "adm1_code IN ('{{ADM1_CODE}}') GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
+                            "where": "adm1_code IN ({{ADM1_CODE}}) GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
                         },
                         "column_filter": "adm1_code",
                         "stats_columns": {
@@ -139,7 +139,7 @@ define(['jquery',
                 build_dropdown_layers('ew_dropdown_layers')
 
                 // build_dropdowns
-                build_dropdown_gaul('ew_drowdown_gaul')
+                build_dropdown_gaul('ew_dropdown_gaul')
 
                 // build map
                 build_map('ew_map')
@@ -205,7 +205,7 @@ define(['jquery',
                     response = (typeof response == 'string')? $.parseJSON(response): response;
                     console.log(response);
                     var dropdowndID = id + "_select"
-                    var html = '<select id="'+ dropdowndID+'" style="width:100%;">';
+                    var html = '<select multiple=""  id="'+ dropdowndID+'"  style="width:100%;">';
                     html += '<option value=""></option>';
                     for(var i=0; i < response.length; i++) {
                         html += '<option value="' + response[i][0] + '">' + response[i][1] + '</option>';
@@ -261,7 +261,9 @@ define(['jquery',
         }
 
         var collector_to_build_stats = function() {
-            var gaul = $("#ew_drowdown_gaul_select").chosen().val();
+            var gaul = $("#ew_dropdown_gaul_select").chosen().val();
+            gaul = get_string_codes(gaul)
+            console.log(gaul);
             var threshold_min = $("#ew_threshold_min").val();
             var threshold_max = $("#ew_threshold_max").val();
             // TODO: check threshold
@@ -526,6 +528,14 @@ define(['jquery',
                 return date + '-' + month + '-' + year
             else
                 return month + '/' + year
+        }
+
+        var get_string_codes = function(values) {
+            var codes= ""
+            for( var i=0; i < values.length; i++) {
+                codes += "'"+ values[i] +"',"
+            }
+            return codes.substring(0, codes.length - 1);
         }
 
         // public instance methods

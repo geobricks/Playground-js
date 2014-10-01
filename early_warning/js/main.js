@@ -6,7 +6,9 @@ require.config({
         bootstrap               :   '//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min',
         backbone                :   '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min',
         chosen                  :   '//fenixapps.fao.org/repository/js/chosen/1.0.0/chosen.jquery.min',
-        highcharts              :   '//code.highcharts.com/highcharts',
+        highcharts              :   'http://code.highcharts.com/highcharts',
+        "highcharts-heatmap"    :   'http://code.highcharts.com/maps/modules/heatmap',
+        "highcharts-data"       :   'http://code.highcharts.com/maps/modules/data',
         jquery                  :   '//code.jquery.com/jquery-1.10.1.min',
         loglevel                :   'logger/loglevel.min',
         mustache                :   '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache',
@@ -74,6 +76,10 @@ require.config({
                 'FMChartLibrary',
                 'regression',
                 'wkt']
+        },
+        "highcharts-heatmap" : {
+            deps: ['highcharts',
+                'highcharts-data']
         }
     }
 

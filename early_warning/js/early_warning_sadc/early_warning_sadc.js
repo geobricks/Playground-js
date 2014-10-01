@@ -139,7 +139,7 @@ define(['jquery',
                 build_dropdown_layers('ew_dropdown_layers')
 
                 // build_dropdowns
-                build_dropdown_gaul('ew_drowdown_gaul')
+                build_dropdown_gaul('ew_dropdown_gaul')
 
                 // build map
                 build_map('ew_map')
@@ -261,7 +261,7 @@ define(['jquery',
         }
 
         var collector_to_build_stats = function() {
-            var gaul = $("#ew_drowdown_gaul_select").chosen().val();
+            var gaul = $("#ew_dropdown_gaul_select").chosen().val();
             var threshold_min = $("#ew_threshold_min").val();
             var threshold_max = $("#ew_threshold_max").val();
             // TODO: check threshold

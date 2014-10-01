@@ -277,32 +277,32 @@ var EW_CHART = (function() {
             },
             colors: COLORS,
             credits: {
-            enabled: false //Attiva o disattiva il link di HighCharts dalla chart
-        },
-        exporting: {
-            enabled: false
-        },
-        navigation: { //Modifica lo stile dei bottoni e spesso del solo bottone dell'esportazione (lo sfondo)
-            buttonOptions: {
-                theme: {
-                    'stroke-width': 1, // Peso stroke del bottone
+                enabled: false //Attiva o disattiva il link di HighCharts dalla chart
+            },
+            exporting: {
+                enabled: false
+            },
+            navigation: { //Modifica lo stile dei bottoni e spesso del solo bottone dell'esportazione (lo sfondo)
+                buttonOptions: {
+                    theme: {
+                        'stroke-width': 1, // Peso stroke del bottone
                         stroke: '#666666', // Colore stroke del bottone
                         r: 0, // Smusso stroke del bottone,
                         states: {
-                        hover: {
-                            stroke: '#666666', // Press stroke del bottone
+                            hover: {
+                                stroke: '#666666', // Press stroke del bottone
                                 fill: '#e6e6e6' // Rollover del bottone
-                        },
-                        select: {
-                            stroke: '#666666', // Press stroke del bottone
+                            },
+                            select: {
+                                stroke: '#666666', // Press stroke del bottone
                                 fill: '#e6e6e6' // Press Fill del bottone
+                            }
                         }
                     }
                 }
-            }
-        },
-        legend: { //Modifica style della legenda
-            enabled: true, //Attiva la legenda
+            },
+            legend: { //Modifica style della legenda
+                enabled: true, //Attiva la legenda
                 floating: false, // IMPORTANTE - Permette alla plot area di stare sotto alla legenda - si guadagna molto spazio
 
 
@@ -317,53 +317,53 @@ var EW_CHART = (function() {
 
 
                 itemStyle: {
-                cursor: 'pointer',
+                    cursor: 'pointer',
                     color: '#666666',
                     fontSize: '14px',
                     fontWeight: 300
-            },
-            itemHiddenStyle: { //Colore dell'elemento legenda quando è disattivato
-                color: '#eeeeee'
-            },
-            itemHoverStyle: { //Colore dell'elemento legenda in rollover
-                color: '#3ca7da'
-            },
-            navigation: { //Paginazione Legenda - stilizzazione
-                activeColor: '#3ca7da', //Colore freccia attiva legenda
+                },
+                itemHiddenStyle: { //Colore dell'elemento legenda quando è disattivato
+                    color: '#eeeeee'
+                },
+                itemHoverStyle: { //Colore dell'elemento legenda in rollover
+                    color: '#3ca7da'
+                },
+                navigation: { //Paginazione Legenda - stilizzazione
+                    activeColor: '#3ca7da', //Colore freccia attiva legenda
                     inactiveColor: '#666666', //Colore freccia disattiva legenda
                     arrowSize: 8, //Dimensioni freccia
                     animation: true, //Attiva/Disattiva animazione
                     style: { //Stile CSS applicato solo alla navigazione della legenda
                         color: '#666666',
                         fontSize: '10px'
+                    }
                 }
-            }
-        },
-        plotOptions: {
-            series: {
-                allowPointSelect: true, //Permette di selezionare i punti della chart
+            },
+            plotOptions: {
+                series: {
+                    allowPointSelect: true, //Permette di selezionare i punti della chart
                     pointPlacement: "on", //Per partire dall'origine
                     animation: { // Configura l'animazione di entrata
-                    duration: 1000,
+                        duration: 1000,
                         easing: 'swing'
-                },
-                connectNulls: true,
+                    },
+                    connectNulls: true,
                     cropThreshold: 3,
                     lineWidth: 1, // IMPORTANTE - Cambia lo spessore delle linee della chart
                     states: {
-                    hover: {
-                        lineWidth: 1
-                    }
-                },
-                fillColor: {
-                    linearGradient: [0, 0, 0, 350],
+                        hover: {
+                            lineWidth: 1
+                        }
+                    },
+                    fillColor: {
+                        linearGradient: [0, 0, 0, 350],
                         stops: [
-                        [0, 'rgba(55, 155, 205,0.5)'],
-                        [1, 'rgba(255,255,255,0)']
-                    ]
-                },
-                marker: {
-                    enabled: false, //Attiva o disattiva i marker
+                            [0, 'rgba(55, 155, 205,0.5)'],
+                            [1, 'rgba(255,255,255,0)']
+                        ]
+                    },
+                    marker: {
+                        enabled: false, //Attiva o disattiva i marker
                         //symbol: 'url(http://www.mentaltoy.com/resources/logoChart.png)', //Questo paramentro carica un simbolo personalizzato. Si può anche avere una chart con marker diverse sulle linee
                         symbol: 'circle', // Tipologia di marker
                         radius: 4,
@@ -371,33 +371,33 @@ var EW_CHART = (function() {
                         lineColor: '#379bcd',
                         fillColor: '#FFFFFF',
                         states: {
-                        hover: {
-                            enabled: true, // Attiva o disattiva il marker quando si passa sopra la chart
+                            hover: {
+                                enabled: true, // Attiva o disattiva il marker quando si passa sopra la chart
                                 symbol: 'circle',
                                 fillColor: '#FFFFFF',
                                 lineColor: '#3ca7da',
                                 radius: 5,
                                 lineWidth: 2
+                            }
                         }
                     }
+
                 }
-
-            }
-        },
-        //END
+            },
+            //END
 
 
-        title: {
-            enabled: false,
+            title: {
+                enabled: false,
                 text: null,
                 x: -20 //center
-        },
-        subtitle: {
-            text: null,
+            },
+            subtitle: {
+                text: null,
                 x: -20
-        },
-        xAxis: {
-            categories: chart.categories,
+            },
+            xAxis: {
+                categories: chart.categories,
                 gridLineWidth: 1, // IMPORTANTE - Attiva le linee verticali
                 lineColor: '#e0e0e0',
                 tickColor: '#e0e0e0',
@@ -411,62 +411,115 @@ var EW_CHART = (function() {
                         color: '#666666',
                         fontWeight: '300',
                         fontSize: '12px'
+                    }
                 }
-            }
-            /*plotLines: [{ //linea custom possono essere anche più di una, è un array
-             color: '#666666',
-             width: 1,
-             value: 11.5,
-             dashStyle: 'dash',
-             zIndex: 3
-             }, { //linea custom possono essere anche più di una, è un array
-             color: '#FFFFFF',
-             width: 1,
-             value: 11.5,
-             zIndex: 2
-             }]*/
-        },
-        yAxis: {
-            gridLineWidth: 1, // IMPORTANTE - Attiva le linee verticali
+                /*plotLines: [{ //linea custom possono essere anche più di una, è un array
+                 color: '#666666',
+                 width: 1,
+                 value: 11.5,
+                 dashStyle: 'dash',
+                 zIndex: 3
+                 }, { //linea custom possono essere anche più di una, è un array
+                 color: '#FFFFFF',
+                 width: 1,
+                 value: 11.5,
+                 zIndex: 2
+                 }]*/
+            },
+            yAxis: {
+                gridLineWidth: 1, // IMPORTANTE - Attiva le linee verticali
                 lineWidth: 1,
                 //tickWidth: 1,
                 lineColor: '#e0e0e0',
                 gridLineColor: '#eeeeee',
                 labels: {
-                style: {
-                    color: '#666666',
+                    style: {
+                        color: '#666666',
                         fontWeight: '300',
                         fontSize: 11
-                }
+                    }
+                },
+                title: {
+                    enabled: true,
+                    text: chart["yAxis"]["title"].text
+                },
+                plotLines: [
+                    {
+                        value: 0,
+                        width: 1
+                    }
+                ]
             },
-            title: {
-                enabled: true,
-                text: chart["yAxis"]["title"].text
-            },
-            plotLines: [
-                {
-                    value: 0,
-                    width: 1
-                }
-            ]
-        },
-        tooltip: {
+            tooltip: {
 //                valueSuffix: ' B',
                 backgroundColor: 'rgba(255, 255, 255, 0.95)',
                 borderWidth: 1,
                 shadow: false,
                 shared: true
-        },
+            },
             series: chart.series
         }
 
-        var c = new Highcharts.Chart(chartRenderer);
+        return new Highcharts.Chart(chartRenderer);
+    }
+
+    function createHeatmap(chart, renderTo, type) {
+
+
+
+        var chartRenderer = {
+
+            chart: {
+                renderTo : renderTo,
+                type: type
+            },
+            credits: {
+                enabled: false
+            },
+
+
+            title: {
+                text: ''
+            },
+
+//            xAxis: {
+//                categories: ['Alexander', 'Marie', 'Maximilian', 'Sophia', 'Lukas', 'Maria', 'Leon', 'Anna', 'Tim', 'Laura']
+//            },
+//
+//            yAxis: {
+//                categories: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+//                title: null
+//            },
+
+            colorAxis: {
+                min: 0,
+                stops: [
+                    [0, '#FFFFFF'],
+                    [0.5, '#CC3333'],
+                    [0.9, '#780000']
+                ]
+//                minColor: '#FFFFFF',
+//                maxColor: '#780000 '
+            }
+
+//            series: [{
+//                name: 'Sales per employee',
+//                borderWidth: 1
+//                data: [[0, 0, 10], [0, 1, 19], [0, 2, 8], [0, 3, 24], [0, 4, 67], [1, 0, 92], [1, 1, 58], [1, 2, 78], [1, 3, 117], [1, 4, 48], [2, 0, 35], [2, 1, 15], [2, 2, 123], [2, 3, 64], [2, 4, 52], [3, 0, 72], [3, 1, 132], [3, 2, 114], [3, 3, 19], [3, 4, 16], [4, 0, 38], [4, 1, 5], [4, 2, 8], [4, 3, 117], [4, 4, 115], [5, 0, 88], [5, 1, 32], [5, 2, 12], [5, 3, 6], [5, 4, 120], [6, 0, 13], [6, 1, 44], [6, 2, 88], [6, 3, 98], [6, 4, 96], [7, 0, 31], [7, 1, 1], [7, 2, 82], [7, 3, 32], [7, 4, 30], [8, 0, 85], [8, 1, 97], [8, 2, 123], [8, 3, 64], [8, 4, 84], [9, 0, 47], [9, 1, 114], [9, 2, 31], [9, 3, 48], [9, 4, 91]]
+//            }]
+
+        }
+
+       chartRenderer = $.extend( true, chart, chartRenderer);
+
+       return new Highcharts.Chart(chartRenderer);
     }
 
 
     return {
         createPie: createPie,
-        createTimeserie: createTimeserie
+        createTimeserie: createTimeserie,
+        createHeatmap: createHeatmap
     };
 
 })();
