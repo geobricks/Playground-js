@@ -1,18 +1,27 @@
+
+var repository = '//fenixapps.fao.org/repository/js/';
+
+
 require.config({
 
-    baseUrl: 'js/libs',
+    baseUrl: '',
 
     paths: {
+
+        'text'                  : 'libs/text',
+        'domReady'              : 'libs/domReady',
+        'loglevel'              : 'libs/logger/loglevel.min',
+
         bootstrap               :   '//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min',
         backbone                :   '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min',
         chosen                  :   '//fenixapps.fao.org/repository/js/chosen/1.0.0/chosen.jquery.min',
-        highcharts              :   'http://code.highcharts.com/highcharts',
+        'highcharts'            :   repository + 'highcharts/4.0.4/js/highcharts',
+        'highcharts_exporting'  :   repository + 'highcharts/4.0.4/js/modules/exporting',
         "highcharts-heatmap"    :   'http://code.highcharts.com/maps/modules/heatmap',
         "highcharts-data"       :   'http://code.highcharts.com/maps/modules/data',
         jquery                  :   '//code.jquery.com/jquery-1.10.1.min',
-        loglevel                :   'logger/loglevel.min',
         mustache                :   '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache',
-        navbar                  :   '../navbar/geobricks_navbar',
+        navbar                  :   'navbar/geobricks_navbar',
         underscore              :   '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min',
 
         // fenix-map-js
@@ -35,14 +44,20 @@ require.config({
         'fenix-map-config'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
         'fenix-map-scatter-analysis'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
 
-        early_warning            :   '../early_warning/early_warning',
-        early_warning_chart      :   '../early_warning/early_warning_chart',
-        distribution             :   '../distribution/distribution',
-        scatter_analysis         :   '../scatter_analysis/scatter_analysis',
-        early_warning_sadc       :   '../early_warning_sadc/early_warning_sadc',
-        early_warning_chart_sadc : '../early_warning_sadc/early_warning_chart_sadc',
-        ghg_fires                : '../ghg_fires/ghg_fires',
-        ghg_fires_chart          : '../ghg_fires/ghg_fires_chart'
+        early_warning            :   'libs/namespace_early_warning/early_warning',
+        namespace_early_warning  :   'libs/namespace_early_warning',
+
+
+        ammerda                  :   'ammerda/ddd',
+        early_warning_chart      :   'early_warning/early_warning_chart',
+        distribution             :   'distribution/distribution',
+        scatter_analysis         :   'scatter_analysis/scatter_analysis',
+        early_warning_sadc       :   'early_warning_sadc/early_warning_sadc',
+        early_warning_chart_sadc :  'early_warning_sadc/early_warning_chart_sadc',
+        ghg_fires                : 'ghg_fires/ghg_fires',
+        ghg_fires_chart          : 'ghg_fires/ghg_fires_chart',
+
+        pgeo_analysis            : 'analysis/analysis'
 
     },
 
@@ -87,15 +102,18 @@ require.config({
 
 require(['jquery',
          'mustache',
-         'text!../../html/templates.html',
+         'text!html/templates.html',
          'backbone',
          'loglevel',
+         'text!config/config.json',
          'chosen',
          'navbar',
          'bootstrap',,
-         'domReady!'], function($, Mustache, templates, Backbone, log) {
+         'domReady!'], function($, Mustache, templates, Backbone, log, config) {
 
     log.setLevel(0);
+
+    var config = $.parseJSON(config);
 
 
     var ApplicationRouter = Backbone.Router.extend({
@@ -108,11 +126,12 @@ require(['jquery',
 
 
         routes: {
-            '(/)early_warning_sadc(/):lang': 'early_warning_sadc',
-            '(/)early_warning(/):lang': 'early_warning',
-            '(/)distribution(/):lang': 'distribution',
-            '(/)scatter_analysis(/):lang': 'scatter_analysis',
+            '(/)ew_sadc(/):lang': 'early_warning_sadc',
+            '(/)ew(/):lang': 'early_warning',
+            '(/)dist(/):lang': 'distribution',
+            '(/)sc(/):lang': 'scatter_analysis',
             '(/)ghg_fires(/):lang': 'ghg_fires',
+            '(/)pgeo_analysis(/):lang': 'analysis',
             '': 'early_warning'
         },
 
@@ -148,6 +167,15 @@ require(['jquery',
             this._init(lang);
             require(['ghg_fires'], function() {
                 GHG_Fires().build({lang: lang});
+            });
+        },
+
+        analysis: function(lang) {
+            this._init(lang);
+            require(['pgeo_analysis'], function(FM_ANALYSIS) {
+                var analysis = new FM_ANALYSIS()
+                config.lang = lang
+                analysis.init(config);
             });
         },
 

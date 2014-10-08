@@ -1,7 +1,7 @@
 define(['jquery',
     'mustache',
     'text!../../html/distribution/distribution.html',
-    'loglevel',
+    '../../../libs/logger/loglevel.min',
     'fenix-map',
     'fenix-map',
     'highcharts',

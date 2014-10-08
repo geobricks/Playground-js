@@ -1,7 +1,7 @@
 define(['jquery',
     'mustache',
     'text!../../html/scatter_analysis/scatter_analysis.html',
-    'loglevel',
+    '../libs/logger/loglevel.min',
     'fenix-map',
     'highcharts',
     'bootstrap',

@@ -1,7 +1,8 @@
 define(['jquery',
         'mustache',
-        'text!../../html/templates.html',
-        'bootstrap'], function ($, Mustache, templates) {
+        'text!html/templates.html',
+        'i18n!../../libs/nls/translate',
+        'bootstrap'], function ($, Mustache, templates, translate) {
 
     var global = this;
 
@@ -18,7 +19,7 @@ define(['jquery',
         require.config({'locale' : CONFIG.lang});
 
         var build = function () {
-            require(['i18n!nls/translate'], function (translate) {
+//            require(['i18n!nls/translate'], function (translate) {
                 var template = $(templates).filter('#' + CONFIG.template_id).html();
                 var view = {
                     early_warning: translate.early_warning,
@@ -28,7 +29,7 @@ define(['jquery',
                 };
                 var render = Mustache.render(template, view);
                 $('#' + CONFIG.placeholder).html(render);
-            });
+//            });
 
         };
 

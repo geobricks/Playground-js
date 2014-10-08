@@ -1,26 +1,20 @@
 define(['jquery',
     'mustache',
-    'text!../../html/early_warning_sadc/early_warning.html',
-    'loglevel',
-    'fenix-map',
+    'text!namespace_early_warning/html/early_warning.html',
+    '../logger/loglevel.min',
     'fenix-map',
     'highcharts',
     'early_warning_chart',
     'bootstrap'], function ($, Mustache, templates, log) {
 
     var global = this;
-    global.Early_warning_sadc = function() {
+    global.Early_warning = function() {
 
         var loadingWindow;
         loadingWindow = loadingWindow || (function () {
             var pleaseWaitDiv = $('' +
                 '<div class="modal" id="pleaseWaitDialog" style="background-color: rgba(54, 25, 25, 0.1);" data-backdrop="static" data-keyboard="false">' +
                 '<div class="modal-body" style="color:#F0F0F0"><h1>Processing...</h1><i class="fa fa-refresh fa-spin fa-5x"></i></div>' +
-//                '<div class="modal-body">' +
-//                '<div class="progress progress-striped active">' +
-//                '<div class="bar" style="width: 100%;">' +
-//                '</div></div>' +
-//                '</div>' +
                 '</div>');
             return {
                 showPleaseWait: function() {
@@ -72,7 +66,7 @@ define(['jquery',
                         "query_condition": {
                             "select": "adm1_code, adm1_name",
                             "from": "{{SCHEMA}}.gaul1_3857",
-                            "where": "adm0_code IN ('{{ADM0_CODE}}') GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
+                            "where": "adm0_code IN ({{ADM0_CODE}}) GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
                         },
                         "column_filter": "adm1_code",
                         "stats_columns": {
@@ -107,7 +101,7 @@ define(['jquery',
                         "query_condition": {
                             "select": "adm1_code, adm1_name",
                             "from": "{{SCHEMA}}.gaul1_3857",
-                            "where": "adm1_code IN ('{{ADM1_CODE}}') GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
+                            "where": "adm1_code IN ({{ADM1_CODE}}) GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
                         },
                         "column_filter": "adm1_code",
                         "stats_columns": {
@@ -149,7 +143,7 @@ define(['jquery',
                     collector_to_build_stats()
                 });
 
-                //get_statistics(77310, "Eastern Cape", "MODIS-NDVI-SADC")
+                //get_statistics(305, "Albania", "TRMM")
             });
         }
 
@@ -205,7 +199,7 @@ define(['jquery',
                     response = (typeof response == 'string')? $.parseJSON(response): response;
                     console.log(response);
                     var dropdowndID = id + "_select"
-                    var html = '<select id="'+ dropdowndID+'" style="width:100%;">';
+                    var html = '<select multiple=""  id="'+ dropdowndID+'"  style="width:100%;">';
                     html += '<option value=""></option>';
                     for(var i=0; i < response.length; i++) {
                         html += '<option value="' + response[i][0] + '">' + response[i][1] + '</option>';
@@ -262,6 +256,8 @@ define(['jquery',
 
         var collector_to_build_stats = function() {
             var gaul = $("#ew_dropdown_gaul_select").chosen().val();
+            gaul = get_string_codes(gaul)
+            console.log(gaul);
             var threshold_min = $("#ew_threshold_min").val();
             var threshold_max = $("#ew_threshold_max").val();
             // TODO: check threshold
@@ -306,10 +302,10 @@ define(['jquery',
             var suddifx_id = "ew_gaul1_"
             html += "<div class='row'>" +
                 "<div class='col-xs-8 col-sm-8 col-md-8 col-lg-8 text-primary'>" +
-                "<h4>Adm. Unit</h4>" +
+                    "<h4>Adm. Unit</h4>" +
                 "</div>" +
                 "<div class='col-xs-4 col-sm-4 col-md-4 col-lg-4' style='margin-left:-15px;'>" +
-                "<h4><small>Mean</small></h4>" +
+                    "<h4><small>Mean</small></h4>" +
                 "</div>" +
                 "</div>"
             console.log(threshold_min);
@@ -324,9 +320,9 @@ define(['jquery',
                         codes += response[i].code + ","
                         var id = suddifx_id + response[i].code;
                         html += "<div class='row'>" +
-                            "<div style='cursor:pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' class='col-xs-8 col-sm-8 col-md-8 col-lg-8 text-primary'><h7><a id='" + id + "' data-toggle='tooltip' title='"+ label +"'>"+ label +"</a></h7></div>" +
-                            "<div class='col-xs-4 col-sm-4 col-md-4 col-lg-4' style='margin-left:-15px;'><small>"+ mean +"%</small></div>" +
-                            "</div>"
+                                "<div style='cursor:pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;' class='col-xs-8 col-sm-8 col-md-8 col-lg-8 text-primary'><h7><a id='" + id + "' data-toggle='tooltip' title='"+ label +"'>"+ label +"</a></h7></div>" +
+                                "<div class='col-xs-4 col-sm-4 col-md-4 col-lg-4' style='margin-left:-15px;'><small>"+ mean +"%</small></div>" +
+                                "</div>"
 
 //                        html += "<h6><a style='cursor:pointer' class='text-primary' id='" + id + "'>" + label + "<small> " + mean + "%<small></a></h6>"
                         ids.push( { "code" : response[i].code, "label" : response[i].label })
@@ -343,8 +339,7 @@ define(['jquery',
             for(var i=0; i < ids.length; i++) {
                 $("#" + suddifx_id + ids[i].code).bind("click", { id: ids[i]}, function(event) {
                     zoom_to(event.data.id.code);
-                    get_statistics(event.data.id.code, event.data.id.label, "MODIS-NDVI-SADC", "ew_chart", "NDVI timeserie (SADC)")
-                    get_statistics(event.data.id.code, event.data.id.label, "TRMM-SADC", "ew_chart_trmm", "TRMM timeserie (SADC)")
+                    get_statistics(event.data.id.code, event.data.id.label, "TRMM")
                 });
             }
 
@@ -403,15 +398,13 @@ define(['jquery',
             });
         }
 
-        var get_statistics = function(gaul_code, gaul_label, layer_code, id_chart, title) {
+        var get_statistics = function(gaul_code, gaul_label, layer_code) {
 
-            console.log(id_chart);
             // adding title and rainfall data
-            $("#" + id_chart +"_panel").show()
-//            $("#" + id_chart +"_title").html(gaul_label + " NDVI SADC timeserie")
-            $("#" + id_chart +"_title").html(gaul_label + " - " + title)
-            $("#" + id_chart).empty()
-            $("#" + id_chart).append('<i class="text-primary fa fa-refresh fa-spin fa-2x"></i>')
+            $("#ew_chart_panel").show()
+            $("#ew_chart_title").html(gaul_label + " Rainfall timeserie")
+            $("#ew_chart").empty()
+            $("#ew_chart").append('<i class="text-primary fa fa-refresh fa-spin fa-2x"></i>')
 
 
             var url = CONFIG.url_search_layer_product_type
@@ -419,7 +412,6 @@ define(['jquery',
             url = url.replace("{{TYPE}}", "none")
             console.log("URL: " + url);
             console.log("URL2: " + CONFIG.url_search_layer_product_type);
-            var id_chart = id_chart;
             $.ajax({
                 type : 'GET',
                 url : url,
@@ -450,7 +442,7 @@ define(['jquery',
                             console.log(response);
                             var STATS = response;
 
-                            create_chart_stats(LAYERS, STATS, id_chart)
+                            create_chart_stats(LAYERS, STATS)
 
                         },
                         error : function(err, b, c) {
@@ -465,7 +457,7 @@ define(['jquery',
         }
 
 
-        var create_chart_stats = function(layers, stats, id_chart) {
+        var create_chart_stats = function(layers, stats) {
             var series = []
             var mean = {}
             mean.name = "Mean"
@@ -494,7 +486,7 @@ define(['jquery',
                             min.data.push(data.data.stats[0].min);
                             max.data.push(data.data.stats[0].max);
                             console.log(layers[i].meContent.seCoverage.coverageTime.from);
-                            var date = timeConverter(layers[i].meContent.seCoverage.coverageTime.from, true)
+                            var date = timeConverter(layers[i].meContent.seCoverage.coverageTime.from, false)
                             console.log(date)
                             categories.push(date)
                             break;
@@ -514,7 +506,7 @@ define(['jquery',
                 "categories" : categories,
                 "series" : series
             }
-            EW_CHART.createTimeserie(chart, id_chart, "line")
+            EW_CHART.createTimeserie(chart, "ew_chart", "line")
         }
 
         var timeConverter = function (UNIX_timestamp, addDay){
@@ -523,7 +515,6 @@ define(['jquery',
             var year = t.getFullYear();
             var month = months[t.getMonth()];
             var date = t.getDate();
-            console.log("date: " +date);
             //var hour = a.getHours();
 //            var min = a.getMinutes();
 //            var sec = a.getSeconds();
@@ -531,6 +522,14 @@ define(['jquery',
                 return date + '-' + month + '-' + year
             else
                 return month + '/' + year
+        }
+
+        var get_string_codes = function(values) {
+            var codes= ""
+            for( var i=0; i < values.length; i++) {
+                codes += "'"+ values[i] +"',"
+            }
+            return codes.substring(0, codes.length - 1);
         }
 
         // public instance methods
