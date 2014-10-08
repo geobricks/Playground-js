@@ -5,5 +5,6 @@
     "url_search_layer_product_type": "http://168.202.28.214:5005/search/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
     "url_spatialquery": "http://168.202.28.214:5005/spatialquery/db/spatial/",
     "url_stats_raster": "http://168.202.28.214:5005/stats/raster/spatial_query",
-    "url_stats_rasters": "http://168.202.28.214:5005/stats/rasters/spatial_query"
+    "url_stats_rasters": "http://168.202.28.214:5005/stats/rasters/spatial_query",
+    "url_stats_rasters_lat_lon": "http://168.202.28.214:5005/stats/rasters/{{LAYERS}}/lat/{{LAT}}/lon/{{LON}}"
 }

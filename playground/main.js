@@ -23,6 +23,8 @@ require.config({
         "highcharts-heatmap"    :   'http://code.highcharts.com/maps/modules/heatmap',
         "highcharts-data"       :   'http://code.highcharts.com/maps/modules/data',
         jquery                  :   '//code.jquery.com/jquery-1.10.1.min',
+        'jquery.hoverIntent'    :   '//fenixapps.fao.org/repository/js/jquery.hoverIntent/1.0/jquery.hoverIntent',
+
         mustache                :   '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache',
         underscore              :   '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min',
 
@@ -72,7 +74,7 @@ require.config({
         ghg_fires_chart      :   fnx_modules + 'fnx_maps_ghg_fires/ghg_fires_chart',
 
         FNX_ANALYSIS            :   fnx_modules + 'fnx_maps_analysis/main',
-        fnx_maps_analysis       : fnx_modules + 'fnx_maps_analysis',
+        fnx_maps_analysis       : fnx_modules + 'fnx_maps_analysis'
     },
 
     shim: {

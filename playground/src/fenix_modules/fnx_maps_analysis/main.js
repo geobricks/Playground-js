@@ -1,9 +1,12 @@
 define(['jquery',
     'mustache',
     'text!fnx_maps_analysis/html/template.html',
+    'text!fnx_maps_analysis/config/chart_template.json',
     'fenix-map',
+    'highcharts',
     'chosen',
-    'bootstrap'], function ($, Mustache, template) {
+    'jquery.hoverIntent',
+    'bootstrap'], function ($, Mustache, template, chart_template) {
 
     'use strict';
 
@@ -18,11 +21,11 @@ define(['jquery',
             "chart_structure_id"  : "pgeo_analysis_chart_id",
 
             "product_dropdown_id" : "pgeo_analysis_product_select",
-            "map_id" : "pgeo_analysis_map"
+            "map_id" : "pgeo_analysis_map",
+
+            "chart_id" : "pgeo_analysis_chart"
         };
     }
-
-//    http://168.202.28.214:5005/stats/raster/fenix:trmm_04_2014,fenix:trmm_05_2014/lat/12/lon/42
 
     FM_ANALYSIS.prototype.init = function(config) {
         this.CONFIG = $.extend(true, {}, this.CONFIG, config);
@@ -35,8 +38,6 @@ define(['jquery',
     };
 
     FM_ANALYSIS.prototype.create_gui = function() {
-        console.log("here");
-
         // create dropdown
         var view = { select_a_product: "Select a product"}
         var t = $(template).filter('#structure_product').html();
@@ -50,10 +51,15 @@ define(['jquery',
         var render = Mustache.render(t, view);
         $("#" + this.CONFIG.map_structure_id).html(render)
         this.create_map(this.CONFIG.map_id)
+
+        // create chart div
+        var t = $(template).filter('#structure_chart').html();
+        $("#" + this.CONFIG.chart_structure_id).html(t)
     };
 
     FM_ANALYSIS.prototype.create_dropdown = function(id) {
         var url = this.CONFIG.url_search_all_products
+        var _this = this;
         $.ajax({
             type : 'GET',
             url : url,
@@ -69,6 +75,11 @@ define(['jquery',
                 try { $('#' + id).chosen({disable_search_threshold:6, width: '100%'}); } catch (e) {}
                 $( "#" + id ).change(function () {
                     console.log($(this).val());
+
+                    // get all layers of the selected product
+
+                    _this.get_all_layers();
+
                 });
             },
             error : function(err, b, c) {}
@@ -96,11 +107,109 @@ define(['jquery',
         var l = new FM.layer(layer);
         m.addLayer(l);
 
+        // On Move
+        var _m = m;
+        var _this = this
+        var GFIchk = {};
+        GFIchk["lat-" + m.id] = 0;
+        GFIchk["lng-" + m.id] = 0;
+        GFIchk["globalID-" + m.id] = 0;
+        m.map.on('mousemove', function (e) {
+            var id = Date.now();
+            GFIchk["globalID-" + _m.id] = id;
+            var t = setTimeout(function() {
+                if ( id == GFIchk["globalID-" + _m.id]) {
+                    //console.log(e);
+                    if ((GFIchk["lat-" + _m.id] != e.latlng.lat) && (GFIchk["lng-" + _m.id] != e.latlng.lng)) {
+                        GFIchk["lat-" + _m.id] = e.latlng.lat;
+                        GFIchk["lng-" + _m.id] = e.latlng.lng;
+                        // call callback
+                        _this.query_layers(_this.CONFIG.uids_to_query, e.latlng.lat, e.latlng.lng)
+                    }
+                }
+            }, 100);
+        });
+        m.map.on('mouseout', function (e) {
+            GFIchk["lat-" + m.id] = 0;
+            GFIchk["lng-" + m.id] = 0;
+            GFIchk["globalID-" + m.id] = 0;
+
+            // TODO: remove chart
+        });
+
         this.CONFIG.m = m;
     };
 
-    FM_ANALYSIS.prototype.query_layers = function(id) {
+    FM_ANALYSIS.prototype.get_all_layers = function(id) {
+        var url = this.CONFIG.url_search_layer_product_type
+        var t = {
+            PRODUCT: "TRMM",
+            TYPE: "none"
+        };
+        url = Mustache.render(url, t);
+        var _this = this;
+        $.ajax({
+            type : 'GET',
+            url : url,
+            success : function(response) {
+                var uids = ""
+                for(var i=0; i< response.length; i++) {
+                    uids += response[i].uid + ","
+                }
+                uids = uids.slice(0,-1)
+                _this.CONFIG.uids_to_query = uids;
+                //_this.query_layers(ids, 12, 42)
+            },
+            error : function(err, b, c) {}
+        });
+    }
 
+    FM_ANALYSIS.prototype.query_layers = function(uids, lat, lon) {
+        var url = this.CONFIG.url_stats_rasters_lat_lon;
+        var _this = this;
+        var t = { LAT: lat,LON: lon, LAYERS: uids };
+        url = Mustache.render(url, t);
+
+        this.loading_html(this.CONFIG.chart_id)
+        $.ajax({
+            type : 'GET',
+            url : url,
+            success : function(response) {
+                var values = []
+                for(var i=0; i< response.length; i++) {
+                    values.push(parseFloat(response[i]))
+                }
+                _this.create_chart(_this.CONFIG.chart_id, values);
+            },
+            error : function(err, b, c) {}
+        });
+    }
+
+    FM_ANALYSIS.prototype.create_chart = function(id, data) {
+        var c = {}
+        c.chart = { "renderTo" : id}
+        c.yAxis = [{title: { text: ''}}]
+        var categories = []
+        var series = []
+        var serie = {
+            name: 'data',
+            type: 'line',
+            data: data
+        }
+        series.push(serie)
+        c.series = series;
+        c.xAxis = []
+        c.xAxis.push( {categories : categories,labels: { rotation: -45, style: { fontSize: '11px',fontFamily: 'Roboto'}}})
+
+        var ct = $.parseJSON(chart_template);
+        c = $.extend(true, {}, ct, c);
+        var c = new Highcharts.Chart(c);
+    }
+
+    FM_ANALYSIS.prototype.loading_html = function(id) {
+        var t = $(template).filter('#structure_loading').html();
+        var render = Mustache.render(t);
+        $("#" + id).html(render)
     }
 
     return FM_ANALYSIS;

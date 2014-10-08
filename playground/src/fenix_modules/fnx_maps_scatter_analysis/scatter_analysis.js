@@ -217,7 +217,7 @@ define(['jquery',
             var layer = {};
             layer.layers = "fenix:gaul0_line_3857"
             layer.layertitle = "Boundaries"
-            layer.urlWMS = CONFIG.url_geoserver_wms
+            layer.urlWMS = "http://fenixapps2.fao.org/geoserver-demo"
             layer.styles = "gaul0_line"
             layer.opacity='0.7';
             layer.zindex= 550;

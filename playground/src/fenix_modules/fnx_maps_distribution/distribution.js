@@ -80,6 +80,14 @@ define(['jquery',
 
         var build_dropdown_products = function(id) {
             var url = CONFIG.url_search_all_products
+            var t = {
+                LAT: "Christophe",
+                LON: "Coenraets",
+                blogURL: "http://coenraets.org"
+            };
+            var template = "<h1>{{firstName}} {{lastName}}</h1>Blog: {{blogURL}}";
+            var html = Mustache.to_html(template, person);
+            url.
             $.ajax({
                 type : 'GET',
                 url : url,
@@ -225,7 +233,7 @@ define(['jquery',
             var layer = {};
             layer.layers = "fenix:gaul0_line_3857"
             layer.layertitle = "Boundaries"
-            layer.urlWMS = "http://fenix.fao.org/geo"
+            layer.urlWMS = "http://fenixapps2.fao.org/geoserver-demo"
             layer.styles = "gaul0_line"
             layer.opacity='0.7';
             layer.zindex= 550;
