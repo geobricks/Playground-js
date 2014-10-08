@@ -1,13 +1,11 @@
 define(['jquery',
     'mustache',
-    'text!../../html/ghg_fires/template.html',
-    '../../../libs/logger/loglevel.min',
-    'fenix-map',
+    'text!fnx_maps_ghg_fires/html/template.html',
     'fenix-map',
     'highcharts',
     'highcharts-heatmap',
     'ghg_fires_chart',
-    'bootstrap'], function ($, Mustache, templates, log) {
+    'bootstrap'], function ($, Mustache, templates) {
 
     var global = this;
     global.GHG_Fires = function() {
@@ -49,13 +47,10 @@ define(['jquery',
         var build = function(config) {
             CONFIG = $.extend(true, {}, CONFIG, config);
 
-            require(['i18n!nls/translate'], function (translate) {
-                var template = $(templates).filter('#' + CONFIG.template_id).html();
-                $('#' + CONFIG.placeholder).html(templates);
+            var template = $(templates).filter('#' + CONFIG.template_id).html();
+            $('#' + CONFIG.placeholder).html(templates);
 
-                build_dropdown_gaul("ghg_fires_gaul_dropdown");
-
-            });
+            build_dropdown_gaul("ghg_fires_gaul_dropdown");
         }
 
 
@@ -162,14 +157,14 @@ define(['jquery',
                         _values[i][1] = _values[i][1].replace(re, '')
                         yAxis_categories.push(_values[i][1]);
                         for(var j=0; j < response[i][0].values.length; j++) {
-                           var d = [j, i, response[i][0].values[j] * pixel_constant_truked]
+                            var d = [j, i, response[i][0].values[j] * pixel_constant_truked]
 
-                           data.push(d)
+                            data.push(d)
 
-                           // check if at least a value is  > 0
-                           if (response[i][0].values[j] > 0) {
+                            // check if at least a value is  > 0
+                            if (response[i][0].values[j] > 0) {
                                 create_chart = true
-                           }
+                            }
                         }
                     }
 

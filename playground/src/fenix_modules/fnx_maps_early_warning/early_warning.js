@@ -1,11 +1,10 @@
 define(['jquery',
     'mustache',
-    'text!namespace_early_warning/html/early_warning.html',
-    '../logger/loglevel.min',
+    'text!fnx_maps_early_warning/html/template.html',
     'fenix-map',
     'highcharts',
     'early_warning_chart',
-    'bootstrap'], function ($, Mustache, templates, log) {
+    'bootstrap'], function ($, Mustache, templates) {
 
     var global = this;
     global.Early_warning = function() {
@@ -123,9 +122,7 @@ define(['jquery',
         var build = function(config) {
             CONFIG = $.extend(true, {}, CONFIG, config);
 
-            console.log($("#ew_chart_title").text())
-
-            require(['i18n!nls/translate'], function (translate) {
+            //require(['i18n!nls/translate'], function (translate) {
                 var template = $(templates).filter('#' + CONFIG.template_id).html();
                 $('#' + CONFIG.placeholder).html(templates);
 
@@ -144,7 +141,7 @@ define(['jquery',
                 });
 
                 //get_statistics(305, "Albania", "TRMM")
-            });
+            //});
         }
 
         var build_dropdown_layers = function(id) {
@@ -197,7 +194,6 @@ define(['jquery',
                 url : url,
                 success : function(response) {
                     response = (typeof response == 'string')? $.parseJSON(response): response;
-                    console.log(response);
                     var dropdowndID = id + "_select"
                     var html = '<select multiple=""  id="'+ dropdowndID+'"  style="width:100%;">';
                     html += '<option value=""></option>';
@@ -257,11 +253,9 @@ define(['jquery',
         var collector_to_build_stats = function() {
             var gaul = $("#ew_dropdown_gaul_select").chosen().val();
             gaul = get_string_codes(gaul)
-            console.log(gaul);
             var threshold_min = $("#ew_threshold_min").val();
             var threshold_max = $("#ew_threshold_max").val();
             // TODO: check threshold
-            console.log(gaul);
             // TODO: function
             if ( CONFIG.l.layer.layers && gaul.length > 0) {
                 build_stats(CONFIG.l.layer.layers, gaul, threshold_min, threshold_max, "ew_stats")
@@ -273,7 +267,6 @@ define(['jquery',
             var json_stats = JSON.parse(JSON.stringify(CONFIG.json_stats));
             json_stats.raster.uid = uid
             json_stats.vector.options.query_condition.where = json_stats.vector.options.query_condition.where.replace("{{ADM0_CODE}}", adm0_code)
-            console.log(json_stats);
             var url = CONFIG.url_stats_raster
             $.ajax({
                 type : 'POST',
@@ -293,7 +286,6 @@ define(['jquery',
         }
 
         var build_stats_response = function (response, threshold_min, threshold_max, output_id) {
-            log.info(response)
             var html = ""
             var codes = ""
 
@@ -308,8 +300,8 @@ define(['jquery',
                     "<h4><small>Mean</small></h4>" +
                 "</div>" +
                 "</div>"
-            console.log(threshold_min);
-            console.log(threshold_max);
+//            console.log(threshold_min);
+//            console.log(threshold_max);
             for(var i=0; i < response.length; i++) {
                 try {
                     var mean = response[i].data.stats[0].mean * 100

@@ -1,7 +1,7 @@
 define(['jquery',
         'mustache',
-        'text!html/templates.html',
-        'i18n!../../libs/nls/translate',
+        'text!navbar_module/html/templates.html',
+        'i18n!libs/nls/translate',
         'bootstrap'], function ($, Mustache, templates, translate) {
 
     var global = this;

@@ -1,12 +1,11 @@
 define(['jquery',
     'mustache',
-    'text!../../html/early_warning_sadc/early_warning.html',
-    '../../../libs/logger/loglevel.min',
+    'text!fnx_maps_early_warning_sadc/html/template.html',
     'fenix-map',
     'fenix-map',
     'highcharts',
-    './early_warning_chart',
-    'bootstrap'], function ($, Mustache, templates, log) {
+    'early_warning_chart',
+    'bootstrap'], function ($, Mustache, templates) {
 
     var global = this;
     global.Early_warning_sadc = function() {
@@ -16,11 +15,6 @@ define(['jquery',
             var pleaseWaitDiv = $('' +
                 '<div class="modal" id="pleaseWaitDialog" style="background-color: rgba(54, 25, 25, 0.1);" data-backdrop="static" data-keyboard="false">' +
                 '<div class="modal-body" style="color:#F0F0F0"><h1>Processing...</h1><i class="fa fa-refresh fa-spin fa-5x"></i></div>' +
-//                '<div class="modal-body">' +
-//                '<div class="progress progress-striped active">' +
-//                '<div class="bar" style="width: 100%;">' +
-//                '</div></div>' +
-//                '</div>' +
                 '</div>');
             return {
                 showPleaseWait: function() {
@@ -131,26 +125,24 @@ define(['jquery',
 
             console.log($("#ew_chart_title").text())
 
-            require(['i18n!nls/translate'], function (translate) {
-                var template = $(templates).filter('#' + CONFIG.template_id).html();
-                $('#' + CONFIG.placeholder).html(templates);
+            var template = $(templates).filter('#' + CONFIG.template_id).html();
+            $('#' + CONFIG.placeholder).html(templates);
 
-                // build_dropdowns
-                build_dropdown_layers('ew_dropdown_layers')
+            // build_dropdowns
+            build_dropdown_layers('ew_dropdown_layers')
 
-                // build_dropdowns
-                build_dropdown_gaul('ew_dropdown_gaul')
+            // build_dropdowns
+            build_dropdown_gaul('ew_dropdown_gaul')
 
-                // build map
-                build_map('ew_map')
+            // build map
+            build_map('ew_map')
 
-                $("#ew_button").bind( "click", function() {
-                    // stats based on the selected layer and the selected country on the Dropdown
-                    collector_to_build_stats()
-                });
-
-                //get_statistics(77310, "Eastern Cape", "MODIS-NDVI-SADC")
+            $("#ew_button").bind( "click", function() {
+                // stats based on the selected layer and the selected country on the Dropdown
+                collector_to_build_stats()
             });
+
+            //get_statistics(77310, "Eastern Cape", "MODIS-NDVI-SADC")
         }
 
         var build_dropdown_layers = function(id) {
@@ -297,7 +289,6 @@ define(['jquery',
         }
 
         var build_stats_response = function (response, threshold_min, threshold_max, output_id) {
-            log.info(response)
             var html = ""
             var codes = ""
 

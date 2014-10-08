@@ -1,11 +1,9 @@
 define(['jquery',
     'mustache',
-    'text!../../html/distribution/distribution.html',
-    '../../../libs/logger/loglevel.min',
-    'fenix-map',
+    'text!fnx_maps_distribution/html/template.html',
     'fenix-map',
     'highcharts',
-    'bootstrap'], function ($, Mustache, templates, log) {
+    'bootstrap'], function ($, Mustache, templates) {
 
     var global = this;
     global.Distribution = function() {
@@ -60,7 +58,6 @@ define(['jquery',
 
             console.log($("#ew_chart_title").text())
 
-            require(['i18n!nls/translate'], function (translate) {
                 var template = $(templates).filter('#' + CONFIG.template_id).html();
                 $('#' + CONFIG.placeholder).html(templates);
 
@@ -79,7 +76,6 @@ define(['jquery',
                      var email_address = $("#pgeo_dist_email_address").val();
                      export_layers(uids, codes, email_address)
                 });
-            });
         }
 
         var build_dropdown_products = function(id) {

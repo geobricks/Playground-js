@@ -1,11 +1,10 @@
 define(['jquery',
     'mustache',
-    'text!../../html/scatter_analysis/scatter_analysis.html',
-    '../libs/logger/loglevel.min',
+    'text!fnx_maps_scatter_analysis/html/template.html',
     'fenix-map',
     'highcharts',
     'bootstrap',
-    'FMChartScatter'], function ($, Mustache, templates, log) {
+    'FMChartScatter'], function ($, Mustache, templates) {
 
     var global = this;
     global.Scatter_Analysis = function() {
@@ -89,31 +88,30 @@ define(['jquery',
         var build = function(config) {
             CONFIG = $.extend(true, {}, CONFIG, config);
 
+
             console.log($("#ew_chart_title").text())
 
-            require(['i18n!nls/translate'], function (translate) {
-                var template = $(templates).filter('#' + CONFIG.template_id).html();
-                $('#' + CONFIG.placeholder).html(templates);
+            var template = $(templates).filter('#' + CONFIG.template_id).html();
+            $('#' + CONFIG.placeholder).html(templates);
 
-                build_dropdown_products('pgeo_dist_prod1', 'pgeo_dist_layers_select1')
-                build_dropdown_products('pgeo_dist_prod2', 'pgeo_dist_layers_select2')
+            build_dropdown_products('pgeo_dist_prod1', 'pgeo_dist_layers_select1')
+            build_dropdown_products('pgeo_dist_prod2', 'pgeo_dist_layers_select2')
 
-                build_dropdown_gaul('pgeo_dist_areas')
+            build_dropdown_gaul('pgeo_dist_areas')
 
-                // build map
-                //build_map('pgeo_dist_map')
+            // build map
+            //build_map('pgeo_dist_map')
 
-                $("#pgeo_dist_analysis_button").bind( "click", function() {
-                    var areas = $("#pgeo_dist_areas_select").chosen().val();
-                    var uids = []
-                    uids.push($("#pgeo_dist_layers_select1").chosen().val())
-                    uids.push($("#pgeo_dist_layers_select2").chosen().val());
-                    if ( uids[0] == "")
-                        uids.splice(0, 1)
-                    var codes = get_string_codes(areas)
+            $("#pgeo_dist_analysis_button").bind( "click", function() {
+                var areas = $("#pgeo_dist_areas_select").chosen().val();
+                var uids = []
+                uids.push($("#pgeo_dist_layers_select1").chosen().val())
+                uids.push($("#pgeo_dist_layers_select2").chosen().val());
+                if ( uids[0] == "")
+                    uids.splice(0, 1)
+                var codes = get_string_codes(areas)
 //                    var email_address = $("#pgeo_dist_email_address").val();
-                    scatter_analysis(uids, codes)
-                });
+                scatter_analysis(uids, codes)
             });
         }
 

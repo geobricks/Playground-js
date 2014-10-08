@@ -1,6 +1,8 @@
 
 var repository = '//fenixapps.fao.org/repository/js/';
 
+var fnx_modules = 'src/fenix_modules/';
+
 
 require.config({
 
@@ -8,6 +10,7 @@ require.config({
 
     paths: {
 
+        'i18n'                  : 'libs/i18n',
         'text'                  : 'libs/text',
         'domReady'              : 'libs/domReady',
         'loglevel'              : 'libs/logger/loglevel.min',
@@ -21,8 +24,12 @@ require.config({
         "highcharts-data"       :   'http://code.highcharts.com/maps/modules/data',
         jquery                  :   '//code.jquery.com/jquery-1.10.1.min',
         mustache                :   '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache',
-        navbar                  :   'navbar/geobricks_navbar',
         underscore              :   '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min',
+
+        // navbar
+
+        navbar                  :   'src/navbar/geobricks_navbar',
+        navbar_module           :   'src/navbar',
 
         // fenix-map-js
         'import-dependencies'   :   '//fenixapps.fao.org/repository/js/FENIX/utils/import-dependencies-1.0',
@@ -44,21 +51,28 @@ require.config({
         'fenix-map-config'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
         'fenix-map-scatter-analysis'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
 
-        early_warning            :   'libs/namespace_early_warning/early_warning',
-        namespace_early_warning  :   'libs/namespace_early_warning',
+        EARLY_WARNING            :   fnx_modules + 'fnx_maps_early_warning/early_warning',
+        fnx_maps_early_warning   :   fnx_modules + 'fnx_maps_early_warning',
+        early_warning_chart      :   fnx_modules + 'fnx_maps_early_warning/early_warning_chart',
 
 
-        ammerda                  :   'ammerda/ddd',
-        early_warning_chart      :   'early_warning/early_warning_chart',
-        distribution             :   'distribution/distribution',
-        scatter_analysis         :   'scatter_analysis/scatter_analysis',
-        early_warning_sadc       :   'early_warning_sadc/early_warning_sadc',
-        early_warning_chart_sadc :  'early_warning_sadc/early_warning_chart_sadc',
-        ghg_fires                : 'ghg_fires/ghg_fires',
-        ghg_fires_chart          : 'ghg_fires/ghg_fires_chart',
+        EARLY_WARNING_SADC          :   fnx_modules + 'fnx_maps_early_warning_sadc/early_warning_sadc',
+        fnx_maps_early_warning_sadc :   fnx_modules + 'fnx_maps_early_warning_sadc',
+        early_warning_chart_sadc    :   fnx_modules + 'fnx_maps_early_warning_sadc/early_warning_chart_sadc',
 
-        pgeo_analysis            : 'analysis/analysis'
 
+        DISTRIBUTION             :   fnx_modules + 'fnx_maps_distribution/distribution',
+        fnx_maps_distribution    :   fnx_modules + 'fnx_maps_distribution',
+
+        SCATTER_ANALYSIS            :   fnx_modules + 'fnx_maps_scatter_analysis/scatter_analysis',
+        fnx_maps_scatter_analysis   :   fnx_modules + 'fnx_maps_scatter_analysis',
+
+        GHG_FIRES            :   fnx_modules + 'fnx_maps_ghg_fires/ghg_fires',
+        fnx_maps_ghg_fires   :   fnx_modules + 'fnx_maps_ghg_fires',
+        ghg_fires_chart      :   fnx_modules + 'fnx_maps_ghg_fires/ghg_fires_chart',
+
+        FNX_ANALYSIS            :   fnx_modules + 'fnx_maps_analysis/main',
+        fnx_maps_analysis       : fnx_modules + 'fnx_maps_analysis',
     },
 
     shim: {
@@ -126,53 +140,53 @@ require(['jquery',
 
 
         routes: {
-            '(/)ew_sadc(/):lang': 'early_warning_sadc',
-            '(/)ew(/):lang': 'early_warning',
-            '(/)dist(/):lang': 'distribution',
-            '(/)sc(/):lang': 'scatter_analysis',
+            '(/)early_warning_sadc(/):lang': 'early_warning_sadc',
+            '(/)early_warning(/):lang': 'early_warning',
+            '(/)distribution(/):lang': 'distribution',
+            '(/)scatter_analysis(/):lang': 'scatter_analysis',
             '(/)ghg_fires(/):lang': 'ghg_fires',
-            '(/)pgeo_analysis(/):lang': 'analysis',
+            '(/)analysis(/):lang': 'analysis',
             '': 'early_warning'
         },
 
         early_warning: function(lang) {
             this._init(lang);
-            require(['early_warning'], function() {
+            require(['EARLY_WARNING'], function() {
                 Early_warning().build({lang: lang});
             });
         },
 
         early_warning_sadc: function(lang) {
             this._init(lang);
-            require(['early_warning_sadc'], function() {
+            require(['EARLY_WARNING_SADC'], function() {
                 Early_warning_sadc().build({lang: lang});
             });
         },
 
         distribution: function(lang) {
             this._init(lang);
-            require(['distribution'], function() {
+            require(['DISTRIBUTION'], function() {
                 Distribution().build({lang: lang});
             });
         },
 
         scatter_analysis: function(lang) {
             this._init(lang);
-            require(['scatter_analysis'], function() {
+            require(['SCATTER_ANALYSIS'], function() {
                 Scatter_Analysis().build({lang: lang});
             });
         },
 
         ghg_fires: function(lang) {
             this._init(lang);
-            require(['ghg_fires'], function() {
+            require(['GHG_FIRES'], function() {
                 GHG_Fires().build({lang: lang});
             });
         },
 
         analysis: function(lang) {
             this._init(lang);
-            require(['pgeo_analysis'], function(FM_ANALYSIS) {
+            require(['FNX_ANALYSIS'], function(FM_ANALYSIS) {
                 var analysis = new FM_ANALYSIS()
                 config.lang = lang
                 analysis.init(config);
