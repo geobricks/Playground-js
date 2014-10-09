@@ -73,7 +73,7 @@ require.config({
         fnx_maps_ghg_fires   :   fnx_modules + 'fnx_maps_ghg_fires',
         ghg_fires_chart      :   fnx_modules + 'fnx_maps_ghg_fires/ghg_fires_chart',
 
-        FNX_ANALYSIS            :   fnx_modules + 'fnx_maps_analysis/main',
+        FNX_ANALYSIS            : fnx_modules + 'fnx_maps_analysis/main',
         fnx_maps_analysis       : fnx_modules + 'fnx_maps_analysis'
     },
 

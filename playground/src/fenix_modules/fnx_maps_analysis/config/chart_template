@@ -104,10 +104,17 @@
         "text": null
     },
     "xAxis": {
-        "gridLineWidth": 1,
-        "lineColor": "#e0e0e0",
-        "tickColor": "#e0e0e0",
-        "gridLineColor": "#eeeeee"
+        "type": "datetime",
+       "dateTimeLabelFormats": {
+                           "day": "%H"
+                       },
+        "labels": {
+            "rotation": -45,
+            "style": {
+                "fontSize": "11px",
+                "fontFamily": "Roboto"
+            }
+       }
     },
     "yAxis": {
         "gridLineWidth": 1,

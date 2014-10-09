@@ -1,7 +1,7 @@
 define(['jquery',
     'mustache',
     'text!fnx_maps_analysis/html/template.html',
-    'text!fnx_maps_analysis/config/chart_template.json',
+    'text!fnx_maps_analysis/config/chart_template',
     'fenix-map',
     'highcharts',
     'chosen',
@@ -23,7 +23,18 @@ define(['jquery',
             "product_dropdown_id" : "pgeo_analysis_product_select",
             "map_id" : "pgeo_analysis_map",
 
-            "chart_id" : "pgeo_analysis_chart"
+            "chart_id" : "pgeo_analysis_chart",
+
+            "chart_obj" : "", // this the chart obj used to add the series
+
+            // layers to be added and queried
+            "cached_layers" : []
+//            "cached_layers" : [
+//                {
+//                    id : "",
+//                    layers : []
+//                }
+//            ]
         };
     }
 
@@ -74,12 +85,13 @@ define(['jquery',
                 $('#' + id).append(html);
                 try { $('#' + id).chosen({disable_search_threshold:6, width: '100%'}); } catch (e) {}
                 $( "#" + id ).change(function () {
-                    console.log($(this).val());
-
-                    // get all layers of the selected product
-
-                    _this.get_all_layers();
-
+                    var values = $(this).val()
+                    if ( values ) {
+                        _this.get_all_layers(values);
+                    }
+                    else {
+                        // TODO: remove all layers
+                    }
                 });
             },
             error : function(err, b, c) {}
@@ -124,7 +136,7 @@ define(['jquery',
                         GFIchk["lat-" + _m.id] = e.latlng.lat;
                         GFIchk["lng-" + _m.id] = e.latlng.lng;
                         // call callback
-                        _this.query_layers(_this.CONFIG.uids_to_query, e.latlng.lat, e.latlng.lng)
+                        _this.query_products(_this.CONFIG.cached_layers, e.latlng.lat, e.latlng.lng)
                     }
                 }
             }, 100);
@@ -137,73 +149,151 @@ define(['jquery',
             // TODO: remove chart
         });
 
+        // caching map
         this.CONFIG.m = m;
     };
 
-    FM_ANALYSIS.prototype.get_all_layers = function(id) {
-        var url = this.CONFIG.url_search_layer_product_type
-        var t = {
-            PRODUCT: "TRMM",
-            TYPE: "none"
-        };
-        url = Mustache.render(url, t);
-        var _this = this;
+    FM_ANALYSIS.prototype.get_all_layers = function(ids) {
+        var m =  this.CONFIG.m;
+        // TODO: real caching of the layers, not calling every time
+        if (  this.CONFIG.cached_layers.length > 0 ) {
+            console.log("remove layers");
+        }
+
+
+        // TODO: remove old layers from cached_layers
+
+        this.CONFIG.cached_layers = []
+
+        for ( var i=0; i < ids.length; i++) {
+            var url = this.CONFIG.url_search_layer_product_type
+            var t = {
+                PRODUCT: ids[i],
+                TYPE: "none"
+            };
+            url = Mustache.render(url, t);
+            this.get_layers(url, m, ids[i])
+        }
+    }
+
+    FM_ANALYSIS.prototype.get_layers = function(url, m, id) {
+        var _id = id;
+        var _this = this
         $.ajax({
-            type : 'GET',
-            url : url,
-            success : function(response) {
-                var uids = ""
-                for(var i=0; i< response.length; i++) {
-                    uids += response[i].uid + ","
+            type: 'GET',
+            url: url,
+            success: function (response) {
+                var json = _this.CONFIG.cached_layers;
+                var changed = false;
+                for( var k = 0; k <  json.length; ++k ) {
+                    if( _id == json[k].id ) {
+                        console.log("here");
+                        changed = true
+                        _this.CONFIG.cached_layers[k].layers = response;
+                    }
                 }
-                uids = uids.slice(0,-1)
-                _this.CONFIG.uids_to_query = uids;
-                //_this.query_layers(ids, 12, 42)
+                if ( !changed ) {
+                    console.log("HERE");
+                    var map_layer = _this.add_layer(m, response[response.length-1])
+                    _this.CONFIG.cached_layers.push({
+                        "id": _id,
+                        "layers": response,
+                        "map_layer" : map_layer
+                    })
+                }
             },
-            error : function(err, b, c) {}
+            error: function (err, b, c) {
+            }
         });
     }
 
-    FM_ANALYSIS.prototype.query_layers = function(uids, lat, lon) {
-        var url = this.CONFIG.url_stats_rasters_lat_lon;
-        var _this = this;
-        var t = { LAT: lat,LON: lon, LAYERS: uids };
-        url = Mustache.render(url, t);
+    FM_ANALYSIS.prototype.add_layer = function(m, layer_def) {
+        console.log(layer_def);
+        var layer = {};
+        layer.layers = layer_def.uid
+        layer.layertitle = layer_def.title[this.CONFIG.lang.toLocaleUpperCase()]
+        layer.urlWMS = this.CONFIG.url_geoserver_wms
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+        return l;
+    }
 
-        this.loading_html(this.CONFIG.chart_id)
+    FM_ANALYSIS.prototype.query_products = function(cached_layers, lat, lon) {
+
+        //this.loading_html(this.CONFIG.chart_id)
+        // create chart
+        console.log("here1");
+        var chart = this.create_empty_chart(this.CONFIG.chart_id)
+        console.log("here");
+
+
+        for (var i=0; i<cached_layers.length; i++) {
+            var url = this.CONFIG.url_stats_rasters_lat_lon;
+
+            // parse layers to get uids
+            var uids = ""
+            for( var j=0; j< cached_layers[i].layers.length; j++) {
+                uids += cached_layers[i].layers[j].uid + ","
+            }
+            uids = uids.slice(0,-1)
+            var t = { LAT: lat,LON: lon, LAYERS: uids };
+            url = Mustache.render(url, t);
+
+            // query the product layers
+            this.query_product_layers(url, chart, cached_layers[i])
+        }
+    }
+
+    FM_ANALYSIS.prototype.query_product_layers = function(url, chart, cached_layer) {
         $.ajax({
             type : 'GET',
             url : url,
             success : function(response) {
                 var values = []
                 for(var i=0; i< response.length; i++) {
-                    values.push(parseFloat(response[i]))
+                    try {
+                        //console.log(cached_layer.layers[i].meContent.seCoverage.coverageTime.from);
+                        var date = cached_layer.layers[i].meContent.seCoverage.coverageTime.from;
+                        // TODO: check how MOngoDB stores the dates
+                        date = (date.$date)? date.$date: date * 1000;
+                        var value = [date, parseFloat(response[i])]
+                        values.push(value)
+                    }
+                    catch (e) { console.error("Error parsing the chart value: " + e);}
                 }
-                _this.create_chart(_this.CONFIG.chart_id, values);
+                var serie = {
+                    name : cached_layer.id,
+                    data : values,
+                    lineWidth: 0
+                    //type : "scatter"
+                }
+                console.log(serie);
+                chart.addSeries(serie, true);
             },
             error : function(err, b, c) {}
         });
+
     }
 
-    FM_ANALYSIS.prototype.create_chart = function(id, data) {
-        var c = {}
-        c.chart = { "renderTo" : id}
-        c.yAxis = [{title: { text: ''}}]
-        var categories = []
-        var series = []
-        var serie = {
-            name: 'data',
-            type: 'line',
-            data: data
-        }
-        series.push(serie)
-        c.series = series;
-        c.xAxis = []
-        c.xAxis.push( {categories : categories,labels: { rotation: -45, style: { fontSize: '11px',fontFamily: 'Roboto'}}})
-
-        var ct = $.parseJSON(chart_template);
-        c = $.extend(true, {}, ct, c);
-        var c = new Highcharts.Chart(c);
+    FM_ANALYSIS.prototype.create_empty_chart = function(id) {
+        console.log(id);
+        var _this = this;
+        var p = $.parseJSON(chart_template);
+        console.log(p);
+        var custom_p = {
+            chart: {
+                renderTo: id,
+                ignoreHiddenSeries : false
+            },
+            xAxis: {
+                "minTickInterval": 3600 * 1000
+            },
+            series: []
+        };
+        custom_p = $.extend(true, {}, custom_p, p);
+        console.log(p);
+        console.log(custom_p);
+        return new Highcharts.Chart(custom_p);
     }
 
     FM_ANALYSIS.prototype.loading_html = function(id) {
