@@ -97,7 +97,7 @@
     "plotOptions": {
     },
     "title": {
-        "enabled": false,
+        "enabled": true,
         "text": null
     },
     "subtitle": {
@@ -106,12 +106,12 @@
     "xAxis": {
         "type": "datetime",
        "dateTimeLabelFormats": {
-                           "day": "%H"
-                       },
+            "day": "%H"
+        },
         "labels": {
             "rotation": -45,
             "style": {
-                "fontSize": "11px",
+                "fontSize": "8px",
                 "fontFamily": "Roboto"
             }
        }

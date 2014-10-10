@@ -156,13 +156,11 @@ define(['jquery',
     FM_ANALYSIS.prototype.get_all_layers = function(ids) {
         var m =  this.CONFIG.m;
         // TODO: real caching of the layers, not calling every time
-        if (  this.CONFIG.cached_layers.length > 0 ) {
-            console.log("remove layers");
+        for ( var i=0; i < this.CONFIG.cached_layers.length; i++) {
+            m.removeLayer(this.CONFIG.cached_layers[i].map_layer)
         }
 
-
         // TODO: remove old layers from cached_layers
-
         this.CONFIG.cached_layers = []
 
         for ( var i=0; i < ids.length; i++) {
@@ -183,18 +181,19 @@ define(['jquery',
             type: 'GET',
             url: url,
             success: function (response) {
+
                 var json = _this.CONFIG.cached_layers;
+                console.log(json);
                 var changed = false;
-                for( var k = 0; k <  json.length; ++k ) {
+                for( var k = 0; k < json.length; k++ ) {
                     if( _id == json[k].id ) {
-                        console.log("here");
                         changed = true
                         _this.CONFIG.cached_layers[k].layers = response;
                     }
                 }
+                var map_layer = _this.add_layer(m, response[response.length-1])
                 if ( !changed ) {
                     console.log("HERE");
-                    var map_layer = _this.add_layer(m, response[response.length-1])
                     _this.CONFIG.cached_layers.push({
                         "id": _id,
                         "layers": response,
@@ -263,8 +262,8 @@ define(['jquery',
                 }
                 var serie = {
                     name : cached_layer.id,
-                    data : values,
-                    lineWidth: 0
+                    data : values
+                    //lineWidth: 0
                     //type : "scatter"
                 }
                 console.log(serie);
@@ -285,12 +284,21 @@ define(['jquery',
                 renderTo: id,
                 ignoreHiddenSeries : false
             },
+            title: {
+                text: 'Timeserie of the selected pixel',
+                "enabled": true,
+                style: {
+                    fontFamily: 'Roboto',
+                    color: '#31708f',
+                    fontSize: '15px'
+                }
+            },
             xAxis: {
                 "minTickInterval": 3600 * 1000
             },
             series: []
         };
-        custom_p = $.extend(true, {}, custom_p, p);
+        custom_p = $.extend(true, {}, p, custom_p);
         console.log(p);
         console.log(custom_p);
         return new Highcharts.Chart(custom_p);

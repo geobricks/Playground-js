@@ -14,6 +14,7 @@ require.config({
         'text'                  : 'libs/text',
         'domReady'              : 'libs/domReady',
         'loglevel'              : 'libs/logger/loglevel.min',
+        'bootstrap-datepicker'  : 'libs/bootstrap-datepicker/bootstrap-datepicker',
 
         bootstrap               :   '//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min',
         backbone                :   '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min',
@@ -73,8 +74,11 @@ require.config({
         fnx_maps_ghg_fires   :   fnx_modules + 'fnx_maps_ghg_fires',
         ghg_fires_chart      :   fnx_modules + 'fnx_maps_ghg_fires/ghg_fires_chart',
 
-        FNX_ANALYSIS            : fnx_modules + 'fnx_maps_analysis/main',
-        fnx_maps_analysis       : fnx_modules + 'fnx_maps_analysis'
+        FNX_ANALYSIS         : fnx_modules + 'fnx_maps_analysis/main',
+        fnx_maps_analysis    : fnx_modules + 'fnx_maps_analysis',
+
+        FNX_CROP_CALENDAR_MODULE    : fnx_modules + 'fnx_crop_calendar/main',
+        fnx_crop_calendar           : fnx_modules + 'fnx_crop_calendar'
     },
 
     shim: {
@@ -148,6 +152,7 @@ require(['jquery',
             '(/)scatter_analysis(/):lang': 'scatter_analysis',
             '(/)ghg_fires(/):lang': 'ghg_fires',
             '(/)analysis(/):lang': 'analysis',
+            '(/)crop_calendar(/):lang': 'crop_calendar',
             '': 'early_warning'
         },
 
@@ -194,6 +199,16 @@ require(['jquery',
                 analysis.init(config);
             });
         },
+
+        crop_calendar: function(lang) {
+            this._init(lang);
+            require(['FNX_CROP_CALENDAR_MODULE'], function(FNX_CROP_CALENDAR) {
+                var app = new FNX_CROP_CALENDAR()
+                config.lang = lang
+                app.init(config);
+            });
+        },
+
 
         _init: function (lang) {
 

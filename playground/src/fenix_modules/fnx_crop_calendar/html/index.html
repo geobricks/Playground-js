@@ -1,18 +1,62 @@
-<table id="producttable">
-    <thead>
-    <tr>
-        <td>UPC_Code</td>
-        <td>Product_Name</td>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- existing data could optionally be included here -->
-    </tbody>
-</table>
+<template id="structure">
+    <div class="row">
+        <div class='col-xs-8'>
+            <h2 class="text-info">Insert your crop period</h2>
+            <div id="fnx_cc_map_id" style="height:600px;"></div>
+        </div>
+        <div class='col-xs-4'>
+            <div id="fnx_cc_form_id"></div>
+        </div>
+    </div>
+</template>
 
-<template id="productrow">
-    <tr>
-        <td class="record"></td>
-        <td></td>
-    </tr>
+<template id="structure_test">
+    <div class='col-xs-6' style="height: 490px;">
+        <!--<h4 class="text-info">{{map_preview}}</h4>-->
+        <h4 class="text-info">Map preview of the latest layer of the product</h4>
+        <div id='pgeo_analysis_map' class='fm-box' style='overflow: hidden; margin: 0 auto; text-align: left;'></div>
+    </div>
+</template>
+
+<template id="structure_crop_form">
+    <div class='col-xs-12'>
+        <h2 class="text-info">Crop Definition</h2>
+        <h3 class="text-primary">Crop Type</h3>
+        <select id="crop_type{{id}}" data-placeholder="Choose a Crop">
+            <option value=""></option>
+            <option value="faostat_code">Rice</option>
+            <option value="faostat_code">Wheat</option>
+        </select>
+        <hr>
+        <h3 class="text-primary">Crop Variety</h3>
+        <div class="input-group">
+            <span class="input-group-addon">@</span>
+            <input type="text" class="form-control" placeholder="Variety of the crop type">
+        </div>
+        <hr>
+        <h3 class="text-primary"><i class="fa fa-calendar"></i> Growing Period</h3>
+        <div id="growing_timeperiod{{id}}"></div>
+        <hr>
+        <h3 class="text-primary"><i class="fa fa-calendar"></i> Sowing Period</h3>
+        <div id="sowing_timeperiod{{id}}"></div>
+        <hr>
+        <h3 class="text-primary"><i class="fa fa-calendar"></i> Harvesting Period</h3>
+        <div id="harvesting_timeperiod{{id}}"></div>
+        <hr>
+        <button type="submit" class="btn btn-default btn-primary pull-right">Submit</button>
+    </div>
+</template>
+
+<template id="structure_time_period">
+    <div class="row">
+        <div class='col-xs-5'>
+            <input id="fromdate{{id}}" type="text" class="form-control" placeholder="From date">
+        </div>
+        <div class='col-xs-5'>
+            <input id="todate{{id}}" type="text" class="form-control" placeholder="To date">
+        </div>
+        <a class="btn btn-large btn-primary" href="">
+            <i class="fa fa-plus"></i>
+        </a>
+    </div>
 </template>

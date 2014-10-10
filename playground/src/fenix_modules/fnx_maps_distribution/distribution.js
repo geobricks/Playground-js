@@ -80,14 +80,6 @@ define(['jquery',
 
         var build_dropdown_products = function(id) {
             var url = CONFIG.url_search_all_products
-            var t = {
-                LAT: "Christophe",
-                LON: "Coenraets",
-                blogURL: "http://coenraets.org"
-            };
-            var template = "<h1>{{firstName}} {{lastName}}</h1>Blog: {{blogURL}}";
-            var html = Mustache.to_html(template, person);
-            url.
             $.ajax({
                 type : 'GET',
                 url : url,
