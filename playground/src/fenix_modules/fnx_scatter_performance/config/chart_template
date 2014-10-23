@@ -1,0 +1,6 @@
+{        chart: {
+            type: 'heatmap',
+            marginTop: 40,
+            marginBottom: 40
+        }
+
