@@ -169,6 +169,7 @@ define(['jquery',
                 PRODUCT: ids[i],
                 TYPE: "none"
             };
+            //var url = "http://168.202.28.214:5005/search/layer/product/EARTHSTAT"
             url = Mustache.render(url, t);
             this.get_layers(url, m, ids[i])
         }
@@ -252,10 +253,12 @@ define(['jquery',
                 for(var i=0; i< response.length; i++) {
                     try {
                         //console.log(cached_layer.layers[i].meContent.seCoverage.coverageTime.from);
-                        var date = cached_layer.layers[i].meContent.seCoverage.coverageTime.from;
+                        //var date = cached_layer.layers[i].meContent.seCoverage.coverageTime.from;
                         // TODO: check how MOngoDB stores the dates
-                        date = (date.$date)? date.$date: date * 1000;
-                        var value = [date, parseFloat(response[i])]
+                        //date = (date.$date)? date.$date: date * 1000;
+                        //var value = [date, parseFloat(response[i])]
+                        //values.push(value)
+                        var value = [i, parseFloat(response[i])]
                         values.push(value)
                     }
                     catch (e) { console.error("Error parsing the chart value: " + e);}

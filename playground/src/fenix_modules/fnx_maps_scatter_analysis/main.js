@@ -1,6 +1,6 @@
 define(['jquery',
     'mustache',
-    'text!fnx_maps_morocco_analysis/html/template.html',
+    'text!fnx_maps_scatter_analysis/html/template.html',
     'fenix-map',
     'highcharts',
     'bootstrap',

@@ -62,14 +62,18 @@ define(['jquery',
 
     FNX_CROP_CALENDAR.prototype.create_map = function(id) {
         var options = {
-            plugins: { geosearch : true, mouseposition: false, controlloading : true, zoomControl: 'bottomright'},
-            guiController: { overlay : true,  baselayer: true,  wmsLoader: true },
+            plugins: {
+                geosearch : true, mouseposition: false, controlloading : true, zoomControl: 'bottomright'
+            },
+            guiController: { overlay : true, baselayer: true,  wmsLoader: false },
             gui: {disclaimerfao: true }
         }
 
-        var mapOptions = { zoomControl:false,attributionControl: false };
+        var mapOptions = { zoomControl:false, attributionControl: false };
         var m = new FM.Map(id, options, mapOptions);
         m.createMap();
+
+        m.map.addLayer()
 
         var layer = {};
         layer.layers = "fenix:gaul0_line_3857"

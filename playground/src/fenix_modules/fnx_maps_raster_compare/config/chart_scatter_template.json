@@ -1,27 +1,36 @@
 {
-    chart: {
-        type: 'scatter',
-        zoomType: 'xy'
+    "chart": {
+        "type": "scatter",
+        "zoomType": "xy"
     },
-    plotOptions: {
-        series: {
-            animation: false,
-            enableMouseTracking: false,
-            shadow: false,
-            marker: {
-                enabled: true,
-                symbol: 'circle',
-                radius: 1
+    "plotOptions": {
+        "series": {
+            "animation": false,
+            "enableMouseTracking": false,
+            "shadow": false,
+            "marker": {
+                "enabled": true,
+                "symbol": "circle",
+                "radius": 1
             }
         }
     },
-    title: {
-        text: null
+    "yAxis": {
+        "title": {
+            "text": null
+        }
     },
-    tooltip: {
-        enabled: false
+    "title": {
+        "text": null
     },
-    legend: {
-        enabled : false
+    "tooltip": {
+        "enabled": false
+    },
+    "legend": {
+        "enabled" : false
+    },
+    "credits": {
+        "enabled" : false
     }
+
 }

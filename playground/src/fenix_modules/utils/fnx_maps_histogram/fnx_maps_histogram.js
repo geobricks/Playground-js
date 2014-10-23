@@ -9,6 +9,7 @@ define(['jquery',
 
     'use strict';
 
+    function FNX_HISTOGRAM() {
         var o = {
             chart: {
                 //color: ['rgba(0, 0, 0, .5)'],
@@ -187,10 +188,7 @@ define(['jquery',
                 series: payload.series
             });
         }
-
-        return {
-            init: init
-        };
     };
 
-})();
+    return FNX_HISTOGRAM;
+});

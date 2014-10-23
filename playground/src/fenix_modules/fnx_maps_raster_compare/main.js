@@ -1,198 +1,209 @@
 define(['jquery',
     'mustache',
-    'text!fnx_maps_scatter_analysis/html/template.html',
+    'text!fnx_maps_raster_compare/html/template.html',
+    'text!fnx_maps_raster_compare/config/chart_scatter_template.json',
+    'FNX_MAPS_LOADING_WINDOW',
     'fenix-map',
     'highcharts',
     'bootstrap',
-    'FMChartScatter'], function ($, Mustache, templates) {
+    'FMChartScatter'], function ($, Mustache, templates, chart_scatter_template, loadingwindow) {
 
-    var global = this;
-    global.A = function() {
+    'use strict';
 
-        var loadingWindow;
-        loadingWindow = loadingWindow || (function () {
-            var pleaseWaitDiv = $('' +
-                '<div class="modal" id="pleaseWaitDialog" style="background-color: rgba(54, 25, 25, 0.1);" data-backdrop="static" data-keyboard="false">' +
-                '<div class="modal-body" style="color:#F0F0F0"><h1>Processing...</h1><i class="fa fa-refresh fa-spin fa-5x"></i></div>' +
-                '</div>');
-            return {
-                showPleaseWait: function() {
-                    pleaseWaitDiv.modal();
-                },
-                hidePleaseWait: function () {
-                    pleaseWaitDiv.modal('hide');
-                }
-            };
-        })();
+    function FNX_RASTER_COMPARE() {
+        this.o = {
+            lang : 'en',
+            "placeholder": "main_content_placeholder",
+            "template_id": "structure",
+            "content_id": "fnx_raster_compare_content",
+            "content_template_id": "fnx_raster_compare_content_template",
 
-        var CONFIG = {
-            lang: 'EN',
-            placeholder: 'main_content_placeholder',
-            template_id: 'map',
+            // Objects interaction
+            "prod1" : {
+                id : "fnx_raster_compare_prod1",
+                layers_id: "fnx_raster_compare_layers_select1"
+            },
 
-            url_geoserver_wms: 'http://fenixapps2.fao.org/geoserver-demo',
+            "prod2" : {
+                id : "fnx_raster_compare_prod2",
+                layers_id: "fnx_raster_compare_layers_select2"
+            },
 
-            url_search_all_products: "http://168.202.28.214:5005/search/layer/distinct/layers/",
+            "chart_scatter": {
+                id: "fnx_raster_compare_chart_scatter",
+                maps: []
+            },
 
-            url_search_layer_product: "http://168.202.28.214:5005/search/layer/product/",
+            "chart_histogram1": {
+                id: "fnx_raster_compare_chart_scatter",
+                maps: []
+            },
 
-            url_spatialquery: "http://168.202.28.214:5005/spatialquery/db/spatial/",
+            "chart_histogram2": {
+                id: "fnx_raster_compare_chart_scatter",
+                maps: []
+            },
 
-            url_stats_scatter_analysis : "http://168.202.28.214:5005/stats/rasters/scatter_analysis/",
+            "map1": {
+                id: "fnx_raster_compare_map1",
+                m: null,
+                default_layer: null, // the one selected from the dropdown
+                layer_scatter: null, // the highlighted pixels from the scatter chart
+                layer_histogram: null // the highlighted pixels from the histogram chart
+            },
 
-            // default layer and map
-            m : null,
-            l : null,
-
-            l_gaul0_highlight: null,
-
-            // distribution query
-            url_distribution_raster: "http://168.202.28.214:5005/distribution/raster/spatial_query",
-            spatial_query: '{ "type" : "database", "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})"}',
-
-
-//            url_distribution_raster: "http://localhost:5005/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
-//            spatial_query: '{"vector":{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})"}}'
-
-            json_stats : {
-                "raster": {
-                    "name": null,
-                    "uid": null
-                },
-                "vector": {
-                    "name": "gaul1",
-                    "type": "database",
-                    "options": {
-                        "query_condition": {
-                            "select": "adm1_code, adm1_name",
-                            "from": "{{SCHEMA}}.gaul1_3857",
-                            "where": "adm0_code IN ({{ADM0_CODE}}) GROUP BY adm1_code, adm1_name ORDER BY adm1_name"
-                        },
-                        "column_filter": "adm1_code",
-                        "stats_columns": {
-                            "polygon_id": "adm1_code",
-                            "label_en": "adm1_name"
-                        }
-                    }
-                },
-                "stats": {
-                    "raster_stats": {
-                        "descriptive_stats": {
-                            "force": true
-                        }
-                    }
-                }
+            "map2": {
+                id: "fnx_raster_compare_map2",
+                m: null,
+                default_layer: null,
+                layer_scatter: null,
+                layer_histogram: null
             }
+        };
+    }
+
+    FNX_RASTER_COMPARE.prototype.init = function(obj) {
+        this.o = $.extend(true, {}, this.o, obj);
+        var o = this.o
+        var template = $(templates).filter('#' + o.template_id).html();
+        $('#' + o.placeholder).html(template);
+
+
+        // parsing the chart temaplte and initialize loading window
+        chart_scatter_template = $.parseJSON(chart_scatter_template);
+        loadingwindow = new loadingwindow()
+
+        // creating objects
+        var map1 = this.createMap(o.map1.id);
+        var map2 = this.createMap(o.map2.id);
+        map1.syncOnMove(map2);
+        map2.syncOnMove(map1);
+
+        // caching maps
+        this.o.map1.m = map1;
+        this.o.map2.m = map2;
+
+        // building dropdowns
+        this.build_dropdown_products(o.prod1.id, o.prod1.layers_id, this.o.map1)
+        this.build_dropdown_products(o.prod2.id, o.prod2.layers_id, this.o.map2)
+
+        var _this =this;
+        $("#pgeo_dist_analysis_button").bind("click", {layer_id1 : o.prod1.layers_id, layer_id2 : o.prod2.layers_id},function(event) {
+            var uids = []
+            uids.push($("#" + event.data.layer_id1).chosen().val())
+            uids.push($("#" + event.data.layer_id2).chosen().val());
+            if ( uids[0] == "")
+                uids.splice(0, 1)
+            _this.create_analysis(uids)
+        });
+    };
+
+    FNX_RASTER_COMPARE.prototype.build_dropdown_products = function(id, layer_dd_ID, mapObj) {
+        var _this =this;
+        var url = this.o.url_search_all_products
+        $.ajax({
+            type : 'GET',
+            url : url,
+            success : function(response) {
+                _this.build_dropdown_products_response(id, layer_dd_ID, response, mapObj)
+            },
+            error : function(err, b, c) {}
+        });
+    }
+
+    FNX_RASTER_COMPARE.prototype.build_dropdown_products_response = function(id, layer_dd_ID, response, mapObj) {
+        var _this =this;
+        response = (typeof response === 'string')? $.parseJSON(response): response;
+        var dropdowndID = id + "_select";
+        var html = '<select id="'+ dropdowndID+'" style="width:100%;">';
+        html += '<option value=""></option>';
+        for(var i=0; i < response.length; i++) {
+            html += '<option value="' + response[i] + '">' + response[i] + '</option>';
         }
+        html += '</select>';
 
-        var init = function(config) {
-            CONFIG = $.extend(true, {}, CONFIG, config);
+        $('#' + id).empty();
+        $('#' + id).append(html);
+
+        try {
+            $('#' + dropdowndID).chosen({disable_search_threshold:6, width: '100%'});
+        }  catch (e) {}
+
+        $( "#" + dropdowndID ).change({ mapObj: mapObj}, function (event) {
+            console.log("build_dropdown_layers");
+            _this.build_dropdown_layers(layer_dd_ID, $(this).val(), event.data.mapObj)
+        });
+
+        // this shouldn't be here
+        var _this = this;
+        $( "#" + layer_dd_ID ).change({ mapObj : mapObj}, function (event) {
+            var mapObj = event.data.mapObj;
+            // remove the layers if exists on the map
+            if ( mapObj.default_layer)
+                mapObj.m.removeLayer(mapObj.default_layer)
+            try {
+                if (mapObj.layer_scatter)
+                    mapObj.m.removeLayer(mapObj.layer_scatter)
+            } catch (e) {}
+            try {
+                if ( mapObj.default_layer)
+                    mapObj.m.removeLayer(mapObj.layer_histogram)
+            } catch (e) {}
 
 
-            console.log($("#ew_chart_title").text())
+            var layer = {};
+            layer.layers = $(this).val()
+            layer.layertitle = $("#" + id + " :selected").text();
+            layer.urlWMS = _this.o.url_geoserver_wms
+            layer.defaultgfi = true;
+            layer.openlegend= true;
+            mapObj.default_layer = new FM.layer(layer);
+            mapObj.m.addLayer(mapObj.default_layer);
 
-            var template = $(templates).filter('#' + CONFIG.template_id).html();
-            $('#' + CONFIG.placeholder).html(templates);
+            // caching scatter and histograms
+            var layer = {};
+            layer.layers = $(this).val()
+            layer.layertitle = $("#" + id + " :selected").text() + " Scatter";
+            layer.urlWMS = _this.o.url_geoserver_wms
+            layer.style = "TO BE APPLIED ON THE FLY!"
+            mapObj.layer_scatter = new FM.layer(layer, mapObj.m);
 
-            build_dropdown_products('pgeo_dist_prod1', 'pgeo_dist_layers_select1')
-            build_dropdown_products('pgeo_dist_prod2', 'pgeo_dist_layers_select2')
+            var layer = {};
+            layer.layers = $(this).val()
+            layer.layertitle = $("#" + id + " :selected").text() + " Histogram";
+            layer.urlWMS = _this.o.url_geoserver_wms
+            layer.style = "TO BE APPLIED ON THE FLY!"
+            mapObj.layer_histogram = new FM.layer(layer, mapObj.m);
+        });
+    }
 
-            build_dropdown_gaul('pgeo_dist_areas')
+    FNX_RASTER_COMPARE.prototype.build_dropdown_layers = function(id, product, mapObj) {
+        var url = this.o.url_search_layer_product + product;
+        var _this = this;
+        $("#" + id).empty()
+        $.ajax({
+            type : 'GET',
+            url : url,
+            success : function(response) {
+                console.log("here");
+                _this.build_dropdown_layers_response(id, product, response, mapObj)
+            },
+            error : function(err, b, c) {}
+        });
+    }
 
-            // build map
-            //build_map('pgeo_dist_map')
-
-            $("#pgeo_dist_analysis_button").bind( "click", function() {
-                var areas = $("#pgeo_dist_areas_select").chosen().val();
-                var uids = []
-                uids.push($("#pgeo_dist_layers_select1").chosen().val())
-                uids.push($("#pgeo_dist_layers_select2").chosen().val());
-                if ( uids[0] == "")
-                    uids.splice(0, 1)
-                var codes = get_string_codes(areas)
-//                    var email_address = $("#pgeo_dist_email_address").val();
-                scatter_analysis(uids, codes)
-            });
+    FNX_RASTER_COMPARE.prototype.build_dropdown_layers_response = function(id, product, response, mapObj) {
+        var lang = this.o.lang.toLocaleUpperCase()
+        response = (typeof response == 'string')? $.parseJSON(response): response;
+        var html = '<option value=""></option>';
+        for(var i=0; i < response.length; i++) {
+            html += '<option value="' + response[i].uid + '">' + response[i].title[lang] + '</option>';
         }
+        $('#' + id).append(html);
+        $('#' + id).trigger("chosen:updated");
+    }
 
-        var build_dropdown_products = function(id, layer_dd_ID) {
-            var url = CONFIG.url_search_all_products
-            $.ajax({
-                type : 'GET',
-                url : url,
-                success : function(response) {
-                    response = (typeof response === 'string')? $.parseJSON(response): response;
-                    var dropdowndID = id + "_select";
-                    var html = '<select id="'+ dropdowndID+'" style="width:100%;">';
-                    html += '<option value=""></option>';
-                    for(var i=0; i < response.length; i++) {
-                        html += '<option value="' + response[i] + '">' + response[i] + '</option>';
-                    }
-                    html += '</select>';
-
-                    $('#' + id).empty();
-                    $('#' + id).append(html);
-
-                    try {
-                        $('#' + dropdowndID).chosen({disable_search_threshold:6, width: '100%'});
-                    }  catch (e) {}
-
-                    $( "#" + dropdowndID ).change(function () {
-                        build_dropdown_layers(layer_dd_ID, $(this).val())
-                    });
-                },
-                error : function(err, b, c) {}
-            });
-        }
-
-        var build_dropdown_layers = function(id, product) {
-            var url = CONFIG.url_search_layer_product + product;
-            $("#" + id).empty()
-            $.ajax({
-                type : 'GET',
-                url : url,
-                success : function(response) {
-                    response = (typeof response == 'string')? $.parseJSON(response): response;
-                    var html = '<option value=""></option>';
-                    for(var i=0; i < response.length; i++) {
-                        html += '<option value="' + response[i].uid + '">' + response[i].title[CONFIG.lang.toLocaleUpperCase()] + '</option>';
-                    }
-                    $('#' + id).append(html);
-                    $('#' + id).trigger("chosen:updated");
-
-                },
-                error : function(err, b, c) {}
-            });
-        }
-
-        var build_dropdown_gaul = function(id) {
-            var query = "SELECT adm0_code, adm0_name FROM spatial.gaul0_3857 WHERE disp_area = 'NO' ORDER BY adm0_name"
-            var url = CONFIG.url_spatialquery + query
-            $.ajax({
-                type : 'GET',
-                url : url,
-                success : function(response) {
-                    response = (typeof response == 'string')? $.parseJSON(response): response;
-                    var dropdowndID = id + "_select"
-                    var html = '<select id="'+ dropdowndID+'"  multiple="" style="width:100%;">';
-                    html += '<option value=""></option>';
-                    for(var i=0; i < response.length; i++) {
-                        html += '<option value="' + response[i][0] + '">' + response[i][1] + '</option>';
-                    }
-                    html += '</select>';
-
-                    $('#' + id).empty();
-                    $('#' + id).append(html);
-
-                    try {
-                        $('#' + dropdowndID).chosen({disable_search_threshold:6, width: '100%'});
-                    }  catch (e) {}
-                },
-                error : function(err, b, c) {}
-            });
-        }
-
-        var build_map = function(id) {
+    FNX_RASTER_COMPARE.prototype.build_map = function(id) {
             var options = {
                 plugins: { geosearch : true, mouseposition: false, controlloading : true, zoomControl: 'bottomright'},
                 guiController: { overlay : true,  baselayer: true,  wmsLoader: true },
@@ -225,7 +236,7 @@ define(['jquery',
             CONFIG.m.addLayer(CONFIG.l_gaul0);
         }
 
-        var collector_to_build_stats = function() {
+    FNX_RASTER_COMPARE.prototype.collector_to_build_stats = function() {
             var gaul = $("#ew_drowdown_gaul_select").chosen().val();
             var threshold = $("#ew_threshold").val();
             // TODO: check threshold
@@ -235,59 +246,47 @@ define(['jquery',
             }
         }
 
-        var scatter_analysis = function(uids, codes) {
-            loadingWindow.showPleaseWait()
+    FNX_RASTER_COMPARE.prototype.create_analysis = function(uids) {
+        $('#' + this.o.content_id).html($(templates).filter('#' + this.o.content_template_id).html());
 
-            var json_stats = JSON.parse(JSON.stringify(CONFIG.json_stats));
-            json_stats.raster.uids = uids
-            json_stats.raster.name = "scatter"
-            json_stats.vector.options.query_condition.where = json_stats.vector.options.query_condition.where.replace("{{ADM0_CODE}}", codes)
-            console.log(json_stats);
-            var url = CONFIG.url_stats_scatter_analysis
-            $.ajax({
-                type : 'POST',
-                url : url,
-                data: JSON.stringify(json_stats),
-                contentType: 'application/json;charset=UTF-8',
-                success : function(response) {
-                    loadingWindow.hidePleaseWait()
-                    createScatter(response, "", codes)
+        var o = this.o;
+        var template = $(templates).filter('#' + o.content_template_id).html();
+        $('#' + o.content_id).html(template);
 
-                },
-                error : function(err, b, c) {
-                    loadingWindow.hidePleaseWait()
-                    console.log(err);
-                }
-            });
-        }
+        // create the analysis widgets
+        this.scatter_analysis(uids, this.o.map1, this.o.map2)
+        this.histogram_analysis(this.o.uids)
+    }
 
-        var zoom_to = function(fenixmap, codes) {
-            var query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), 4326)) FROM spatial.gaul1_3857 WHERE adm0_code IN ("+ codes +")"
-            var url = CONFIG.url_spatialquery
-            url += query;
-            $.ajax({
-                type : 'GET',
-                url : url,
-                success : function(response) {
-                    response = (typeof response == 'string')? $.parseJSON(response): response;
-                    var polygon = $.parseJSON(response[0][0])
-                    var coordinates = polygon.coordinates;
-                    var minlat = coordinates[0][0][1]
-                    var minlon = coordinates[0][0][0]
-                    var maxlat = coordinates[0][1][1]
-                    var maxlon = coordinates[0][2][0]
-                    fenixmap.map.fitBounds([
-                        [minlat, minlon],
-                        [maxlat, maxlon]
-                    ]);
-                },
-                error : function(err, b, c) {
-                    alert(err)
-                }
-            });
-        }
+    FNX_RASTER_COMPARE.prototype.scatter_analysis = function(uids, map1, map2) {
+        loadingwindow.showPleaseWait()
+        var url = this.o.url_stats_rasters_scatter_plot;
+        url = url.replace("{{LAYERS}}", uids)
+        var _this = this;
+        $.ajax({
+            type : 'GET',
+            url : url,
+            contentType: 'application/json;charset=UTF-8',
+            success : function(response) {
+                loadingwindow.hidePleaseWait();
+                response = (typeof response == 'string')? $.parseJSON(response): response;
+                _this.createScatter(response, map1, map2)
+            },
+            error : function(err, b, c) {
+                $('#' + _this.o.content_id).empty();
+                loadingwindow.hidePleaseWait()
+                alert(err.responseJSON.message);
+            }
+        });
+    }
 
-        var get_string_codes = function(values) {
+    FNX_RASTER_COMPARE.prototype.histogram_analysis = function(id, uid, map) {
+
+
+    }
+
+
+    FNX_RASTER_COMPARE.prototype.get_string_codes = function(values) {
             var codes= ""
             for( var i=0; i < values.length; i++) {
                 codes += "'"+ values[i] +"',"
@@ -295,7 +294,7 @@ define(['jquery',
             return codes.substring(0, codes.length - 1);
         }
 
-        var get_string_uids = function(values) {
+    FNX_RASTER_COMPARE.prototype.get_string_uids = function(values) {
             var codes= ""
             for( var i=0; i < values.length; i++) {
                 codes += "" + values[i] +";"
@@ -303,51 +302,94 @@ define(['jquery',
             return codes.substring(0, codes.length - 1);
         }
 
-        var createScatter =  function(csv, obj, codes) {
-            var c = new FMChartScatter();
+    FNX_RASTER_COMPARE.prototype.createScatter =  function(response, map1, map2) {
+        var _this = this;
+        var c = {
+            chart: {
+                renderTo: this.o.chart_scatter.id,
+                events: {
+                    redraw: function (e) {
+                        // Get min/Max
 
-            $("#pgeo_dist_chart").empty()
-            $("#pgeo_dist_map").empty()
-            var chartID = "pgeo_dist_chart"
-            var mapID = "pgeo_dist_map"
+                        // Get SLD
 
+                        // Apply SLD the scatter layer
 
-            // to handle multiple maps
-            var mapsArray = [];
+                        console.log(this.xAxis[0].min, this.xAxis[0].max, this.yAxis[0].min,  this.yAxis[0].max);
+                            //mapsSpatialQueries(mapsObj, series,  this.xAxis[0].min, this.xAxis[0].max, this.yAxis[0].min, this.yAxis[0].max)
+                        console.log(map1);
+                        console.log(map2);
 
-            // single map
-            var map = {};
-            // to handle multiple layers
+                        _this.applyStyle(map1.layer_scatter,
+                               '* {'+
+                            'raster-channels: auto;' +
+                            'raster-color-map:'+
+                            'color-map-entry(black, ' + this.xAxis[0].min + ', 0)'+
+                            'color-map-entry(red, ' + this.xAxis[0].min + ')'+
+                            'color-map-entry(black,  ' + this.xAxis[0].max + ', 0)'+
+                            '}'
+                        );
 
-            var fenixMap = createMap(mapID);
-            var l = createLayer();
-            var layerHighlight = createHighlightLayer(fenixMap);
+                        _this.applyStyle(map2.layer_scatter,
+                                '* {'+
+                                'raster-channels: auto;' +
+                                'raster-color-map:'+
+                                'color-map-entry(black, ' + this.yAxis[0].min + ', 0)'+
+                                'color-map-entry(red, ' + this.yAxis[0].min + ')'+
+                                'color-map-entry(black,  ' + this.yAxis[0].max + ', 0)'+
+                                '}'
+                        );
+                    }
+                }
+            },
+            series: response.series
+        };
+//        var time_create_data = Date.now();
+//        var n1 = Date.now() - time_create_data;
+        //chart.redraw();
+//        var time_to_draw = Date.now() - time_create_data;
+//        var end = new Date().getTime();
+//        $('#time').text('Render To create serie: '+(n1)+' mSec');
+//        $('#time_all').text('Render Time: All: '+(time_to_draw)+' mSec');
+        c = $.extend(true, {}, chart_scatter_template, c);
+        var chart = new Highcharts.Chart(c);
+    }
 
+    FNX_RASTER_COMPARE.prototype.applyStyle = function(l, style) {
+        console.log("APPLY STYLE");
+        console.log(l);
+        console.log(style);
+        var data = {
+            stylename: l.layer.layers,
+            style: style
+        };
 
-            map.id = mapID;
-            map.fenixMap = fenixMap;
-            map.layers = [];
-            map.layers.push({ l: l, layerHighlight: layerHighlight});
-            mapsArray.push(map);
+        console.log(data);
+        $.ajax({
+            type : 'POST',
+            url  : "http://fenixapps2.fao.org/geoservices/CSS2SLD",
+            data : data,
+            success : function(response) {
+                console.log(response);
 
-            c.init({
-                chart : { data : csv, id : chartID, datatype: 'csv',  chart_title: obj.title },
-                maps: mapsArray
-            });
+                try {
+                    l._fenixMap.removeLayer(l)
+                } catch (e) {}
+                l.addLayer()
 
+                //l.leafletLayer.wmsParams.sld_body = response;
+                l.leafletLayer.wmsParams.sld = response;
+                l.leafletLayer.redraw();
+            },
+            error : function(err, b, c) {
+               console.log(err);
+                loadingwindow.hidePleaseWait()
+                alert(err.responseJSON.message);
+            }
+        });
+    };
 
-            var layer = {};
-            layer.layers = 'fenix:gaul0_line_3857'
-            layer.layertitle = 'Country Boundaries'
-            layer.urlWMS = CONFIG.url_geoserver_wms
-            layer.opacity='0.8';
-            var l = new FM.layer(layer);
-            fenixMap.addLayer(l);
-
-            zoom_to(fenixMap, codes)
-        }
-
-        var createMap = function(mapID) {
+    FNX_RASTER_COMPARE.prototype.createMap = function(mapID, uid) {
             var options = {
                 plugins: {
                     geosearch : false,
@@ -376,7 +418,7 @@ define(['jquery',
             return m;
         }
 
-        var createLayer = function() {
+    FNX_RASTER_COMPARE.prototype.createLayer = function() {
             var layer = FMDEFAULTLAYER.getLayer("GAUL1", true)
             layer.urlWMS = CONFIG.url_geoserver_wms
             layer.layertitle="Scatter layer x/y"
@@ -405,25 +447,8 @@ define(['jquery',
             var l = new FM.layer(layer);
             l.zindex = 100
             return l
-        }
+    }
 
-        function createHighlightLayer(m) {
-            var layer = FMDEFAULTLAYER.getLayer("GAUL1", true)
-            layer.urlWMS = CONFIG.url_geoserver_wms
-            layer.layertitle="Scatter Analysis (Highlight)"
-            layer.style = 'gaul_highlight_polygon';
-            layer.srs = 'EPSG:3857';
-            layer.opacity='0.9';
-            layer.cql_filter="";
-            var layerHighlight = new FM.layer(layer, m);
-            layerHighlight.zindex = 106
-            return layerHighlight;
-        }
 
-        // public instance methods
-        return {
-            build: build
-        };
-    };
-
+    return FNX_RASTER_COMPARE;
 });

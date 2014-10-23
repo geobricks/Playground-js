@@ -4,6 +4,7 @@ var repository = '//fenixapps.fao.org/repository/js/';
 var fnx_modules = 'src/fenix_modules/';
 
 
+
 require.config({
 
     baseUrl: '',
@@ -28,6 +29,8 @@ require.config({
 
         mustache                :   '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache',
         underscore              :   '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min',
+
+        'csvjson'               :   'http://fenixapps.fao.org/repository/js/csvjson/1.0/csvjson.min.1.0',
 
         // navbar
 
@@ -54,6 +57,8 @@ require.config({
         'fenix-map-config'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
         'fenix-map-scatter-analysis'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
 
+        FNX_MAPS_LOADING_WINDOW : fnx_modules + 'utils/fnx_maps_loading_window',
+
         EARLY_WARNING            :   fnx_modules + 'fnx_maps_early_warning/early_warning',
         fnx_maps_early_warning   :   fnx_modules + 'fnx_maps_early_warning',
         early_warning_chart      :   fnx_modules + 'fnx_maps_early_warning/early_warning_chart',
@@ -67,7 +72,7 @@ require.config({
         DISTRIBUTION             :   fnx_modules + 'fnx_maps_distribution/distribution',
         fnx_maps_distribution    :   fnx_modules + 'fnx_maps_distribution',
 
-        SCATTER_ANALYSIS            :   fnx_modules + 'fnx_maps_scatter_analysis/scatter_analysis',
+        SCATTER_ANALYSIS            :   fnx_modules + 'fnx_maps_scatter_analysis/main',
         fnx_maps_scatter_analysis   :   fnx_modules + 'fnx_maps_scatter_analysis',
 
         GHG_FIRES            :   fnx_modules + 'fnx_maps_ghg_fires/ghg_fires',
@@ -78,7 +83,16 @@ require.config({
         fnx_maps_analysis    : fnx_modules + 'fnx_maps_analysis',
 
         FNX_CROP_CALENDAR_MODULE    : fnx_modules + 'fnx_crop_calendar/main',
-        fnx_crop_calendar           : fnx_modules + 'fnx_crop_calendar'
+        fnx_crop_calendar           : fnx_modules + 'fnx_crop_calendar',
+
+        FNX_MAPS_RASTER_COMPARE_MODULE   : fnx_modules + 'fnx_maps_raster_compare/main',
+        fnx_maps_raster_compare        : fnx_modules + 'fnx_maps_raster_compare',
+
+        FNX_EBOLA_MODULE : fnx_modules + 'fnx_ebola/main',
+        fnx_ebola        : fnx_modules + 'fnx_ebola',
+
+        FNX_SCATTER_PERFORMANCE_MODULE : fnx_modules + 'fnx_scatter_performance/main',
+        fnx_scatter_performance        : fnx_modules + 'fnx_scatter_performance'
     },
 
     shim: {
@@ -153,6 +167,9 @@ require(['jquery',
             '(/)ghg_fires(/):lang': 'ghg_fires',
             '(/)analysis(/):lang': 'analysis',
             '(/)crop_calendar(/):lang': 'crop_calendar',
+            '(/)morocco_analysis(/):lang': 'morocco',
+            '(/)ebola(/):lang': 'ebola',
+            '(/)scatter_performance(/):lang': 'scatter_performance',
             '': 'early_warning'
         },
 
@@ -209,6 +226,33 @@ require(['jquery',
             });
         },
 
+
+        morocco: function(lang) {
+            this._init(lang);
+            require(['FNX_MAPS_RASTER_COMPARE_MODULE'], function(MODULE) {
+                var app = new MODULE()
+                config.lang = lang
+                app.init(config);
+            });
+        },
+
+        ebola: function(lang) {
+            this._init(lang);
+            require(['FNX_EBOLA_MODULE'], function(MODULE) {
+                var app = new MODULE()
+                config.lang = lang
+                app.init(config);
+            });
+        },
+
+        scatter_performance: function(lang) {
+            this._init(lang);
+            require(['FNX_SCATTER_PERFORMANCE_MODULE'], function(MODULE) {
+                var app = new MODULE()
+                config.lang = lang
+                app.init(config);
+            });
+        },
 
         _init: function (lang) {
 
