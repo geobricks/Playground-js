@@ -245,9 +245,12 @@ define(['jquery',
             layer.urlWMS = "http://fenixapps2.fao.org/geoserver-demo"
             layer.styles = "gaul0_line"
             layer.opacity='0.7';
+            layer.hideLayerInControllerList = true;
             layer.zindex= 550;
             CONFIG.l_gaul0 = new FM.layer(layer);
             CONFIG.m.addLayer(CONFIG.l_gaul0);
+
+            fmLayer.leafletLayer.redraw()
         }
 
         var collector_to_build_stats = function() {
