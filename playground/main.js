@@ -92,7 +92,10 @@ require.config({
         fnx_ebola        : fnx_modules + 'fnx_ebola',
 
         FNX_SCATTER_PERFORMANCE_MODULE : fnx_modules + 'fnx_scatter_performance/main',
-        fnx_scatter_performance        : fnx_modules + 'fnx_scatter_performance'
+        fnx_scatter_performance        : fnx_modules + 'fnx_scatter_performance',
+
+        FNX_RASTER_HISTOGRAM_MODULE : fnx_modules + 'raster/fnx_raster_histogram/main',
+        fnx_raster_histogram        : fnx_modules + 'raster/fnx_raster_histogram'
     },
 
     shim: {

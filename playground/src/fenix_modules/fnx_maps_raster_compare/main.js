@@ -2,11 +2,12 @@ define(['jquery',
     'mustache',
     'text!fnx_maps_raster_compare/html/template.html',
     'text!fnx_maps_raster_compare/config/chart_scatter_template.json',
+    'FNX_RASTER_HISTOGRAM_MODULE',
     'FNX_MAPS_LOADING_WINDOW',
     'fenix-map',
     'highcharts',
     'bootstrap',
-    'FMChartScatter'], function ($, Mustache, templates, chart_scatter_template, loadingwindow) {
+    'FMChartScatter'], function ($, Mustache, templates, chart_scatter_template, Histogram, loadingwindow) {
 
     'use strict';
 
@@ -35,12 +36,12 @@ define(['jquery',
             },
 
             "chart_histogram1": {
-                id: "fnx_raster_compare_chart_scatter",
+                id: "fnx_raster_compare_chart_histogram1",
                 maps: []
             },
 
             "chart_histogram2": {
-                id: "fnx_raster_compare_chart_scatter",
+                id: "fnx_raster_compare_chart_histogram2",
                 maps: []
             },
 
@@ -70,8 +71,8 @@ define(['jquery',
 
 
         // parsing the chart temaplte and initialize loading window
-        chart_scatter_template = $.parseJSON(chart_scatter_template);
-        loadingwindow = new loadingwindow()
+        this.chart_scatter_template = $.parseJSON(chart_scatter_template);
+        this.loadingwindow = new loadingwindow()
 
         // creating objects
         var map1 = this.createMap(o.map1.id);
@@ -87,13 +88,11 @@ define(['jquery',
         this.build_dropdown_products(o.prod1.id, o.prod1.layers_id, this.o.map1)
         this.build_dropdown_products(o.prod2.id, o.prod2.layers_id, this.o.map2)
 
-        var _this =this;
+        var _this = this;
         $("#pgeo_dist_analysis_button").bind("click", {layer_id1 : o.prod1.layers_id, layer_id2 : o.prod2.layers_id},function(event) {
             var uids = []
             uids.push($("#" + event.data.layer_id1).chosen().val())
             uids.push($("#" + event.data.layer_id2).chosen().val());
-            if ( uids[0] == "")
-                uids.splice(0, 1)
             _this.create_analysis(uids)
         });
     };
@@ -191,8 +190,6 @@ define(['jquery',
             layer.style = "THIS IS APPLIED ON THE FLY!"
             mapObj.layer_histogram = new FM.layer(layer, mapObj.m);
             mapObj.m.addLayer(mapObj.layer_histogram);
-
-
         });
     }
 
@@ -230,33 +227,45 @@ define(['jquery',
 
         // create the analysis widgets
         this.scatter_analysis(uids, this.o.map1, this.o.map2)
-        this.histogram_analysis(this.o.uids, this.o.map1, this.o.map2)
+        this.histogram_analysis(this.o.chart_histogram1.id, uids[0], this.o.map1)
+        this.histogram_analysis(this.o.chart_histogram2.id, uids[1], this.o.map2)
     }
 
     FNX_RASTER_COMPARE.prototype.scatter_analysis = function(uids, map1, map2) {
-        loadingwindow.showPleaseWait()
-        var url = this.o.url_stats_rasters_scatter_plot;
-        url = url.replace("{{LAYERS}}", uids)
+        this.loadingwindow.showPleaseWait()
+        var url = this.o.url_stats_rasters_scatter_plot_workers.replace("{{LAYERS}}", uids)
         var _this = this;
         $.ajax({
             type : 'GET',
             url : url,
             contentType: 'application/json;charset=UTF-8',
             success : function(response) {
-                loadingwindow.hidePleaseWait();
+                _this.loadingwindow.hidePleaseWait();
                 response = (typeof response == 'string')? $.parseJSON(response): response;
                 _this.createScatter(response, map1, map2)
             },
             error : function(err, b, c) {
                 $('#' + _this.o.content_id).empty();
-                loadingwindow.hidePleaseWait()
+                _this.loadingwindow.hidePleaseWait()
                 alert(err.responseJSON.message);
             }
         });
     }
 
     FNX_RASTER_COMPARE.prototype.histogram_analysis = function(id, uid, map) {
-
+        var obj = {
+            chart : {
+                id : id //'fnx_raster_compare_chart_histogram1'
+            },
+            l : {
+                layer : {
+                    layers : uid //'fenix:trmm_04_2014'
+                }
+            }
+        }
+        var o = $.extend(true, {}, obj, this.o);
+        var hist = new Histogram();
+        hist.init(o);
     }
 
     FNX_RASTER_COMPARE.prototype.get_string_codes = function(values) {
@@ -282,35 +291,62 @@ define(['jquery',
                 renderTo: this.o.chart_scatter.id,
                 events: {
                     redraw: function (e) {
-//                        try { map1.removeLayer(map1.layer_scatter) }catch (e) {}
-//                        try { map2.removeLayer(map2.layer_scatter) }catch (e) {}
 
-                        _this.applyStyle(map1.m, map1.layer_scatter,
-                                '* {'+
-                                'raster-channels: auto;' +
-                                'raster-color-map:'+
-                                'color-map-entry(black, ' + this.xAxis[0].min + ', 0)'+
-                                'color-map-entry(red, ' + this.xAxis[0].min + ')'+
-                                'color-map-entry(black,  ' + this.xAxis[0].max + ', 0)'+
-                                '}'
-                        );
+                        // TODO: make it nicer the selection of the SLD to apply
+                        if (this.xAxis[0].min !=  this.xAxis[0].originalMin || this.xAxis[0].max  !=  this.xAxis[0].originalMax) {
+                            _this.applyStyle(map1.m, map1.layer_scatter,
+                                    '* {' +
+                                    'raster-channels: auto;' +
+                                    'raster-color-map:' +
+                                    'color-map-entry(black, ' + this.xAxis[0].min + ', 0)' +
+                                    'color-map-entry(red, ' + this.xAxis[0].min + ')' +
+                                    'color-map-entry(black,  ' + this.xAxis[0].max + ', 0)' +
+                                    '}'
+                            );
+                        }
+                        else {
+                            map1.layer_scatter.leafletLayer.wmsParams.sld = "";
+                            map1.layer_scatter.leafletLayer.redraw()
+                        }
 
-                        _this.applyStyle(map2.m, map2.layer_scatter,
-                                '* {'+
-                                'raster-channels: auto;' +
-                                'raster-color-map:'+
-                                'color-map-entry(black, ' + this.yAxis[0].min + ', 0)'+
-                                'color-map-entry(red, ' + this.yAxis[0].min + ')'+
-                                'color-map-entry(black,  ' + this.yAxis[0].max + ', 0)'+
-                                '}'
-                        );
+                        if (this.yAxis[0].min !=  this.yAxis[0].originalMin || this.yAxis[0].max  !=  this.yAxis[0].originalMax) {
+                            _this.applyStyle(map2.m, map2.layer_scatter,
+                                    '* {' +
+                                    'raster-channels: auto;' +
+                                    'raster-color-map:' +
+                                    'color-map-entry(black, ' + this.yAxis[0].min + ', 0)' +
+                                    'color-map-entry(red, ' + this.yAxis[0].min + ')' +
+                                    'color-map-entry(black,  ' + this.yAxis[0].max + ', 0)' +
+                                    '}'
+                            );
+                        }
+                        else {
+                            map2.layer_scatter.leafletLayer.wmsParams.sld = "";
+                            map2.layer_scatter.leafletLayer.redraw()
+                        }
+
+                    },
+                    load: function (e) {
+                        this.xAxis[0].originalMin = this.xAxis[0].min;
+                        this.xAxis[0].originalMax = this.xAxis[0].max;
+
+                        this.yAxis[0].originalMin = this.yAxis[0].min;
+                        this.yAxis[0].originalMax = this.yAxis[0].max;
+
+                        // caching the Axes to be used in the selection
+//                        this.originalAxes = {
+//                            xmin: this.xAxis[0].min,
+//                            xmax: this.xAxis[0].max,
+//                            ymin: this.yAxis[0].min,
+//                            ymax: this.yAxis[0].max
+//                        }
                     }
                 }
             },
             series: response.series
         };
-        c = $.extend(true, {}, chart_scatter_template, c);
-        var chart = new Highcharts.Chart(c);
+        c = $.extend(true, {}, this.chart_scatter_template, c);
+        this.o.chart_scatter.chartObj = new Highcharts.Chart(c);
     }
 
     FNX_RASTER_COMPARE.prototype.applyStyle = function(m, l, style) {
@@ -318,17 +354,18 @@ define(['jquery',
             stylename: l.layer.layers,
             style: style
         };
+        var url = this.o.url_css2sld;
+        var _this = this;
         $.ajax({
             type : 'POST',
-            url  : "http://fenixapps2.fao.org/geoservices/CSS2SLD",
+            url  : url,
             data : data,
             success : function(response) {
                 l.leafletLayer.wmsParams.sld = response;
                 l.leafletLayer.redraw()
             },
             error : function(err, b, c) {
-                console.log(err);
-                loadingwindow.hidePleaseWait()
+                _this.loadingwindow.hidePleaseWait()
                 alert(err.responseJSON.message);
             }
         });
