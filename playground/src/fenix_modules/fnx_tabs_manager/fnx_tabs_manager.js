@@ -17,7 +17,8 @@ define(['jquery',
         this.CONFIG = {
             lang            :   'en',
             placeholder     :   'main_content_placeholder',
-            modules_buffer  :   []
+            modules_buffer  :   [],
+            prefix          :   null
         };
 
     }
@@ -26,12 +27,15 @@ define(['jquery',
 
         /* Extend default configuration. */
         this.CONFIG = $.extend(true, {}, this.CONFIG, config);
+        this.CONFIG.prefix = this.random_id();
 
         /* Cast configuration files. */
         tabs_configuration = $.parseJSON(tabs_configuration);
 
         /* Load tabs structure. */
-        var view = {};
+        var view = {
+            prefix: this.CONFIG.prefix
+        };
         var template = $(templates).filter('#tabs_structure').html();
         var render = Mustache.render(template, view);
         $('#' + this.CONFIG.placeholder).html(render);
@@ -46,7 +50,7 @@ define(['jquery',
             };
             template = $(templates).filter('#single_tab_header').html();
             render = Mustache.render(template, view);
-            $(render).appendTo('#tab_headers');
+            $(render).appendTo('#' + this.CONFIG.prefix + 'tab_headers');
 
             /* Add new content. */
             view = {
@@ -55,12 +59,12 @@ define(['jquery',
             };
             template = $(templates).filter('#single_tab_content').html();
             render = Mustache.render(template, view);
-            $(render).appendTo('#tab_contents');
+            $(render).appendTo('#' + this.CONFIG.prefix + 'tab_contents');
 
         }
 
         /* Make the new tab active. */
-        $('#tab_headers a:first').tab('show');
+        $('#' + this.CONFIG.prefix + 'tab_headers a:first').tab('show');
 
         /* Initiate the first module. */
         this.init_module(tabs_configuration[0].module_code);
@@ -86,6 +90,11 @@ define(['jquery',
                 });
             });
         }
+    };
+
+    FNX_TABS_MANAGER.prototype.random_id = function() {
+        var randLetter = Math.random().toString(36).substring(7);
+        return (randLetter + Date.now()).toLocaleLowerCase() + '_';
     };
 
     return new FNX_TABS_MANAGER();
