@@ -253,6 +253,7 @@ define(['jquery',
     }
 
     FNX_RASTER_COMPARE.prototype.histogram_analysis = function(id, uid, map) {
+        console.log(id + " " + uid);
         var obj = {
             chart : {
                 id : id //'fnx_raster_compare_chart_histogram1'
@@ -297,10 +298,10 @@ define(['jquery',
                             _this.applyStyle(map1.m, map1.layer_scatter,
                                     '* {' +
                                     'raster-channels: auto;' +
+                                    'raster-color-map-type: intervals;' +
                                     'raster-color-map:' +
-                                    'color-map-entry(black, ' + this.xAxis[0].min + ', 0)' +
-                                    'color-map-entry(red, ' + this.xAxis[0].min + ')' +
-                                    'color-map-entry(black,  ' + this.xAxis[0].max + ', 0)' +
+                                        'color-map-entry(black, ' + this.xAxis[0].min + ', 0)' +
+                                        'color-map-entry(purple,  ' + this.xAxis[0].max + ')' +
                                     '}'
                             );
                         }
@@ -313,10 +314,10 @@ define(['jquery',
                             _this.applyStyle(map2.m, map2.layer_scatter,
                                     '* {' +
                                     'raster-channels: auto;' +
+                                    'raster-color-map-type: intervals;' +
                                     'raster-color-map:' +
-                                    'color-map-entry(black, ' + this.yAxis[0].min + ', 0)' +
-                                    'color-map-entry(red, ' + this.yAxis[0].min + ')' +
-                                    'color-map-entry(black,  ' + this.yAxis[0].max + ', 0)' +
+                                        'color-map-entry(black, ' + this.yAxis[0].min + ', 0)' +
+                                        'color-map-entry(purple,  ' + this.yAxis[0].max + ')' +
                                     '}'
                             );
                         }

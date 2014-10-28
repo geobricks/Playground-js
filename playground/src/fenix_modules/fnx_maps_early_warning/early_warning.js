@@ -32,9 +32,9 @@ define(['jquery',
 
             url_geoserver_wms: 'http://168.202.28.214:9090/geoserver/wms',
 
-            url_search_layer_product: "http://168.202.28.214:5005/search/layer/product/",
+            url_search_layer_product: "http://168.202.28.214:5005/search/metadata/layer/product/",
 
-            url_search_layer_product_type: "http://168.202.28.214:5005/search/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
+            url_search_layer_product_type: "http://168.202.28.214:5005/search/metadata/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
 
             url_spatialquery: "http://168.202.28.214:5005/spatialquery/db/spatial/",
 
