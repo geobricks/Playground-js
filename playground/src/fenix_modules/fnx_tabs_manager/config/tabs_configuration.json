@@ -1,6 +1,10 @@
 [
     {
-        "label_code": "tab1",
-        "module_code": "EARLY_WARNING"
+        "label_code": "early_warning",
+        "module_code": "FNX_MAPS_RASTER_COMPARE_MODULE"
+    },
+    {
+        "label_code": "ghg_fires",
+        "module_code": "FNX_EBOLA_MODULE"
     }
 ]

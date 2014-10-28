@@ -1,7 +1,8 @@
 define({
     'root' : {
-        'early_warning': 'Early Warning'
+        'early_warning': 'Early Warning',
+        'ghg_fires': 'GHG Fires'
     },
-    'F' : true,
-    'S' : true
+    'fr' : true,
+    'es' : true
 });
