@@ -1,10 +1,10 @@
 {
-    "url_geoserver_wms": "//168.202.28.214:9090/geoserver/wms",
+    "url_geoserver_wms": "http://168.202.28.214:9090/geoserver/wms",
 
     "#COMMENT" : "SEARCH",
-    "url_search_all_products": "//168.202.28.214:5005/search/layer/distinct/layers/",
-    "url_search_layer_product": "//168.202.28.214:5005/search/layer/product/",
-    "url_search_layer_product_type": "//168.202.28.214:5005/search/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
+    "url_search_all_products": "//168.202.28.214:5005/search/metadata/layer/distinct/layers/",
+    "url_search_layer_product": "//168.202.28.214:5005/search/metadata/layer/product/",
+    "url_search_layer_product_type": "//168.202.28.214:5005/search/metadata/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
 
     "#COMMENT" : "SPATIAL_QUERIES",
     "url_spatialquery_db_spatial": "//168.202.28.214:5005/spatialquery/db/spatial/",
