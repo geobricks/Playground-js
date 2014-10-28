@@ -1,8 +1,8 @@
 define(['jquery',
         'mustache',
-        'text!fnx_tabs_manager/js/ghg-qa-qc/html/templates.html',
-        'text!fnx_tabs_manager/js/ghg-qa-qc/config/tabs_configuration.json',
-        'i18n!fnx_tabs_manager/js/ghg-qa-qc/nls/translate',
+        'text!fnx_tabs_manager/html/templates.html',
+        'text!fnx_tabs_manager/config/tabs_configuration.json',
+        'i18n!fnx_tabs_manager/nls/translate',
         'chosen',
         'bootstrap'], function ($,
                                 Mustache,
@@ -15,7 +15,8 @@ define(['jquery',
     function FNX_TABS_MANAGER() {
 
         this.CONFIG = {
-            lang            :   'E'
+            lang            :   'E',
+            placeholder     :   'main_content_placeholder'
         };
 
     }
@@ -24,6 +25,13 @@ define(['jquery',
 
         /* Extend default configuration. */
         this.CONFIG = $.extend(true, {}, this.CONFIG, config);
+
+        /* Load tabs structure. */
+        var view = {};
+        var template = $(templates).filter('#tabs_structure').html();
+        var render = Mustache.render(template, view);
+        $('#' + this.CONFIG.placeholder).html(render);
+
 
     };
 

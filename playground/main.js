@@ -95,7 +95,10 @@ require.config({
         fnx_scatter_performance        : fnx_modules + 'fnx_scatter_performance',
 
         FNX_RASTER_HISTOGRAM_MODULE : fnx_modules + 'raster/fnx_raster_histogram/main',
-        fnx_raster_histogram        : fnx_modules + 'raster/fnx_raster_histogram'
+        fnx_raster_histogram        : fnx_modules + 'raster/fnx_raster_histogram',
+
+        FNX_TABS_MANAGER_MODULE : fnx_modules + 'fnx_tabs_manager/fnx_tabs_manager',
+        fnx_tabs_manager        : fnx_modules + 'fnx_tabs_manager'
     },
 
     shim: {
@@ -173,6 +176,7 @@ require(['jquery',
             '(/)morocco_analysis(/):lang': 'morocco',
             '(/)ebola(/):lang': 'ebola',
             '(/)scatter_performance(/):lang': 'scatter_performance',
+            '(/)tabs_manager(/):lang': 'tabs_manager',
             '': 'early_warning'
         },
 
@@ -180,6 +184,15 @@ require(['jquery',
             this._init(lang);
             require(['EARLY_WARNING'], function() {
                 Early_warning().build({lang: lang});
+            });
+        },
+
+        tabs_manager: function(lang) {
+            this._init(lang);
+            require(['FNX_TABS_MANAGER_MODULE'], function(FNX_TABS_MANAGER) {
+                FNX_TABS_MANAGER.init({
+                    lang: lang
+                });
             });
         },
 
