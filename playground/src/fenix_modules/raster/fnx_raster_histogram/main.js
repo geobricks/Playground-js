@@ -103,6 +103,14 @@ define(['jquery',
                 events: {
                 }
             },
+            xAxis: {
+                categories: obj.categories,
+                tickInterval: 20,
+                labels: {
+                    rotation: -45
+                }
+
+            },
             series: obj.series
         };
         c = $.extend(true, {}, c, this.histogram_template);
