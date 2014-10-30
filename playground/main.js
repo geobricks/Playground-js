@@ -76,6 +76,7 @@ require.config({
         fnx_maps_scatter_analysis   :   fnx_modules + 'fnx_maps_scatter_analysis',
 
         GHG_FIRES            :   fnx_modules + 'fnx_maps_ghg_fires/ghg_fires',
+        GHG_FIRES            :   fnx_modules + 'fnx_maps_ghg_fires/ghg_fires',
         fnx_maps_ghg_fires   :   fnx_modules + 'fnx_maps_ghg_fires',
         ghg_fires_chart      :   fnx_modules + 'fnx_maps_ghg_fires/ghg_fires_chart',
 

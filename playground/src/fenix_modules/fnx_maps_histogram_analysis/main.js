@@ -16,60 +16,33 @@ define(['jquery',
             lang : 'en',
             "placeholder": "main_content_placeholder",
             "template_id": "structure",
-            "content_id": "fnx_raster_compare_content",
-            "content_template_id": "fnx_raster_compare_content_template",
+            "content_id": "fnx_raster_histogram_content",
+            "content_template_id": "fnx_raster_histogram_content_template",
 
             // Objects interaction
-            "prod1" : {
-                id : "fnx_raster_compare_prod1",
-                layers_id: "fnx_raster_compare_layers_select1"
+            "prod" : {
+                id : "fnx_raster_histogram_prod1",
+                layers_id: "fnx_raster_histogram_layers_select1"
             },
 
-            "prod2" : {
-                id : "fnx_raster_compare_prod2",
-                layers_id: "fnx_raster_compare_layers_select2"
-            },
-
-            "chart_scatter": {
-                id: "fnx_raster_compare_chart_scatter",
-                maps: []
-            },
-
-            "chart_histogram1": {
-                id: "fnx_raster_compare_chart_histogram1",
-                maps: []
-            },
-
-            "chart_histogram2": {
-                id: "fnx_raster_compare_chart_histogram2",
+            "chart_histogram": {
+                id: "fnx_raster_histogram_chart_histogram1",
                 maps: []
             },
 
             "map1": {
-                id: "fnx_raster_compare_map1",
+                id: "fnx_raster_histogram_map1",
                 m: null,
                 default_layer: null, // the one selected from the dropdown
                 layer_scatter: null, // the highlighted pixels from the scatter chart
                 layer_histogram: null // the highlighted pixels from the histogram chart
             },
 
-            "map2": {
-                id: "fnx_raster_compare_map2",
-                m: null,
-                default_layer: null,
-                layer_scatter: null,
-                layer_histogram: null
-            },
-
             // TODO: default product and layer to be shown if they exists
-            "default_product_list": ["TRMM", "MODIS-NDVI-SADC", "TRMM-SADC", "MODIS_BURNED_AREAS", "MODIS_LAND_COVER", "MODIS_MOLLWEIDE", "Doukkola-Temperature", "Doukkala-ACTUALET", "Doukkala-Seasonal-wheat", "Transpiration-Seasonal-wheat", "Doukkola-NDVI", "Doukkola-PRECIPITATION"],
+            "default_product_list": ["TRMM", "Doukkola-Temperature", "Doukkala-ACTUALET", "Doukkala-Seasonal-wheat", "Transpiration-Seasonal-wheat", "Doukkola-NDVI", "Doukkola-PRECIPITATION"],
             "default_product1": {
                 "product_code": "TRMM",
                 "layer_code": "fenix:trmm_06_2012_da"
-            },
-            "default_product2": {
-                "product_code": "TRMM",
-                "layer_code": "fenix:trmm_07_2012_da"
             }
         };
     }
@@ -82,25 +55,14 @@ define(['jquery',
 
 
         // parsing the chart temaplte and initialize loading window
-        this.chart_scatter_template = $.parseJSON(chart_scatter_template);
         this.loadingwindow = new loadingwindow()
 
-        // creating objects
-        var map1 = this.createMap(o.map1.id);
-        var map2 = this.createMap(o.map2.id);
-        map1.syncOnMove(map2);
-        map2.syncOnMove(map1);
-
-        // caching maps
-        this.o.map1.m = map1;
-        this.o.map2.m = map2;
 
         // building dropdowns
-        this.build_dropdown_products(o.prod1.id, o.prod1.layers_id, this.o.map1, this.o.default_product1, this.o.default_product_list)
-        this.build_dropdown_products(o.prod2.id, o.prod2.layers_id, this.o.map2, this.o.default_product2, this.o.default_product_list)
+        this.build_dropdown_products(o.prod.id, o.prod.layers_id, this.o.map, this.o.default_product, this.o.default_product_list)
 
         var _this = this;
-        $("#pgeo_dist_analysis_button").bind("click", {layer_id1 : o.prod1.layers_id, layer_id2 : o.prod2.layers_id},function(event) {
+        $("#").bind("click", {layer_id1 : o.prod1.layers_id, layer_id2 : o.prod2.layers_id},function(event) {
             var uids = []
             uids.push($("#" + event.data.layer_id1).chosen().val())
             uids.push($("#" + event.data.layer_id2).chosen().val());
@@ -291,7 +253,7 @@ define(['jquery',
         console.log(id + " " + uid);
         var obj = {
             chart : {
-                id : id //'fnx_raster_compare_chart_histogram1'
+                id : id //'fnx_raster_histogram_chart_histogram1'
             },
             l : l
         }
@@ -333,8 +295,8 @@ define(['jquery',
                                     'raster-channels: auto;' +
                                     'raster-color-map-type: intervals;' +
                                     'raster-color-map:' +
-                                        'color-map-entry(black, ' + min + ', 0)' +
-                                        'color-map-entry(purple,  ' + max + ')' +
+                                    'color-map-entry(black, ' + min + ', 0)' +
+                                    'color-map-entry(purple,  ' + max + ')' +
                                     '}'
                             );
                         }
@@ -351,8 +313,8 @@ define(['jquery',
                                     'raster-channels: auto;' +
                                     'raster-color-map-type: intervals;' +
                                     'raster-color-map:' +
-                                        'color-map-entry(black, ' + this.yAxis[0].min + ', 0)' +
-                                        'color-map-entry(purple,  ' + this.yAxis[0].max + ')' +
+                                    'color-map-entry(black, ' + this.yAxis[0].min + ', 0)' +
+                                    'color-map-entry(purple,  ' + this.yAxis[0].max + ')' +
                                     '}'
                             );
                         }

@@ -83,10 +83,9 @@ define(['jquery',
             require([module_code], function (MODULE) {
                 var app = new MODULE();
                 _this.CONFIG.modules_buffer[module_code] = app;
-                app.init({
-                    lang: _this.CONFIG.lang,
-                    placeholder: module_code + '_tab_content_placeholder'
-                });
+                var config =  { placeholder: module_code + '_tab_content_placeholder' }
+                config = $.extend(true, {}, _this.CONFIG, config);
+                app.init(config);
             });
         } else {
             try {

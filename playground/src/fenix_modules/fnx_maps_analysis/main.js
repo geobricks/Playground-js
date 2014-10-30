@@ -38,6 +38,10 @@ define(['jquery',
         };
     }
 
+    FM_ANALYSIS.prototype.force_map_refresh = function() {
+        this.CONFIG.m.map.invalidateSize();
+    }
+
     FM_ANALYSIS.prototype.init = function(config) {
         this.CONFIG = $.extend(true, {}, this.CONFIG, config);
         console.log(this.CONFIG);

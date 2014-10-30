@@ -74,7 +74,8 @@ define(['jquery',
         };
     }
 
-    FNX_RASTER_COMPARE.prototype.reload_tabs = function() {
+    FNX_RASTER_COMPARE.prototype.force_map_refresh = function() {
+        console.log("");
         this.o.map1.m.map.invalidateSize();
         this.o.map2.m.map.invalidateSize();
     }
@@ -105,7 +106,7 @@ define(['jquery',
         this.build_dropdown_products(o.prod2.id, o.prod2.layers_id, this.o.map2, this.o.default_product2, this.o.default_product_list)
 
         var _this = this;
-        $("#pgeo_dist_analysis_button").bind("click", {layer_id1 : o.prod1.layers_id, layer_id2 : o.prod2.layers_id},function(event) {
+        $("#fnx_raster_compare_analysis_button").bind("click", {layer_id1 : o.prod1.layers_id, layer_id2 : o.prod2.layers_id},function(event) {
             var uids = []
             uids.push($("#" + event.data.layer_id1).chosen().val())
             uids.push($("#" + event.data.layer_id2).chosen().val());
