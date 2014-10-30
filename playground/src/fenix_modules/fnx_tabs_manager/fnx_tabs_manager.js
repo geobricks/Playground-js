@@ -75,7 +75,6 @@ define(['jquery',
             var target_module_name = e.target.hash.substring(1, e.target.hash.indexOf('_tab_content'));
             _this.init_module(target_module_name);
         })
-
     };
 
     FNX_TABS_MANAGER.prototype.init_module = function(module_code) {
@@ -84,10 +83,9 @@ define(['jquery',
             var _this = this;
             require([module_code], function (MODULE) {
                 var app = new MODULE();
-                app.init({
-                    lang: _this.CONFIG.lang,
-                    placeholder: module_code + '_tab_content_placeholder'
-                });
+                var config =  { placeholder: module_code + '_tab_content_placeholder' }
+                config = $.extend(true, {}, _this.CONFIG, config);
+                app.init(config);
             });
         }
     };

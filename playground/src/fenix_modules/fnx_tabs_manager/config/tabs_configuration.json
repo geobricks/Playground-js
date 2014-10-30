@@ -1,10 +1,14 @@
 [
     {
-        "label_code": "early_warning",
-        "module_code": "FNX_MAPS_RASTER_COMPARE_MODULE"
+        "label_code" : "timeserie_analysis",
+        "module_code": "FNX_MAPS_ANALYSIS_MODULE"
     },
     {
-        "label_code": "ghg_fires",
-        "module_code": "FNX_EBOLA_MODULE"
+        "label_code" : "scatter_analysis",
+        "module_code": "FNX_MAPS_HISTOGRAM_ANALYSIS_MODULE"
+    },
+    {
+        "label_code" : "histogram_analysis",
+        "module_code": "FNX_MAPS_HISTOGRAM_ANALYSIS_MODULE"
     }
 ]

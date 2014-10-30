@@ -1,7 +1,7 @@
 define(['jquery',
     'mustache',
-    'text!fnx_maps_raster_compare/html/template.html',
-    'text!fnx_maps_raster_compare/config/chart_scatter_template.json',
+    'text!fnx_maps_histogram_analysis/html/template.html',
+    'text!fnx_maps_histogram_analysis/config/chart_scatter_template.json',
     'FNX_RASTER_HISTOGRAM_MODULE',
     'FNX_MAPS_LOADING_WINDOW',
     'fenix-map',
@@ -11,7 +11,7 @@ define(['jquery',
 
     'use strict';
 
-    function FNX_RASTER_COMPARE() {
+    function FNX_HISTOGRAM_ANALYSIS() {
         this.o = {
             lang : 'en',
             "placeholder": "main_content_placeholder",
@@ -74,12 +74,7 @@ define(['jquery',
         };
     }
 
-    FNX_RASTER_COMPARE.prototype.reload_tabs = function() {
-        this.o.map1.m.map.invalidateSize();
-        this.o.map2.m.map.invalidateSize();
-    }
-
-    FNX_RASTER_COMPARE.prototype.init = function(obj) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.init = function(obj) {
         this.o = $.extend(true, {}, this.o, obj);
         var o = this.o
         var template = $(templates).filter('#' + o.template_id).html();
@@ -113,7 +108,7 @@ define(['jquery',
         });
     };
 
-    FNX_RASTER_COMPARE.prototype.build_dropdown_products = function(id, layer_dd_ID, mapObj, default_product, default_product_list) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.build_dropdown_products = function(id, layer_dd_ID, mapObj, default_product, default_product_list) {
         if ( default_product_list) {
             this.build_dropdown_products_response(id, layer_dd_ID, default_product_list, mapObj, default_product)
         }
@@ -132,7 +127,7 @@ define(['jquery',
         }
     }
 
-    FNX_RASTER_COMPARE.prototype.build_dropdown_products_response = function(id, layer_dd_ID, response, mapObj, default_product) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.build_dropdown_products_response = function(id, layer_dd_ID, response, mapObj, default_product) {
         var _this =this;
         response = (typeof response === 'string')? $.parseJSON(response): response;
         var dropdowndID = id + "_select";
@@ -169,7 +164,7 @@ define(['jquery',
         }
     }
 
-    FNX_RASTER_COMPARE.prototype.layer_selected = function(mapObj, uid, layertitle) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.layer_selected = function(mapObj, uid, layertitle) {
         // remove the scatter analysis applied until now
         $('#' + this.o.content_id).empty();
 
@@ -225,10 +220,10 @@ define(['jquery',
         mapObj.m.addLayer(mapObj.layer_histogram);
     }
 
-    FNX_RASTER_COMPARE.prototype.select_product = function() {
+    FNX_HISTOGRAM_ANALYSIS.prototype.select_product = function() {
     }
 
-    FNX_RASTER_COMPARE.prototype.build_dropdown_layers = function(id, product, mapObj, default_layer) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.build_dropdown_layers = function(id, product, mapObj, default_layer) {
         var url = this.o.url_search_layer_product + product;
         var _this = this;
         $("#" + id).empty()
@@ -242,7 +237,7 @@ define(['jquery',
         });
     }
 
-    FNX_RASTER_COMPARE.prototype.build_dropdown_layers_response = function(id, product, response, mapObj, default_layer) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.build_dropdown_layers_response = function(id, product, response, mapObj, default_layer) {
         var lang = this.o.lang.toLocaleUpperCase()
         response = (typeof response == 'string')? $.parseJSON(response): response;
         var html = '<option value=""></option>';
@@ -258,7 +253,7 @@ define(['jquery',
         }
     }
 
-    FNX_RASTER_COMPARE.prototype.create_analysis = function(uids) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.create_analysis = function(uids) {
         $('#' + this.o.content_id).html($(templates).filter('#' + this.o.content_template_id).html());
 
         var o = this.o;
@@ -271,7 +266,7 @@ define(['jquery',
         this.histogram_analysis(this.o.chart_histogram2.id, uids[1], this.o.map2.layer_histogram)
     }
 
-    FNX_RASTER_COMPARE.prototype.scatter_analysis = function(uids, map1, map2) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.scatter_analysis = function(uids, map1, map2) {
         this.loadingwindow.showPleaseWait()
         var url = this.o.url_stats_rasters_scatter_plot_workers.replace("{{LAYERS}}", uids)
         var _this = this;
@@ -292,7 +287,7 @@ define(['jquery',
         });
     }
 
-    FNX_RASTER_COMPARE.prototype.histogram_analysis = function(id, uid, l) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.histogram_analysis = function(id, uid, l) {
         console.log(id + " " + uid);
         var obj = {
             chart : {
@@ -305,7 +300,7 @@ define(['jquery',
         hist.init(o);
     }
 
-    FNX_RASTER_COMPARE.prototype.get_string_codes = function(values) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.get_string_codes = function(values) {
         var codes= ""
         for( var i=0; i < values.length; i++) {
             codes += "'"+ values[i] +"',"
@@ -313,7 +308,7 @@ define(['jquery',
         return codes.substring(0, codes.length - 1);
     }
 
-    FNX_RASTER_COMPARE.prototype.get_string_uids = function(values) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.get_string_uids = function(values) {
         var codes= ""
         for( var i=0; i < values.length; i++) {
             codes += "" + values[i] +";"
@@ -321,7 +316,7 @@ define(['jquery',
         return codes.substring(0, codes.length - 1);
     }
 
-    FNX_RASTER_COMPARE.prototype.createScatter =  function(response, map1, map2) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.createScatter =  function(response, map1, map2) {
         var _this = this;
         var c = {
             chart: {
@@ -380,7 +375,7 @@ define(['jquery',
         this.o.chart_scatter.chartObj = new Highcharts.Chart(c);
     }
 
-    FNX_RASTER_COMPARE.prototype.applyStyle = function(m, l, style) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.applyStyle = function(m, l, style) {
         var data = {
             stylename: l.layer.layers,
             style: style
@@ -402,7 +397,7 @@ define(['jquery',
         });
     };
 
-    FNX_RASTER_COMPARE.prototype.createMap = function(mapID, uid) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.createMap = function(mapID, uid) {
         var options = {
             plugins: {
                 geosearch : false,
@@ -431,5 +426,5 @@ define(['jquery',
         return m;
     }
 
-    return FNX_RASTER_COMPARE;
+    return FNX_HISTOGRAM_ANALYSIS;
 });

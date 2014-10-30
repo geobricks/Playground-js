@@ -79,8 +79,11 @@ require.config({
         fnx_maps_ghg_fires   :   fnx_modules + 'fnx_maps_ghg_fires',
         ghg_fires_chart      :   fnx_modules + 'fnx_maps_ghg_fires/ghg_fires_chart',
 
-        FNX_ANALYSIS         : fnx_modules + 'fnx_maps_analysis/main',
-        fnx_maps_analysis    : fnx_modules + 'fnx_maps_analysis',
+        FNX_MAPS_ANALYSIS_MODULE: fnx_modules + 'fnx_maps_analysis/main',
+        fnx_maps_analysis       : fnx_modules + 'fnx_maps_analysis',
+
+        FNX_MAPS_HISTOGRAM_ANALYSIS_MODULE  : fnx_modules + 'fnx_maps_histogram_analysis/main',
+        fnx_maps_histogram_analysis         : fnx_modules + 'fnx_maps_histogram_analysis',
 
         FNX_CROP_CALENDAR_MODULE    : fnx_modules + 'fnx_crop_calendar/main',
         fnx_crop_calendar           : fnx_modules + 'fnx_crop_calendar',
@@ -190,9 +193,7 @@ require(['jquery',
         tabs_manager: function(lang) {
             this._init(lang);
             require(['FNX_TABS_MANAGER_MODULE'], function(FNX_TABS_MANAGER) {
-                FNX_TABS_MANAGER.init({
-                    lang: lang
-                });
+                FNX_TABS_MANAGER.init(config);
             });
         },
 
@@ -226,7 +227,7 @@ require(['jquery',
 
         analysis: function(lang) {
             this._init(lang);
-            require(['FNX_ANALYSIS'], function(FM_ANALYSIS) {
+            require(['FNX_MAPS_ANALYSIS_MODULE'], function(FM_ANALYSIS) {
                 var analysis = new FM_ANALYSIS()
                 config.lang = lang
                 analysis.init(config);

@@ -26,6 +26,12 @@ define(['jquery',
             stats: {
                 id: null
             },
+            highlight_color: "#5eadd5",
+            /** TODO:
+             *  1) this should be an array of layers/maps to interact with
+             *  2) the load/redraw should be done at the level of application probably
+             *  with a CALLBACK function and not in here
+             */
             l: '', // layer
             map: '', // map if we want interact with the map
             callback: ''
@@ -87,20 +93,44 @@ define(['jquery',
 
     /** TODO: handle multiple raster bands **/
     FNX_RASTER_HISTOGRAM.prototype.parseChartSeries = function(data) {
-        var series = [];
-        series.push({
-            name: 'Histogram',
-            data: data
-        });
-        return series;
+        return [{ name: 'Histogram', data: data  }];
     }
 
     FNX_RASTER_HISTOGRAM.prototype.createChart = function(obj) {
         $("#" + this.o.chart.id).empty();
+        var _this= this;
         var c = {
             chart: {
                 renderTo: this.o.chart.id,
                 events: {
+                    redraw: function (e) {
+                        // TODO: make it nicer the selection of the SLD to apply
+                        if (this.xAxis[0].min !=  this.xAxis[0].originalMin || this.xAxis[0].max  !=  this.xAxis[0].originalMax) {
+                           var min = (this.xAxis[0].min >= this.xAxis[0].originalMin)? this.xAxis[0].min : this.xAxis[0].originalMin
+                           var max = (this.xAxis[0].max <= this.xAxis[0].originalMax)? this.xAxis[0].max : this.xAxis[0].originalMax
+
+                            _this.applyStyle(_this.o.l,
+                                    '* {' +
+                                    'raster-channels: auto;' +
+                                    'raster-color-map-type: intervals;' +
+                                    'raster-color-map:' +
+                                    'color-map-entry(black, ' + min+ ', 0)' +
+                                    'color-map-entry('+ _this.o.highlight_color +',  ' + max + ')' +
+                                    '}'
+                            );
+                        }
+                        else {
+                            _this.o.l.leafletLayer.wmsParams.sld = "";
+                            _this.o.l.leafletLayer.redraw()
+                        }
+                    },
+                    load: function (e) {
+                        this.xAxis[0].originalMin = this.xAxis[0].min;
+                        this.xAxis[0].originalMax = this.xAxis[0].max;
+
+                        this.yAxis[0].originalMin = this.yAxis[0].min;
+                        this.yAxis[0].originalMax = this.yAxis[0].max;
+                    }
                 }
             },
             xAxis: {
@@ -116,6 +146,29 @@ define(['jquery',
         c = $.extend(true, {}, c, this.histogram_template);
         this.o.chart.chartObj = new Highcharts.Chart(c);
     }
+
+    FNX_RASTER_HISTOGRAM.prototype.applyStyle = function(l, style) {
+        var data = {
+            stylename: l.layer.layers,
+            style: style
+        };
+        var url = this.o.url_css2sld;
+        var _this = this;
+        $.ajax({
+            type : 'POST',
+            url  : url,
+            data : data,
+            success : function(response) {
+                l.leafletLayer.wmsParams.sld = response;
+                l.leafletLayer.redraw()
+            },
+            error : function(err, b, c) {
+                _this.loadingwindow.hidePleaseWait()
+                alert(err.responseJSON.message);
+            }
+        });
+    };
+
 
     return FNX_RASTER_HISTOGRAM;
 });

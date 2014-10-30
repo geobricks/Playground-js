@@ -1,0 +1,36 @@
+{
+    "chart": {
+        "type": "scatter",
+        "zoomType": "xy"
+    },
+    "plotOptions": {
+        "series": {
+            "animation": false,
+            "enableMouseTracking": false,
+            "shadow": false,
+            "marker": {
+                "enabled": true,
+                "symbol": "circle",
+                "radius": 1
+            }
+        }
+    },
+    "yAxis": {
+        "title": {
+            "text": null
+        }
+    },
+    "title": {
+        "text": null
+    },
+    "tooltip": {
+        "enabled": false
+    },
+    "legend": {
+        "enabled" : false
+    },
+    "credits": {
+        "enabled" : false
+    }
+
+}

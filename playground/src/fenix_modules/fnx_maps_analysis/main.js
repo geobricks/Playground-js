@@ -149,6 +149,10 @@ define(['jquery',
             // TODO: remove chart
         });
 
+        // TODO: on click
+        //this.query_products(_this.CONFIG.cached_layers, e.latlng.lat, e.latlng.lng)
+
+
         // caching map
         this.CONFIG.m = m;
     };
