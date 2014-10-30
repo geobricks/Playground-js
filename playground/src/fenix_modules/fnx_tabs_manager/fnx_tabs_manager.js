@@ -1,14 +1,14 @@
 define(['jquery',
-        'mustache',
-        'text!fnx_tabs_manager/html/templates.html',
-        'text!fnx_tabs_manager/config/tabs_configuration.json',
-        'i18n!fnx_tabs_manager/nls/translate',
-        'chosen',
-        'bootstrap'], function ($,
-                                Mustache,
-                                templates,
-                                tabs_configuration,
-                                translate) {
+    'mustache',
+    'text!fnx_tabs_manager/html/templates.html',
+    'text!fnx_tabs_manager/config/tabs_configuration.json',
+    'i18n!fnx_tabs_manager/nls/translate',
+    'chosen',
+    'bootstrap'], function ($,
+                            Mustache,
+                            templates,
+                            tabs_configuration,
+                            translate) {
 
     'use strict';
 
