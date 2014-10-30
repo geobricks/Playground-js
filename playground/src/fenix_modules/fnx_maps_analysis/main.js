@@ -21,20 +21,30 @@ define(['jquery',
             "chart_structure_id"  : "pgeo_analysis_chart_id",
 
             "product_dropdown_id" : "pgeo_analysis_product_select",
-            "map_id" : "pgeo_analysis_map",
+            "map" : {
+                id : "pgeo_analysis_map",
+                lat: 32.650000,
+                lng: -8.433333,
+                zoom: 9
+            },
 
             "chart_id" : "pgeo_analysis_chart",
 
             "chart_obj" : "", // this the chart obj used to add the series
 
             // layers to be added and queried
-            "cached_layers" : []
+            "cached_layers" : [],
 //            "cached_layers" : [
 //                {
 //                    id : "",
 //                    layers : []
 //                }
 //            ]
+
+            // TODO: default product and layer to be shown if they exists
+            "default_product_list": ["TRMM", "Doukkola-Temperature", "Doukkala-ACTUALET", "Doukkala-Seasonal-wheat", "Transpiration-Seasonal-wheat", "Doukkola-NDVI", "Doukkola-PRECIPITATION"]
+
+
         };
     }
 
@@ -44,11 +54,8 @@ define(['jquery',
 
     FM_ANALYSIS.prototype.init = function(config) {
         this.CONFIG = $.extend(true, {}, this.CONFIG, config);
-        console.log(this.CONFIG);
-
         var t = $(template).filter('#structure').html();
         $("#" + this.CONFIG.placeholder).html(t)
-
         this.create_gui()
     };
 
@@ -65,7 +72,7 @@ define(['jquery',
         var t = $(template).filter('#structure_map').html();
         var render = Mustache.render(t, view);
         $("#" + this.CONFIG.map_structure_id).html(render)
-        this.create_map(this.CONFIG.map_id)
+        this.create_map(this.CONFIG.map.id)
 
         // create chart div
         var t = $(template).filter('#structure_chart').html();
@@ -73,34 +80,50 @@ define(['jquery',
     };
 
     FM_ANALYSIS.prototype.create_dropdown = function(id) {
-        var url = this.CONFIG.url_search_all_products
-        var _this = this;
-        $.ajax({
-            type : 'GET',
-            url : url,
-            success : function(response) {
-                response = (typeof response === 'string')? $.parseJSON(response): response;
-
-                var html = '<option value=""></option>';
-                for(var i=0; i < response.length; i++) {
-                    html += '<option value="' + response[i] + '">' + response[i] + '</option>';
+        if ( this.CONFIG.default_product_list) {
+            this.build_dropdown_products_response(id, this.CONFIG.default_product_list);
+        }
+        else {
+            var url = this.CONFIG.url_search_all_products
+            var _this = this;
+            $.ajax({
+                type: 'GET',
+                url: url,
+                success: function (response) {
+                    _this.build_dropdown_products_response(id, response);
+                },
+                error: function (err, b, c) {
                 }
-                $('#' + id).empty();
-                $('#' + id).append(html);
-                try { $('#' + id).chosen({disable_search_threshold:6, width: '100%'}); } catch (e) {}
-                $( "#" + id ).change(function () {
-                    var values = $(this).val()
-                    if ( values ) {
-                        _this.get_all_layers(values);
-                    }
-                    else {
-                        // TODO: remove all layers
-                    }
-                });
-            },
-            error : function(err, b, c) {}
-        });
+            });
+        }
     };
+
+    FM_ANALYSIS.prototype.build_dropdown_products_response = function(id, response) {
+        var response = (typeof response === 'string') ? $.parseJSON(response) : response;
+
+        var html = '<option value=""></option>';
+        for (var i = 0; i < response.length; i++) {
+            html += '<option value="' + response[i] + '">' + response[i] + '</option>';
+        }
+        $('#' + id).empty();
+        $('#' + id).append(html);
+        try {
+            $('#' + id).chosen({disable_search_threshold: 6, width: '100%'});
+        } catch (e) {
+        }
+
+        var _this = this;
+        $("#" + id).change(function () {
+            var values = $(this).val()
+            if (values) {
+                _this.get_all_layers(values);
+            }
+            else {
+                // TODO: remove all layers
+            }
+        });
+    }
+
 
     FM_ANALYSIS.prototype.create_map = function(id) {
         var options = {
@@ -111,7 +134,10 @@ define(['jquery',
 
         var mapOptions = { zoomControl:false,attributionControl: false };
         var m = new FM.Map(id, options, mapOptions);
-        m.createMap();
+        var lat = (this.CONFIG.map.lat)? this.CONFIG.map.lat: 0;
+        var lng = (this.CONFIG.map.lng)? this.CONFIG.map.lng: 0;
+        var zoom = (this.CONFIG.map.zoom)? this.CONFIG.map.zoom: 15;
+        m.createMap(lat, lng, zoom);
 
         var layer = {};
         layer.layers = "fenix:gaul0_line_3857"
@@ -190,9 +216,7 @@ define(['jquery',
             type: 'GET',
             url: url,
             success: function (response) {
-
                 var json = _this.CONFIG.cached_layers;
-                console.log(json);
                 var changed = false;
                 for( var k = 0; k < json.length; k++ ) {
                     if( _id == json[k].id ) {
@@ -202,7 +226,6 @@ define(['jquery',
                 }
                 var map_layer = _this.add_layer(m, response[response.length-1])
                 if ( !changed ) {
-                    console.log("HERE");
                     _this.CONFIG.cached_layers.push({
                         "id": _id,
                         "layers": response,
@@ -216,7 +239,6 @@ define(['jquery',
     }
 
     FM_ANALYSIS.prototype.add_layer = function(m, layer_def) {
-        console.log(layer_def);
         var layer = {};
         layer.layers = layer_def.uid
         layer.layertitle = layer_def.title[this.CONFIG.lang.toLocaleUpperCase()]
@@ -227,14 +249,9 @@ define(['jquery',
     }
 
     FM_ANALYSIS.prototype.query_products = function(cached_layers, lat, lon) {
-
         //this.loading_html(this.CONFIG.chart_id)
         // create chart
-        console.log("here1");
         var chart = this.create_empty_chart(this.CONFIG.chart_id)
-        console.log("here");
-
-
         for (var i=0; i<cached_layers.length; i++) {
             var url = this.CONFIG.url_stats_rasters_lat_lon;
 
@@ -277,7 +294,6 @@ define(['jquery',
                     //lineWidth: 0
                     //type : "scatter"
                 }
-                console.log(serie);
                 chart.addSeries(serie, true);
             },
             error : function(err, b, c) {}
@@ -286,10 +302,8 @@ define(['jquery',
     }
 
     FM_ANALYSIS.prototype.create_empty_chart = function(id) {
-        console.log(id);
         var _this = this;
         var p = $.parseJSON(chart_template);
-        console.log(p);
         var custom_p = {
             chart: {
                 renderTo: id,
@@ -310,8 +324,6 @@ define(['jquery',
             series: []
         };
         custom_p = $.extend(true, {}, p, custom_p);
-        console.log(p);
-        console.log(custom_p);
         return new Highcharts.Chart(custom_p);
     }
 

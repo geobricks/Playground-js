@@ -17,7 +17,16 @@ define(['jquery',
             "placeholder": "main_content_placeholder",
             "template_id": "structure",
             "content_id": "fnx_raster_histogram_content",
+            "button_add_histogram_id": "fnx_raster_histogram_add",
+
             "content_template_id": "fnx_raster_histogram_content_template",
+
+            // used to build dinamically the charts (TODO: remove and build it really dinamically)
+            "histogram_base_id": "fnx_raster_histogram_chart_",
+            "counter_histogram_id": 0,
+            "counter_histogram_current_id": 0,
+
+
 
             // Objects interaction
             "prod" : {
@@ -61,13 +70,26 @@ define(['jquery',
         // building dropdowns
         this.build_dropdown_products(o.prod.id, o.prod.layers_id, this.o.map, this.o.default_product, this.o.default_product_list)
 
+        // create histograms rows
+        var t = $(templates).filter('#' + o.content_template_id).html();
+        for (var j=0; j < 10; j++) {
+            var view = {}
+            for (var i = 0; i < 3; i++) {
+                view['chart_id' + i] = o.histogram_base_id + o.counter_histogram_id++;
+            }
+            var render = Mustache.render(t, view);
+            $("#" + o.content_id).append(render);
+        }
+
+        // bind button to add histogram
         var _this = this;
-        $("#").bind("click", {layer_id1 : o.prod1.layers_id, layer_id2 : o.prod2.layers_id},function(event) {
-            var uids = []
-            uids.push($("#" + event.data.layer_id1).chosen().val())
-            uids.push($("#" + event.data.layer_id2).chosen().val());
-            _this.create_analysis(uids)
+        $("#" + o.button_add_histogram_id).bind( "click", function() {
+            var uid = $("#" + _this.o.prod.layers_id).chosen().val()
+            var title = $("#" + _this.o.prod.layers_id + " :selected").text()
+            var id = _this.o.histogram_base_id + _this.o.counter_histogram_current_id++;
+            _this.add_histogram(id, uid, title)
         });
+
     };
 
     FNX_HISTOGRAM_ANALYSIS.prototype.build_dropdown_products = function(id, layer_dd_ID, mapObj, default_product, default_product_list) {
@@ -116,74 +138,17 @@ define(['jquery',
         // change layer in the map
         var _this = this;
         $( "#" + layer_dd_ID ).change({ mapObj : mapObj}, function (event) {
-            _this.layer_selected(event.data.mapObj, $(this).val(), $("#" + layer_dd_ID + " :selected").text())
+            //_this.layer_selected(event.data.mapObj, $(this).val(), $("#" + layer_dd_ID + " :selected").text())
+            console.log("preview the selected layer on the map?");
         });
 
         // set default product if exists
-        if ( default_product ) {
-            $('#' + dropdowndID).val(default_product.product_code).trigger("chosen:updated");
-            this.build_dropdown_layers(layer_dd_ID, default_product.product_code, mapObj, default_product.layer_code)
-        }
+//        if ( default_product ) {
+//            $('#' + dropdowndID).val(default_product.product_code).trigger("chosen:updated");
+//            this.build_dropdown_layers(layer_dd_ID, default_product.product_code, mapObj, default_product.layer_code)
+//        }
     }
 
-    FNX_HISTOGRAM_ANALYSIS.prototype.layer_selected = function(mapObj, uid, layertitle) {
-        // remove the scatter analysis applied until now
-        $('#' + this.o.content_id).empty();
-
-        // remove the layers if exists on the map
-        if ( mapObj.default_layer)
-            mapObj.m.removeLayer(mapObj.default_layer)
-        try {
-            if (mapObj.layer_scatter)
-                mapObj.m.removeLayer(mapObj.layer_scatter)
-        } catch (e) {}
-        try {
-            if ( mapObj.default_layer)
-                mapObj.m.removeLayer(mapObj.layer_histogram)
-        } catch (e) {}
-
-        // remove all layers
-        try {
-            mapObj.m.removeLayer(mapObj.default_layer)
-        }catch (e){}
-        try {
-            mapObj.m.removeLayer(mapObj.layer_scatter)
-        }catch (e){}
-        try {
-            mapObj.m.removeLayer(mapObj.layer_histogram)
-        }catch (e){}
-
-        var layer = {};
-        layer.layers = uid;
-        layer.layertitle = layertitle
-        layer.urlWMS = this.o.url_geoserver_wms
-        layer.defaultgfi = true;
-        layer.openlegend= true;
-        mapObj.default_layer = new FM.layer(layer);
-        mapObj.m.addLayer(mapObj.default_layer);
-
-        // caching scatter and histograms (TODO: it should be added dinamically to the map at runtime)
-        var layer = {};
-        layer.layers = uid;
-        layer.layertitle = "Scatter - " + layertitle;
-        layer.urlWMS = this.o.url_geoserver_wms
-        layer.style = "THIS IS APPLIED ON THE FLY!"
-        //layer.hideLayerInControllerList = true; // to don't show the layer on the layer's list
-        mapObj.layer_scatter = new FM.layer(layer, mapObj.m);
-        mapObj.m.addLayer(mapObj.layer_scatter);
-
-        var layer = {};
-        layer.layers = uid;
-        layer.layertitle = "Histogram - " + layertitle;
-        layer.urlWMS = this.o.url_geoserver_wms
-        layer.style = "THIS IS APPLIED ON THE FLY!"
-        //layer.hideLayerInControllerList = true; // to don't show the layer on the layer's list
-        mapObj.layer_histogram = new FM.layer(layer, mapObj.m);
-        mapObj.m.addLayer(mapObj.layer_histogram);
-    }
-
-    FNX_HISTOGRAM_ANALYSIS.prototype.select_product = function() {
-    }
 
     FNX_HISTOGRAM_ANALYSIS.prototype.build_dropdown_layers = function(id, product, mapObj, default_layer) {
         var url = this.o.url_search_layer_product + product;
@@ -215,17 +180,8 @@ define(['jquery',
         }
     }
 
-    FNX_HISTOGRAM_ANALYSIS.prototype.create_analysis = function(uids) {
-        $('#' + this.o.content_id).html($(templates).filter('#' + this.o.content_template_id).html());
-
-        var o = this.o;
-        var template = $(templates).filter('#' + o.content_template_id).html();
-        $('#' + o.content_id).html(template);
-
-        // create the analysis widgets
-        this.scatter_analysis(uids, this.o.map1, this.o.map2)
-        this.histogram_analysis(this.o.chart_histogram1.id, uids[0], this.o.map1.layer_histogram)
-        this.histogram_analysis(this.o.chart_histogram2.id, uids[1], this.o.map2.layer_histogram)
+    FNX_HISTOGRAM_ANALYSIS.prototype.add_histogram = function(id, uid, title) {
+        this.histogram_analysis(id, uid, title)
     }
 
     FNX_HISTOGRAM_ANALYSIS.prototype.scatter_analysis = function(uids, map1, map2) {
@@ -249,13 +205,22 @@ define(['jquery',
         });
     }
 
-    FNX_HISTOGRAM_ANALYSIS.prototype.histogram_analysis = function(id, uid, l) {
+    FNX_HISTOGRAM_ANALYSIS.prototype.histogram_analysis = function(id, uid, title) {
         console.log(id + " " + uid);
         var obj = {
             chart : {
-                id : id //'fnx_raster_histogram_chart_histogram1'
+                id : id,
+                c:  {
+                    title: {
+                        text: title
+                    }
+                }
             },
-            l : l
+            l : {
+                layer: {
+                    layers: uid
+                }
+            }
         }
         var o = $.extend(true, {}, obj, this.o);
         var hist = new Histogram();

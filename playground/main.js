@@ -177,10 +177,11 @@ require(['jquery',
             '(/)ghg_fires(/):lang': 'ghg_fires',
             '(/)analysis(/):lang': 'analysis',
             '(/)crop_calendar(/):lang': 'crop_calendar',
-            '(/)morocco_analysis(/):lang': 'morocco',
+            '(/)raster_compare(/):lang': 'raster_compare',
             '(/)ebola(/):lang': 'ebola',
             '(/)scatter_performance(/):lang': 'scatter_performance',
             '(/)tabs_manager(/):lang': 'tabs_manager',
+            '(/)morocco(/):lang': 'morocco',
             '': 'early_warning'
         },
 
@@ -192,6 +193,13 @@ require(['jquery',
         },
 
         tabs_manager: function(lang) {
+            this._init(lang);
+            require(['FNX_TABS_MANAGER_MODULE'], function(FNX_TABS_MANAGER) {
+                FNX_TABS_MANAGER.init(config);
+            });
+        },
+
+        morocco: function(lang) {
             this._init(lang);
             require(['FNX_TABS_MANAGER_MODULE'], function(FNX_TABS_MANAGER) {
                 FNX_TABS_MANAGER.init(config);
@@ -245,7 +253,7 @@ require(['jquery',
         },
 
 
-        morocco: function(lang) {
+        raster_compare: function(lang) {
             this._init(lang);
             require(['FNX_MAPS_RASTER_COMPARE_MODULE'], function(MODULE) {
                 var app = new MODULE()

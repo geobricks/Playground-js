@@ -11,10 +11,8 @@ define(['jquery',
                 //color: ['rgba(0, 0, 0, .5)'],
                 id: null,
                 series: '',
+                c: {}, // chart definition that is merged with the template
                 decimalvalues: 4,
-                chart_title: '',
-                yaxis_title: '',
-                xaxis_title: '',
                 keyword: 'FAOSTAT_DEFAULT_LINE',
 
                 // Chart Obj
@@ -143,7 +141,10 @@ define(['jquery',
             },
             series: obj.series
         };
-        c = $.extend(true, {}, c, this.histogram_template);
+        // merge with the option passed to the main object
+        c = $.extend(true, {}, this.o.chart.c, c);
+        // merge with the option in the template
+        c = $.extend(true, {}, this.histogram_template, c);
         this.o.chart.chartObj = new Highcharts.Chart(c);
     }
 

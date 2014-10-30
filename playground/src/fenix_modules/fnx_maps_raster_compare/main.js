@@ -32,6 +32,7 @@ define(['jquery',
 
             "chart_scatter": {
                 id: "fnx_raster_compare_chart_scatter",
+                id_stats: "fnx_raster_compare_chart_scatter_stats",
                 maps: []
             },
 
@@ -50,7 +51,12 @@ define(['jquery',
                 m: null,
                 default_layer: null, // the one selected from the dropdown
                 layer_scatter: null, // the highlighted pixels from the scatter chart
-                layer_histogram: null // the highlighted pixels from the histogram chart
+                layer_histogram: null, // the highlighted pixels from the histogram chart
+                mapOptions: {
+                    lat: 32.650000,
+                    lng: -8.433333,
+                    zoom: 9
+                }
             },
 
             "map2": {
@@ -58,7 +64,12 @@ define(['jquery',
                 m: null,
                 default_layer: null,
                 layer_scatter: null,
-                layer_histogram: null
+                layer_histogram: null,
+                mapOptions: {
+                    lat: 32.650000,
+                    lng: -8.433333,
+                    zoom: 9
+                }
             },
 
             // TODO: default product and layer to be shown if they exists
@@ -92,8 +103,8 @@ define(['jquery',
         this.loadingwindow = new loadingwindow()
 
         // creating objects
-        var map1 = this.createMap(o.map1.id);
-        var map2 = this.createMap(o.map2.id);
+        var map1 = this.createMap(o.map1.id, o.map1.mapOptions);
+        var map2 = this.createMap(o.map2.id, o.map2.mapOptions);
         map1.syncOnMove(map2);
         map2.syncOnMove(map1);
 
@@ -284,6 +295,7 @@ define(['jquery',
                 _this.loadingwindow.hidePleaseWait();
                 response = (typeof response == 'string')? $.parseJSON(response): response;
                 _this.createScatter(response, map1, map2)
+                _this.createScatterStats(_this.o.chart_scatter.id_stats, response["stats"])
             },
             error : function(err, b, c) {
                 $('#' + _this.o.content_id).empty();
@@ -294,7 +306,6 @@ define(['jquery',
     }
 
     FNX_RASTER_COMPARE.prototype.histogram_analysis = function(id, uid, l) {
-        console.log(id + " " + uid);
         var obj = {
             chart : {
                 id : id //'fnx_raster_compare_chart_histogram1'
@@ -320,6 +331,16 @@ define(['jquery',
             codes += "" + values[i] +";"
         }
         return codes.substring(0, codes.length - 1);
+    }
+
+    FNX_RASTER_COMPARE.prototype.createScatterStats = function(id, values) {
+        var $id = $('#' + id);
+        $id.empty();
+        $id.append("<div>Slope: "+ values.slope +"</div>")
+        $id.append("<div>P-Value: "+ values.p_value +"</div>")
+        $id.append("<div>Standard Error: "+ values.std_err +"</div>")
+        $id.append("<div>Intercept: "+ values.intercept +"</div>")
+        $id.append("<div>R-Value: "+ values.r_value +"</div>")
     }
 
     FNX_RASTER_COMPARE.prototype.createScatter =  function(response, map1, map2) {
@@ -403,7 +424,7 @@ define(['jquery',
         });
     };
 
-    FNX_RASTER_COMPARE.prototype.createMap = function(mapID, uid) {
+    FNX_RASTER_COMPARE.prototype.createMap = function(mapID, opt) {
         var options = {
             plugins: {
                 geosearch : false,
@@ -427,7 +448,13 @@ define(['jquery',
         };
 
         var m = new FM.Map(mapID, options, mapOptions);
-        m.createMap();
+        var lat = (opt.lat)? opt.lat: 0;
+        var lng = (opt.lng)? opt.lng: 0;
+        var zoom = (opt.zoom)? opt.zoom: 15;
+        console.log(lat);
+        console.log(zoom);
+        console.log(zoom);
+        m.createMap(lat, lng, zoom);
 
         return m;
     }
