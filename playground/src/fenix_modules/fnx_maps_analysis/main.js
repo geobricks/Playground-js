@@ -42,8 +42,9 @@ define(['jquery',
 //            ]
 
             // TODO: default product and layer to be shown if they exists
-            "default_product_list": ["TRMM", "Doukkola-Temperature", "Doukkala-ACTUALET", "Doukkala-Seasonal-wheat", "Transpiration-Seasonal-wheat", "Doukkola-NDVI", "Doukkola-PRECIPITATION"]
+            "default_product_list": ["TRMM", "Doukkola-Temperature", "Doukkala-ACTUALET", "Doukkala-Seasonal-wheat", "Transpiration-Seasonal-wheat", "Doukkola-NDVI", "Doukkola-PRECIPITATION"],
 
+            "cached_yaxis_count": 0
 
         };
     }
@@ -249,9 +250,13 @@ define(['jquery',
     }
 
     FM_ANALYSIS.prototype.query_products = function(cached_layers, lat, lon) {
+        // Restoring axis values TODO: move it from here
+        this.CONFIG.cached_yaxis_count = 0;
+
         //this.loading_html(this.CONFIG.chart_id)
         // create chart
-        var chart = this.create_empty_chart(this.CONFIG.chart_id)
+        var chart = this.create_empty_chart(this.CONFIG.chart_id, cached_layers.length)
+
         for (var i=0; i<cached_layers.length; i++) {
             var url = this.CONFIG.url_stats_rasters_lat_lon;
 
@@ -270,6 +275,7 @@ define(['jquery',
     }
 
     FM_ANALYSIS.prototype.query_product_layers = function(url, chart, cached_layer) {
+        var _this = this;
         $.ajax({
             type : 'GET',
             url : url,
@@ -288,12 +294,17 @@ define(['jquery',
                     }
                     catch (e) { console.error("Error parsing the chart value: " + e);}
                 }
+                chart.yAxis[_this.CONFIG.cached_yaxis_count].update({
+                    text: ""
+                });
                 var serie = {
                     name : cached_layer.id,
-                    data : values
+                    data : values,
+                    yAxis: _this.CONFIG.cached_yaxis_count++
                     //lineWidth: 0
                     //type : "scatter"
                 }
+                console.log(serie);
                 chart.addSeries(serie, true);
             },
             error : function(err, b, c) {}
@@ -301,7 +312,7 @@ define(['jquery',
 
     }
 
-    FM_ANALYSIS.prototype.create_empty_chart = function(id) {
+    FM_ANALYSIS.prototype.create_empty_chart = function(id, number_of_yaxis) {
         var _this = this;
         var p = $.parseJSON(chart_template);
         var custom_p = {
@@ -311,18 +322,28 @@ define(['jquery',
             },
             title: {
                 text: 'Timeserie of the selected pixel',
-                "enabled": true,
+                enabled: true,
                 style: {
                     fontFamily: 'Roboto',
                     color: '#31708f',
                     fontSize: '15px'
                 }
             },
-            xAxis: {
-                "minTickInterval": 3600 * 1000
-            },
+            yAxis: [],
             series: []
         };
+
+        for(var i=0; i < number_of_yaxis; i++) {
+            custom_p.yAxis.push({
+                title: {
+//                    text: 'boh',
+                    style: {
+                        color: Highcharts.getOptions().colors[i]
+                    }
+                }
+                //,opposite: true
+            })
+        }
         custom_p = $.extend(true, {}, p, custom_p);
         return new Highcharts.Chart(custom_p);
     }

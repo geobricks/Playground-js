@@ -104,7 +104,7 @@
         "text": null
     },
     "xAxis": {
-        "type": "datetime",
+       "type": "datetime",
        "dateTimeLabelFormats": {
             "day": "%H"
         },
