@@ -459,7 +459,7 @@ define(['jquery',
         layer.layertitle = "Boundaries"
         layer.urlWMS = "http://fenixapps2.fao.org/geoserver-demo"
         layer.styles = "gaul0_line"
-        layer.opacity='0.7';
+        layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
         //layer.visibility = false
         layer.zindex= 200;
@@ -471,7 +471,7 @@ define(['jquery',
         layer.layers = "fenix:CPBS_CPHS_TMercator"
         layer.layertitle = "CPBS CPHS"
         layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
-        layer.opacity='0.7';
+        layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
         //layer.visibility = false
         layer.zindex= 201;
@@ -482,7 +482,7 @@ define(['jquery',
         layer.layers = "fenix:Perimetre_de_gestion_TMercator"
         layer.layertitle = "Perimetre de gestion"
         layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
-        layer.opacity='0.7';
+        layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
         layer.visibility = false
         layer.zindex= 202;

@@ -155,7 +155,7 @@ define(['jquery',
         layer.layers = "fenix:CPBS_CPHS_TMercator"
         layer.layertitle = "CPBS CPHS"
         layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
-        layer.opacity='0.7';
+        layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
         //layer.visibility = false
         layer.zindex= 202;
@@ -166,7 +166,7 @@ define(['jquery',
         layer.layers = "fenix:Perimetre_de_gestion_TMercator"
         layer.layertitle = "Perimetre de gestion"
         layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
-        layer.opacity='0.7';
+        layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
         //layer.visibility = false
         layer.zindex= 203;
