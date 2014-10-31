@@ -171,18 +171,16 @@ define(['jquery',
         var l = new FM.layer(layer);
         m.addLayer(l);
 
-
-        var layer = {};
-        layer.layers = "fenix:Doukkala_G2015_4_3857"
-        layer.layertitle = "Doukkala GAUL4"
-        layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
-        layer.opacity='0.7';
-        //layer.hideLayerInControllerList = true;
-        //layer.visibility = false
-        layer.zindex= 201;
-        var l = new FM.layer(layer);
-        m.addLayer(l);
-
+//        var layer = {};
+//        layer.layers = "fenix:Doukkala_G2015_4_3857"
+//        layer.layertitle = "Doukkala GAUL4"
+//        layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
+//        layer.opacity='0.7';
+//        //layer.hideLayerInControllerList = true;
+//        //layer.visibility = false
+//        layer.zindex= 201;
+//        var l = new FM.layer(layer);
+//        m.addLayer(l);
 
         // On Move
         var _m = m;

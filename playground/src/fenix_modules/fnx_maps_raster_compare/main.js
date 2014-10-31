@@ -336,10 +336,10 @@ define(['jquery',
     FNX_RASTER_COMPARE.prototype.createScatterStats = function(id, values) {
         var $id = $('#' + id);
         $id.empty();
-        $id.append("<div>Slope: "+ values.slope +"</div>")
-        $id.append("<div>P-Value: "+ values.p_value +"</div>")
-        $id.append("<div>Standard Error: "+ values.std_err +"</div>")
-        $id.append("<div>Intercept: "+ values.intercept +"</div>")
+//        $id.append("<div>Slope: "+ values.slope +"</div>")
+//        $id.append("<div>P-Value: "+ values.p_value +"</div>")
+//        $id.append("<div>Standard Error: "+ values.std_err +"</div>")
+//        $id.append("<div>Intercept: "+ values.intercept +"</div>")
         $id.append("<div>R-Square: "+ values.r_value +"</div>")
     }
 
@@ -489,18 +489,16 @@ define(['jquery',
         var l = new FM.layer(layer);
         m.addLayer(l);
 
-        var layer = {};
-        layer.layers = "fenix:Doukkala_G2015_4_3857"
-        layer.layertitle = "Doukkala GAUL4"
-        layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
-        layer.opacity='0.7';
-        //layer.hideLayerInControllerList = true;
-        //layer.visibility = false
-        layer.zindex= 202;
-        var l = new FM.layer(layer);
-        m.addLayer(l);
-
-
+//        var layer = {};
+//        layer.layers = "fenix:Doukkala_G2015_4_3857"
+//        layer.layertitle = "Doukkala GAUL4"
+//        layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
+//        layer.opacity='0.7';
+//        //layer.hideLayerInControllerList = true;
+//        //layer.visibility = false
+//        layer.zindex= 202;
+//        var l = new FM.layer(layer);
+//        m.addLayer(l);
 
         return m;
     }

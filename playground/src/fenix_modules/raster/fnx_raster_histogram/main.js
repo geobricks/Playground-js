@@ -103,9 +103,9 @@ define(['jquery',
                 events: {
                     redraw: function (e) {
                         // TODO: make it nicer the selection of the SLD to apply
-                        if (this.xAxis[0].min !=  this.xAxis[0].originalMin || this.xAxis[0].max  !=  this.xAxis[0].originalMax) {
-                           var min = (this.xAxis[0].min >= this.xAxis[0].originalMin)? this.xAxis[0].min : this.xAxis[0].originalMin
-                           var max = (this.xAxis[0].max <= this.xAxis[0].originalMax)? this.xAxis[0].max : this.xAxis[0].originalMax
+                        if (this.yAxis[0].min !=  this.yAxis[0].originalMin || this.yAxis[0].max  !=  this.yAxis[0].originalMax) {
+                           var min = (this.yAxis[0].min >= this.yAxis[0].originalMin)? this.yAxis[0].min : this.yAxis[0].originalMin
+                           var max = (this.yAxis[0].max <= this.yAxis[0].originalMax)? this.yAxis[0].max : this.yAxis[0].originalMax
 
                             _this.applyStyle(_this.o.l,
                                     '* {' +
@@ -123,9 +123,6 @@ define(['jquery',
                         }
                     },
                     load: function (e) {
-                        this.xAxis[0].originalMin = this.xAxis[0].min;
-                        this.xAxis[0].originalMax = this.xAxis[0].max;
-
                         this.yAxis[0].originalMin = this.yAxis[0].min;
                         this.yAxis[0].originalMax = this.yAxis[0].max;
                     }
@@ -149,6 +146,8 @@ define(['jquery',
     }
 
     FNX_RASTER_HISTOGRAM.prototype.applyStyle = function(l, style) {
+        console.log(l);
+        console.log(style);
         var data = {
             stylename: l.layer.layers,
             style: style
@@ -169,7 +168,6 @@ define(['jquery',
             }
         });
     };
-
 
     return FNX_RASTER_HISTOGRAM;
 });
