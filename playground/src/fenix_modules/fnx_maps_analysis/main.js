@@ -2,11 +2,12 @@ define(['jquery',
     'mustache',
     'text!fnx_maps_analysis/html/template.html',
     'text!fnx_maps_analysis/config/chart_template',
+    'FNX_MAPS_LOADING_WINDOW',
     'fenix-map',
     'highcharts',
     'chosen',
     'jquery.hoverIntent',
-    'bootstrap'], function ($, Mustache, template, chart_template) {
+    'bootstrap'], function ($, Mustache, template, chart_template, loadingwindow) {
 
     'use strict';
 
@@ -56,6 +57,7 @@ define(['jquery',
         this.CONFIG = $.extend(true, {}, this.CONFIG, config);
         var t = $(template).filter('#structure').html();
         $("#" + this.CONFIG.placeholder).html(t)
+        this.loadingwindow = new loadingwindow()
         this.create_gui()
     };
 
@@ -313,10 +315,12 @@ define(['jquery',
 
     FM_ANALYSIS.prototype.query_product_layers = function(url, chart, cached_layer) {
         var _this = this;
+        this.loadingwindow.showPleaseWait()
         $.ajax({
             type : 'GET',
             url : url,
             success : function(response) {
+                _this.loadingwindow.hidePleaseWait()
                 var values = []
                 for(var i=0; i< response.length; i++) {
                     try {
@@ -344,7 +348,9 @@ define(['jquery',
                 console.log(serie);
                 chart.addSeries(serie, true);
             },
-            error : function(err, b, c) {}
+            error : function(err, b, c) {
+                _this.loadingwindow.hidePleaseWait()
+            }
         });
 
     }
