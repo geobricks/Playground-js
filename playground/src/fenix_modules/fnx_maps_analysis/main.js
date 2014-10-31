@@ -42,10 +42,9 @@ define(['jquery',
 //            ]
 
             // TODO: default product and layer to be shown if they exists
-            "default_product_list": ["TRMM", "Doukkola-Temperature", "Doukkala-ACTUALET", "Doukkala-Seasonal-wheat", "Transpiration-Seasonal-wheat", "Doukkola-NDVI", "Doukkola-PRECIPITATION"],
+            "default_product_list": ["Doukkola - NDVI", "Doukkola - Temperature", "Doukkala - reference evapotransipiration", "Doukkala - actual evapotransipiration", "Doukkala - potential evapotransipiration", "Doukkola - Precipitation"],
 
             "cached_yaxis_count": 0
-
         };
     }
 
@@ -128,7 +127,7 @@ define(['jquery',
 
     FM_ANALYSIS.prototype.create_map = function(id) {
         var options = {
-            plugins: { geosearch : true, mouseposition: false, controlloading : true, zoomControl: 'bottomright'},
+            plugins: { geosearch : false, mouseposition: false, controlloading : false, zoomControl: 'bottomright'},
             guiController: { overlay : true,  baselayer: true,  wmsLoader: true },
             gui: {disclaimerfao: true }
         }
@@ -146,9 +145,44 @@ define(['jquery',
         layer.urlWMS = "http://fenixapps2.fao.org/geoserver-demo"
         layer.styles = "gaul0_line"
         layer.opacity='0.7';
-        layer.zindex= 550;
+        layer.zindex= 200;
         var l = new FM.layer(layer);
         m.addLayer(l);
+
+        var layer = {};
+        layer.layers = "fenix:CPBS_CPHS_TMercator"
+        layer.layertitle = "CPBS CPHS"
+        layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
+        layer.opacity='0.7';
+        //layer.hideLayerInControllerList = true;
+        //layer.visibility = false
+        layer.zindex= 202;
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+
+        var layer = {};
+        layer.layers = "fenix:Perimetre_de_gestion_TMercator"
+        layer.layertitle = "Perimetre de gestion"
+        layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
+        layer.opacity='0.7';
+        //layer.hideLayerInControllerList = true;
+        //layer.visibility = false
+        layer.zindex= 203;
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+
+
+        var layer = {};
+        layer.layers = "fenix:Doukkala_G2015_4_3857"
+        layer.layertitle = "Doukkala GAUL4"
+        layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
+        layer.opacity='0.7';
+        //layer.hideLayerInControllerList = true;
+        //layer.visibility = false
+        layer.zindex= 201;
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+
 
         // On Move
         var _m = m;
@@ -157,28 +191,33 @@ define(['jquery',
         GFIchk["lat-" + m.id] = 0;
         GFIchk["lng-" + m.id] = 0;
         GFIchk["globalID-" + m.id] = 0;
-        m.map.on('mousemove', function (e) {
-            var id = Date.now();
-            GFIchk["globalID-" + _m.id] = id;
-            var t = setTimeout(function() {
-                if ( id == GFIchk["globalID-" + _m.id]) {
-                    //console.log(e);
-                    if ((GFIchk["lat-" + _m.id] != e.latlng.lat) && (GFIchk["lng-" + _m.id] != e.latlng.lng)) {
-                        GFIchk["lat-" + _m.id] = e.latlng.lat;
-                        GFIchk["lng-" + _m.id] = e.latlng.lng;
-                        // call callback
-                        _this.query_products(_this.CONFIG.cached_layers, e.latlng.lat, e.latlng.lng)
-                    }
-                }
-            }, 100);
-        });
-        m.map.on('mouseout', function (e) {
-            GFIchk["lat-" + m.id] = 0;
-            GFIchk["lng-" + m.id] = 0;
-            GFIchk["globalID-" + m.id] = 0;
 
-            // TODO: remove chart
+        m.map.on('click', function (e) {
+            _this.query_products(_this.CONFIG.cached_layers, e.latlng.lat, e.latlng.lng)
         });
+
+//        m.map.on('mousemove', function (e) {
+//            var id = Date.now();
+//            GFIchk["globalID-" + _m.id] = id;
+//            var t = setTimeout(function() {
+//                if ( id == GFIchk["globalID-" + _m.id]) {
+//                    //console.log(e);
+//                    if ((GFIchk["lat-" + _m.id] != e.latlng.lat) && (GFIchk["lng-" + _m.id] != e.latlng.lng)) {
+//                        GFIchk["lat-" + _m.id] = e.latlng.lat;
+//                        GFIchk["lng-" + _m.id] = e.latlng.lng;
+//                        // call callback
+//                        _this.query_products(_this.CONFIG.cached_layers, e.latlng.lat, e.latlng.lng)
+//                    }
+//                }
+//            }, 100);
+//        });
+//        m.map.on('mouseout', function (e) {
+//            GFIchk["lat-" + m.id] = 0;
+//            GFIchk["lng-" + m.id] = 0;
+//            GFIchk["globalID-" + m.id] = 0;
+//
+//            // TODO: remove chart
+//        });
 
         // TODO: on click
         //this.query_products(_this.CONFIG.cached_layers, e.latlng.lat, e.latlng.lng)

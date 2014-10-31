@@ -111,7 +111,7 @@
         "labels": {
             "rotation": -45,
             "style": {
-                "fontSize": "8px",
+                "fontSize": "7px",
                 "fontFamily": "Roboto"
             }
        }

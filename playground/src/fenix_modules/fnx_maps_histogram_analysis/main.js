@@ -48,11 +48,11 @@ define(['jquery',
             },
 
             // TODO: default product and layer to be shown if they exists
-            "default_product_list": ["TRMM", "Doukkola-Temperature", "Doukkala-ACTUALET", "Doukkala-Seasonal-wheat", "Transpiration-Seasonal-wheat", "Doukkola-NDVI", "Doukkola-PRECIPITATION"],
-            "default_product1": {
-                "product_code": "TRMM",
-                "layer_code": "fenix:trmm_06_2012_da"
-            }
+            "default_product_list": ["Doukkala - wheat seasonal", "Doukkola - NDVI", "Doukkola - Temperature", "Doukkala - reference evapotransipiration", "Doukkala - actual evapotransipiration", "Doukkala - potential evapotransipiration", "Doukkola - Precipitation"],
+//            "default_product1": {
+//                "product_code": "TRMM",
+//                "layer_code": "fenix:trmm_06_2012_da"
+//            }
         };
     }
 

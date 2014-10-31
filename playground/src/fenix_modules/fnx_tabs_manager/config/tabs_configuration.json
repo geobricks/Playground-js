@@ -8,7 +8,7 @@
         "module_code": "FNX_MAPS_HISTOGRAM_ANALYSIS_MODULE"
     },
     {
-        "label_code" : "scatter_analysis",
+        "label_code" : "correlation_analysis",
         "module_code": "FNX_MAPS_RASTER_COMPARE_MODULE"
     }
 ]

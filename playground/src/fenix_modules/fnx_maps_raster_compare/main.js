@@ -73,14 +73,14 @@ define(['jquery',
             },
 
             // TODO: default product and layer to be shown if they exists
-            "default_product_list": ["TRMM", "MODIS-NDVI-SADC", "TRMM-SADC", "MODIS_BURNED_AREAS", "MODIS_LAND_COVER", "MODIS_MOLLWEIDE", "Doukkola-Temperature", "Doukkala-ACTUALET", "Doukkala-Seasonal-wheat", "Transpiration-Seasonal-wheat", "Doukkola-NDVI", "Doukkola-PRECIPITATION"],
+            "default_product_list": ["Doukkala - wheat seasonal", "Doukkola - NDVI", "Doukkola - Temperature", "Doukkala - reference evapotransipiration", "Doukkala - actual evapotransipiration", "Doukkala - potential evapotransipiration", "Doukkola - Precipitation"],
             "default_product1": {
-                "product_code": "TRMM",
-                "layer_code": "fenix:trmm_06_2012_da"
+                "product_code": "Doukkala - wheat seasonal",
+                "layer_code": "fenix:actual_-_yield"
             },
             "default_product2": {
-                "product_code": "TRMM",
-                "layer_code": "fenix:trmm_07_2012_da"
+                "product_code": "Doukkala - wheat seasonal",
+                "layer_code": "fenix:potential_-_yield"
             }
         };
     }
@@ -340,7 +340,7 @@ define(['jquery',
         $id.append("<div>P-Value: "+ values.p_value +"</div>")
         $id.append("<div>Standard Error: "+ values.std_err +"</div>")
         $id.append("<div>Intercept: "+ values.intercept +"</div>")
-        $id.append("<div>R-Value: "+ values.r_value +"</div>")
+        $id.append("<div>R-Square: "+ values.r_value +"</div>")
     }
 
     FNX_RASTER_COMPARE.prototype.createScatter =  function(response, map1, map2) {
@@ -429,7 +429,7 @@ define(['jquery',
             plugins: {
                 geosearch : false,
                 mouseposition: false,
-                controlloading : true,
+                controlloading : false,
                 zoomControl: 'bottomright'
             },
             guiController: {
@@ -451,10 +451,56 @@ define(['jquery',
         var lat = (opt.lat)? opt.lat: 0;
         var lng = (opt.lng)? opt.lng: 0;
         var zoom = (opt.zoom)? opt.zoom: 15;
-        console.log(lat);
-        console.log(zoom);
-        console.log(zoom);
         m.createMap(lat, lng, zoom);
+
+        // Boundaries
+        var layer = {};
+        layer.layers = "fenix:gaul0_line_3857"
+        layer.layertitle = "Boundaries"
+        layer.urlWMS = "http://fenixapps2.fao.org/geoserver-demo"
+        layer.styles = "gaul0_line"
+        layer.opacity='0.7';
+        //layer.hideLayerInControllerList = true;
+        //layer.visibility = false
+        layer.zindex= 200;
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+
+
+        var layer = {};
+        layer.layers = "fenix:CPBS_CPHS_TMercator"
+        layer.layertitle = "CPBS CPHS"
+        layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
+        layer.opacity='0.7';
+        //layer.hideLayerInControllerList = true;
+        //layer.visibility = false
+        layer.zindex= 201;
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+
+        var layer = {};
+        layer.layers = "fenix:Perimetre_de_gestion_TMercator"
+        layer.layertitle = "Perimetre de gestion"
+        layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
+        layer.opacity='0.7';
+        //layer.hideLayerInControllerList = true;
+        layer.visibility = false
+        layer.zindex= 202;
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+
+        var layer = {};
+        layer.layers = "fenix:Doukkala_G2015_4_3857"
+        layer.layertitle = "Doukkala GAUL4"
+        layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
+        layer.opacity='0.7';
+        //layer.hideLayerInControllerList = true;
+        //layer.visibility = false
+        layer.zindex= 202;
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+
+
 
         return m;
     }
