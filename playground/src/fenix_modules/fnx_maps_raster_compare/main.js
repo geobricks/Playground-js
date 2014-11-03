@@ -123,6 +123,13 @@ define(['jquery',
             uids.push($("#" + event.data.layer_id2).chosen().val());
             _this.create_analysis(uids)
         });
+
+        // add on click listener
+        this.o.map1.m.map.on('click', function (e) {
+            map2.getFeatureInfo(e);
+        });
+
+
     };
 
     FNX_RASTER_COMPARE.prototype.build_dropdown_products = function(id, layer_dd_ID, mapObj, default_product, default_product_list) {

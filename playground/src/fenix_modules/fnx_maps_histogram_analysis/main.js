@@ -27,7 +27,6 @@ define(['jquery',
             "counter_histogram_current_id": 0,
 
 
-
             // Objects interaction
             "prod" : {
                 id : "fnx_raster_histogram_prod1",
@@ -39,12 +38,12 @@ define(['jquery',
                 maps: []
             },
 
-            "map1": {
-                id: "fnx_raster_histogram_map1",
+            "map": {
+                id: "fnx_maps_histogram_analysis_map",
                 m: null,
-                default_layer: null, // the one selected from the dropdown
-                layer_scatter: null, // the highlighted pixels from the scatter chart
-                layer_histogram: null // the highlighted pixels from the histogram chart
+                lat: 32.650000,
+                lng: -8.433333,
+                zoom: 9
             },
 
             // TODO: default product and layer to be shown if they exists
@@ -57,15 +56,14 @@ define(['jquery',
     }
 
     FNX_HISTOGRAM_ANALYSIS.prototype.init = function(obj) {
+        console.log(obj);
         this.o = $.extend(true, {}, this.o, obj);
         var o = this.o
         var template = $(templates).filter('#' + o.template_id).html();
         $('#' + o.placeholder).html(template);
 
-
         // parsing the chart temaplte and initialize loading window
         this.loadingwindow = new loadingwindow()
-
 
         // building dropdowns
         this.build_dropdown_products(o.prod.id, o.prod.layers_id, this.o.map, this.o.default_product, this.o.default_product_list)
@@ -88,8 +86,11 @@ define(['jquery',
             var title = $("#" + _this.o.prod.layers_id + " :selected").text()
             var id = _this.o.histogram_base_id + _this.o.counter_histogram_current_id++;
             _this.add_histogram(id, uid, title)
+            _this.add_layer(uid, title);
         });
 
+        // create map
+        this.o.map.m = this.create_map(this.o.map.id)
     };
 
     FNX_HISTOGRAM_ANALYSIS.prototype.build_dropdown_products = function(id, layer_dd_ID, mapObj, default_product, default_product_list) {
@@ -184,6 +185,16 @@ define(['jquery',
         this.histogram_analysis(id, uid, title)
     }
 
+    FNX_HISTOGRAM_ANALYSIS.prototype.add_layer = function(uid, title) {
+        var layer = {};
+        layer.layers = uid
+        layer.layertitle = title
+        layer.urlWMS = this.o.url_geoserver_wms;
+        layer.openlegend = true;
+        var l = new FM.layer(layer);
+        this.o.map.m.addLayer(l);
+    }
+
     FNX_HISTOGRAM_ANALYSIS.prototype.scatter_analysis = function(uids, map1, map2) {
         this.loadingwindow.showPleaseWait()
         var url = this.o.url_stats_rasters_scatter_plot_workers.replace("{{LAYERS}}", uids)
@@ -204,6 +215,57 @@ define(['jquery',
             }
         });
     }
+
+
+    FNX_HISTOGRAM_ANALYSIS.prototype.create_map = function(id) {
+        var options = {
+            plugins: { geosearch : false, mouseposition: false, controlloading : false, zoomControl: 'bottomright'},
+            guiController: { overlay : true,  baselayer: true,  wmsLoader: true },
+            gui: {disclaimerfao: true }
+        }
+
+        var mapOptions = { zoomControl:false,attributionControl: false };
+        var m = new FM.Map(id, options, mapOptions);
+        var lat = (this.o.map.lat)? this.o.map.lat: 0;
+        var lng = (this.o.map.lng)? this.o.map.lng: 0;
+        var zoom = (this.o.map.zoom)? this.o.map.zoom: 15;
+        m.createMap(lat, lng, zoom);
+
+        var layer = {};
+        layer.layers = "fenix:gaul0_line_3857"
+        layer.layertitle = "Boundaries"
+        layer.urlWMS = "http://fenixapps2.fao.org/geoserver-demo"
+        layer.styles = "gaul0_line"
+        layer.opacity='0.7';
+        layer.zindex= 200;
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+
+        var layer = {};
+        layer.layers = "fenix:CPBS_CPHS_TMercator"
+        layer.layertitle = "CPBS CPHS"
+        layer.urlWMS = this.o.url_geoserver_wms;
+        layer.opacity='0.55';
+        //layer.hideLayerInControllerList = true;
+        //layer.visibility = false
+        layer.zindex= 202;
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+
+        var layer = {};
+        layer.layers = "fenix:Perimetre_de_gestion_TMercator"
+        layer.layertitle = "Perimetre de gestion"
+        layer.urlWMS = this.o.url_geoserver_wms;
+        layer.opacity='0.55';
+        //layer.hideLayerInControllerList = true;
+        //layer.visibility = false
+        layer.zindex= 203;
+        var l = new FM.layer(layer);
+        m.addLayer(l);
+
+        return m;
+    }
+
 
     FNX_HISTOGRAM_ANALYSIS.prototype.histogram_analysis = function(id, uid, title) {
         console.log(id + " " + uid);

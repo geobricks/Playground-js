@@ -283,6 +283,7 @@ define(['jquery',
         layer.layers = layer_def.uid
         layer.layertitle = layer_def.title[this.CONFIG.lang.toLocaleUpperCase()]
         layer.urlWMS = this.CONFIG.url_geoserver_wms
+        layer.openlegend = true;
         var l = new FM.layer(layer);
         m.addLayer(l);
         return l;
