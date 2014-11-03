@@ -138,10 +138,9 @@ define(['jquery',
         // this shouldn't be here
         // change layer in the map
         var _this = this;
-        $( "#" + layer_dd_ID ).change({ mapObj : mapObj}, function (event) {
-            //_this.layer_selected(event.data.mapObj, $(this).val(), $("#" + layer_dd_ID + " :selected").text())
-            console.log("preview the selected layer on the map?");
-        });
+//        $( "#" + layer_dd_ID ).change({ mapObj : mapObj}, function (event) {
+//            _this.add_layer($(this).val(), $("#" + layer_dd_ID + " :selected").text());
+//        });
 
         // set default product if exists
        if ( default_product ) {

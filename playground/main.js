@@ -188,7 +188,7 @@ require(['jquery',
         early_warning: function(lang) {
             this._init(lang);
             require(['EARLY_WARNING'], function() {
-                Early_warning().build({lang: lang});
+                Early_warning().build(config);
             });
         },
 
@@ -209,28 +209,28 @@ require(['jquery',
         early_warning_sadc: function(lang) {
             this._init(lang);
             require(['EARLY_WARNING_SADC'], function() {
-                Early_warning_sadc().build({lang: lang});
+                Early_warning_sadc().build(config);
             });
         },
 
         distribution: function(lang) {
             this._init(lang);
             require(['DISTRIBUTION'], function() {
-                Distribution().build({lang: lang});
+                Distribution().build(config);
             });
         },
 
         scatter_analysis: function(lang) {
             this._init(lang);
             require(['SCATTER_ANALYSIS'], function() {
-                Scatter_Analysis().build({lang: lang});
+                Scatter_Analysis().build(config);
             });
         },
 
         ghg_fires: function(lang) {
             this._init(lang);
             require(['GHG_FIRES'], function() {
-                GHG_Fires().build({lang: lang});
+                GHG_Fires().build(config);
             });
         },
 
@@ -238,7 +238,6 @@ require(['jquery',
             this._init(lang);
             require(['FNX_MAPS_ANALYSIS_MODULE'], function(FM_ANALYSIS) {
                 var analysis = new FM_ANALYSIS()
-                config.lang = lang
                 analysis.init(config);
             });
         },
@@ -247,7 +246,6 @@ require(['jquery',
             this._init(lang);
             require(['FNX_CROP_CALENDAR_MODULE'], function(FNX_CROP_CALENDAR) {
                 var app = new FNX_CROP_CALENDAR()
-                config.lang = lang
                 app.init(config);
             });
         },
@@ -257,7 +255,6 @@ require(['jquery',
             this._init(lang);
             require(['FNX_MAPS_RASTER_COMPARE_MODULE'], function(MODULE) {
                 var app = new MODULE()
-                config.lang = lang
                 app.init(config);
             });
         },
@@ -266,7 +263,6 @@ require(['jquery',
             this._init(lang);
             require(['FNX_EBOLA_MODULE'], function(MODULE) {
                 var app = new MODULE()
-                config.lang = lang
                 app.init(config);
             });
         },
@@ -275,7 +271,6 @@ require(['jquery',
             this._init(lang);
             require(['FNX_SCATTER_PERFORMANCE_MODULE'], function(MODULE) {
                 var app = new MODULE()
-                config.lang = lang
                 app.init(config);
             });
         },
@@ -284,6 +279,7 @@ require(['jquery',
 
             if (lang) {
                 this._initLanguage(lang)
+                config.lang = lang
             }
 
             if (!this.isRendered) {

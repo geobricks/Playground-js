@@ -30,6 +30,7 @@ define(['jquery',
             },
 
             "chart_id" : "pgeo_analysis_chart",
+            "chart_title_id" : "pgeo_analysis_chart_title",
 
             "chart_obj" : "", // this the chart obj used to add the series
 
@@ -294,6 +295,8 @@ define(['jquery',
         this.CONFIG.cached_yaxis_count = 0;
 
         //this.loading_html(this.CONFIG.chart_id)
+        $("#" + this.CONFIG.chart_title_id).show()
+
         // create chart
         var chart = this.create_empty_chart(this.CONFIG.chart_id, cached_layers.length)
 
@@ -365,7 +368,7 @@ define(['jquery',
                 ignoreHiddenSeries : false
             },
             title: {
-                text: 'Timeserie of the selected pixel',
+//                text: 'Timeserie of the selected pixel',
                 enabled: true,
                 style: {
                     fontFamily: 'Roboto',
