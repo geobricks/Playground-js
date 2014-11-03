@@ -29,16 +29,16 @@ define(['jquery',
             lang: 'EN',
             placeholder: 'main_content_placeholder',
             template_id: 'map',
-
-            url_geoserver_wms: 'http://fenixapps2.fao.org/geoserver-demo',
-
-            url_search_all_products: "http://168.202.28.214:5005/search/layer/distinct/layers/",
-
-            url_search_layer_product: "http://168.202.28.214:5005/search/layer/product/",
-
-            url_spatialquery: "http://168.202.28.214:5005/spatialquery/db/spatial/",
-
-            url_stats_scatter_analysis : "http://168.202.28.214:5005/stats/rasters/scatter_analysis/",
+//
+//            url_geoserver_wms: 'http://fenixapps2.fao.org/geoserver-demo',
+//
+//            url_search_all_products: "http://168.202.28.214:5005/search/layer/distinct/layers/",
+//
+//            url_search_layer_product: "http://168.202.28.214:5005/search/layer/product/",
+//
+//            url_spatialquery: "http://168.202.28.214:5005/spatialquery/db/spatial/",
+//
+//            url_stats_scatter_analysis : "http://168.202.28.214:5005/stats/rasters/scatter_analysis/",
 
             // default layer and map
             m : null,
@@ -87,9 +87,6 @@ define(['jquery',
 
         var build = function(config) {
             CONFIG = $.extend(true, {}, CONFIG, config);
-
-
-            console.log($("#ew_chart_title").text())
 
             var template = $(templates).filter('#' + CONFIG.template_id).html();
             $('#' + CONFIG.placeholder).html(templates);
@@ -167,7 +164,7 @@ define(['jquery',
 
         var build_dropdown_gaul = function(id) {
             var query = "SELECT adm0_code, adm0_name FROM spatial.gaul0_3857 WHERE disp_area = 'NO' ORDER BY adm0_name"
-            var url = CONFIG.url_spatialquery + query
+            var url = CONFIG.url_spatialquery_db_spatial + query
             $.ajax({
                 type : 'GET',
                 url : url,
@@ -263,8 +260,7 @@ define(['jquery',
 
         var zoom_to = function(fenixmap, codes) {
             var query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), 4326)) FROM spatial.gaul1_3857 WHERE adm0_code IN ("+ codes +")"
-            var url = CONFIG.url_spatialquery
-            url += query;
+            var url = CONFIG.url_spatialquery_db_spatial + query;
             $.ajax({
                 type : 'GET',
                 url : url,

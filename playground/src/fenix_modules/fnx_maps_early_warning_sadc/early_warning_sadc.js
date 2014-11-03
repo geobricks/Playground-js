@@ -31,16 +31,16 @@ define(['jquery',
             placeholder: 'main_content_placeholder',
             template_id: 'map',
 
-            url_geoserver_wms: 'http://168.202.28.214:9090/geoserver/wms',
+//            url_geoserver_wms: 'http://168.202.28.214:9090/geoserver/wms',
 
-            url_search_layer_product: "http://168.202.28.214:5005/search/layer/product/",
-
-            url_search_layer_product_type: "http://168.202.28.214:5005/search/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
-
-            url_spatialquery: "http://168.202.28.214:5005/spatialquery/db/spatial/",
-
-            url_stats_raster: "http://168.202.28.214:5005/stats/raster/spatial_query",
-            url_stats_rasters: "http://168.202.28.214:5005/stats/rasters/spatial_query",
+//            url_search_layer_product: "http://168.202.28.214:5005/search/layer/product/",
+//
+//            url_search_layer_product_type: "http://168.202.28.214:5005/search/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
+//
+//            url_spatialquery: "http://168.202.28.214:5005/spatialquery/db/spatial/",
+//
+//            url_stats_raster: "http://168.202.28.214:5005/stats/raster/spatial_query",
+//            url_stats_rasters: "http://168.202.28.214:5005/stats/rasters/spatial_query",
 
 
             // default layer and map
@@ -122,8 +122,7 @@ define(['jquery',
 
         var build = function(config) {
             CONFIG = $.extend(true, {}, CONFIG, config);
-
-            console.log($("#ew_chart_title").text())
+            console.log(CONFIG);
 
             var template = $(templates).filter('#' + CONFIG.template_id).html();
             $('#' + CONFIG.placeholder).html(templates);
@@ -146,7 +145,7 @@ define(['jquery',
         }
 
         var build_dropdown_layers = function(id) {
-            var url = FMCONFIG.METADATA_GET_LAYERS_BY_PRODUCT + "EARTHSTAT";
+            var url = CONFIG.url_search_layer_product + "EARTHSTAT";
             $.ajax({
                 type : 'GET',
                 url : url,
@@ -189,7 +188,7 @@ define(['jquery',
 
         var build_dropdown_gaul = function(id) {
             var query = "SELECT adm0_code, adm0_name FROM spatial.gaul0_3857 WHERE disp_area = 'NO' ORDER BY adm0_name"
-            var url = CONFIG.url_spatialquery + query
+            var url = CONFIG.url_spatialquery_db_spatial + query
             $.ajax({
                 type : 'GET',
                 url : url,
@@ -270,7 +269,7 @@ define(['jquery',
             json_stats.raster.uid = uid
             json_stats.vector.options.query_condition.where = json_stats.vector.options.query_condition.where.replace("{{ADM0_CODE}}", adm0_code)
             console.log(json_stats);
-            var url = CONFIG.url_stats_raster
+            var url = CONFIG.url_stats_raster_spatial_query
             $.ajax({
                 type : 'POST',
                 url : url,
@@ -362,7 +361,7 @@ define(['jquery',
 //            http://127.0.0.1:5005/spatialquery/db/spatial/SELECT%20ST_AsGeoJSON%28ST_Extent%28geom%29%29%20from%20spatial.gaul1_3857%20where%20adm1_code%20IN%20%2870073,70075,1503,1489,1506,1502,1485,1507,1498,1492,70072,1495,1501,1487,70074,1493,70080,1494,1509,1511,70081,70082,1505,1491,1504,1490,70079,1508,70077,70078,70076,1500%29
             // TODO: POST and not GET
             var query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), 4326)) FROM spatial.gaul1_3857 WHERE adm1_code IN ("+ codes +")"
-            var url = CONFIG.url_spatialquery
+            var url = CONFIG.url_spatialquery_db_spatial
             url += query;
             $.ajax({
                 type : 'GET',
@@ -427,7 +426,7 @@ define(['jquery',
                     json_stats_gaul1.raster.name = layer.title
                     json_stats_gaul1.vector.options.query_condition.where = json_stats_gaul1.vector.options.query_condition.where.replace("{{ADM1_CODE}}", gaul_code)
                     console.log(json_stats_gaul1);
-                    var url = CONFIG.url_stats_rasters
+                    var url = CONFIG.url_stats_rasters_spatial_query
 
                     var LAYERS = response;
                     $.ajax({

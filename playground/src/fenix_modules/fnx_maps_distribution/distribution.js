@@ -29,24 +29,24 @@ define(['jquery',
             placeholder: 'main_content_placeholder',
             template_id: 'map',
 
-            url_geoserver_wms: 'http://168.202.28.214:9090/geoserver/wms',
-
-            url_search_all_products: "http://168.202.28.214:5005/search/layer/distinct/layers/",
-
-            url_search_layer_product: "http://168.202.28.214:5005/search/layer/product/",
-
-            url_spatialquery: "http://168.202.28.214:5005/spatialquery/db/spatial/",
+//            url_geoserver_wms: 'http://168.202.28.214:9090/geoserver/wms',
+//
+//            url_search_all_products: "http://168.202.28.214:5005/search/layer/distinct/layers/",
+//
+//            url_search_layer_product: "http://168.202.28.214:5005/search/layer/product/",
+//
+//            url_spatialquery: "http://168.202.28.214:5005/spatialquery/db/spatial/",
 
             // default layer and map
             m : null,
             l : null,
 
-            l_gaul0_highlight: null,
+            l_gaul0_highlight: null
 
             // distribution query
-            url_distribution_raster: "http://168.202.28.214:5005/distribution/raster/spatial_query",
-            spatial_query: '{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})"}'
-
+//            url_distribution_raster: "http://168.202.28.214:5005/distribution/raster/spatial_query",
+//            spatial_query: '{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})"}'
+//
 
 //            url_distribution_raster: "http://localhost:5005/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
 //            spatial_query: '{"vector":{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})"}}'
@@ -160,7 +160,7 @@ define(['jquery',
 
         var build_dropdown_gaul = function(id) {
             var query = "SELECT adm0_code, adm0_name FROM spatial.gaul0_3857 WHERE disp_area = 'NO' ORDER BY adm0_name"
-            var url = CONFIG.url_spatialquery + query
+            var url = CONFIG.url_spatialquery_db_spatial + query
             $.ajax({
                 type : 'GET',
                 url : url,
@@ -245,8 +245,8 @@ define(['jquery',
 
         var export_layers = function(uids, codes, email_address) {
             loadingWindow.showPleaseWait()
-            var url = CONFIG.url_distribution_raster
-            var spatial_query = CONFIG.spatial_query
+            var url = CONFIG.url_distribution_raster_spatial_query;
+            var spatial_query = CONFIG.url_spatialquery_db_spatial;
             spatial_query = spatial_query.replace(/{{CODES}}/gi, codes)
             var data = {
                 "raster" : {
@@ -258,6 +258,8 @@ define(['jquery',
             if (email_address != "") {
                 data.email_address = email_address
             }
+            console.log(url);
+            console.log(spatial_query);
             $.ajax({
                 type : 'POST',
                 url : url,
@@ -277,7 +279,7 @@ define(['jquery',
 
         var zoom_to = function(codes) {
             var query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), 4326)) FROM spatial.gaul0_3857 WHERE adm0_code IN ("+ codes +")"
-            var url = CONFIG.url_spatialquery
+            var url = CONFIG.url_spatialquery_db_spatial
             url += query;
             $.ajax({
                 type : 'GET',

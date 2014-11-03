@@ -190,6 +190,7 @@ define(['jquery',
         layer.layertitle = title
         layer.urlWMS = this.o.url_geoserver_wms;
         layer.openlegend = true;
+        layer.defaultgfi = true;
         var l = new FM.layer(layer);
         this.o.map.m.addLayer(l);
     }
