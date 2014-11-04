@@ -80,13 +80,12 @@ define(['jquery',
             },
             "default_product2": {
                 "product_code": "Doukkala - wheat seasonal",
-                "layer_code": "fenix:potential_-_yield"
+                "layer_code": "fenix:water_productivity"
             }
         };
     }
 
     FNX_RASTER_COMPARE.prototype.force_map_refresh = function() {
-        console.log("");
         this.o.map1.m.map.invalidateSize();
         this.o.map2.m.map.invalidateSize();
     }
@@ -96,7 +95,6 @@ define(['jquery',
         var o = this.o
         var template = $(templates).filter('#' + o.template_id).html();
         $('#' + o.placeholder).html(template);
-
 
         // parsing the chart temaplte and initialize loading window
         this.chart_scatter_template = $.parseJSON(chart_scatter_template);
@@ -128,8 +126,6 @@ define(['jquery',
         this.o.map1.m.map.on('click', function (e) {
             map2.getFeatureInfo(e);
         });
-
-
     };
 
     FNX_RASTER_COMPARE.prototype.build_dropdown_products = function(id, layer_dd_ID, mapObj, default_product, default_product_list) {
@@ -476,7 +472,7 @@ define(['jquery',
 
         var layer = {};
         layer.layers = "fenix:CPBS_CPHS_TMercator"
-        layer.layertitle = "CPBS CPHS"
+        layer.layertitle = "Irrigation Canals"
         layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
         layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
@@ -487,11 +483,11 @@ define(['jquery',
 
         var layer = {};
         layer.layers = "fenix:Perimetre_de_gestion_TMercator"
-        layer.layertitle = "Perimetre de gestion"
+        layer.layertitle = "Irrigation Perimeter"
         layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
         layer.opacity='0.55';
-        //layer.hideLayerInControllerList = true;
-        layer.visibility = false
+        layer.style = 'morocco_perimetre_de_gestion_contour';
+        //layer.visibility = false
         layer.zindex= 202;
         var l = new FM.layer(layer);
         m.addLayer(l);

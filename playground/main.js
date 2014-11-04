@@ -24,7 +24,8 @@ require.config({
         'highcharts_exporting'  :   repository + 'highcharts/4.0.4/js/modules/exporting',
         "highcharts-heatmap"    :   'http://code.highcharts.com/maps/modules/heatmap',
         "highcharts-data"       :   'http://code.highcharts.com/maps/modules/data',
-        jquery                  :   '//code.jquery.com/jquery-1.10.1.min',
+        jquery                  :   '//fenixapps.fao.org/repository/js/jquery/1.10.2/jquery-1.10.2.min',
+
         'jquery.hoverIntent'    :   '//fenixapps.fao.org/repository/js/jquery.hoverIntent/1.0/jquery.hoverIntent',
 
         mustache                :   '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.8.1/mustache',

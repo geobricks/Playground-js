@@ -1,8 +1,10 @@
 <div id="structure">
-    <div id="pgeo_analysis_product_id" style="margin-top:15px;"></div>
-    <div class='row'>
-        <div id="pgeo_analysis_map_id"></div>
-        <div id="pgeo_analysis_chart_id"></div>
+    <div id="pgeo_analysis_main_container"> <!-- use it for the fullscreen -->
+        <div id="pgeo_analysis_product_id" style="margin-top:15px;"></div>
+        <div class='row'>
+            <div id="pgeo_analysis_map_id"></div>
+            <div id="pgeo_analysis_chart_id"></div>
+        </div>
     </div>
 </div>
 </div>
@@ -17,7 +19,7 @@
 </div>
 
 <div id="structure_map">
-    <div class='col-xs-6' style="height: 550px;margin-top:20px;">
+    <div class='col-xs-12' style="height: 550px;margin-top:20px;">
         <!--<h4 class="text-info">{{map_preview}}</h4>-->
         <h5 class="text-primary">Map preview of the latest layer of the product</h5>
         <div id='pgeo_analysis_map' class='fm-box' style='height:550px; overflow: hidden; margin: 0 auto; text-align: left;'></div>
@@ -25,7 +27,7 @@
 </div>
 
 <div id="structure_chart">
-    <div class='col-xs-6' style="height: 350px;margin-top:20px;">
+    <div class='col-xs-6' style="height: 300px;margin-top:50px;margin-bottom:80px;">
         <h5 id="pgeo_analysis_chart_title" style="display:none" class="text-primary text-center">Pixel Timeserie</h5>
         <div id='pgeo_analysis_chart' class='fm-box' style='overflow: hidden; margin: 0 auto; text-align: left;'></div>
     </div>

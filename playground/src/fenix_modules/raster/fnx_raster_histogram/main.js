@@ -103,9 +103,11 @@ define(['jquery',
                 events: {
                     redraw: function (e) {
                         // TODO: make it nicer the selection of the SLD to apply
-                        if (this.yAxis[0].min !=  this.yAxis[0].originalMin || this.yAxis[0].max  !=  this.yAxis[0].originalMax) {
-                           var min = (this.yAxis[0].min >= this.yAxis[0].originalMin)? this.yAxis[0].min : this.yAxis[0].originalMin
-                           var max = (this.yAxis[0].max <= this.yAxis[0].originalMax)? this.yAxis[0].max : this.yAxis[0].originalMax
+                        var selectedMin = parseFloat(this.xAxis[0].categories[Math.round(this.xAxis[0].min)])
+                        var selectedMax = parseFloat(this.xAxis[0].categories[Math.round(this.xAxis[0].max)])
+                        if (selectedMin != this.xAxis[0].originalMin || selectedMax != this.xAxis[0].originalMax) {
+                           var min = (selectedMin >= this.xAxis[0].originalMin)? selectedMin: this.xAxis[0].originalMin;
+                           var max = (selectedMax <= this.xAxis[0].originalMax)? selectedMax: this.xAxis[0].originalMax;
 
                             _this.applyStyle(_this.o.l,
                                     '* {' +
@@ -123,8 +125,8 @@ define(['jquery',
                         }
                     },
                     load: function (e) {
-                        this.yAxis[0].originalMin = this.yAxis[0].min;
-                        this.yAxis[0].originalMax = this.yAxis[0].max;
+                        this.xAxis[0].originalMin = parseFloat(this.xAxis[0].categories[0]);
+                        this.xAxis[0].originalMax = parseFloat(this.xAxis[0].categories[this.xAxis[0].categories.length-1]);
                     }
                 }
             },

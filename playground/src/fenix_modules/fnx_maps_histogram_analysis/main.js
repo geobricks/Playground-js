@@ -43,8 +43,11 @@ define(['jquery',
                 m: null,
                 lat: 32.650000,
                 lng: -8.433333,
-                zoom: 9
+                zoom: 10,
+                l: null // cached layer used to change visible view
             },
+
+
 
             // TODO: default product and layer to be shown if they exists
             "default_product_list": ["Doukkala - wheat seasonal", "Doukkola - NDVI", "Doukkola - Temperature", "Doukkala - reference evapotransipiration", "Doukkala - actual evapotransipiration", "Doukkala - potential evapotransipiration", "Doukkola - Precipitation"],
@@ -185,6 +188,11 @@ define(['jquery',
     }
 
     FNX_HISTOGRAM_ANALYSIS.prototype.add_layer = function(uid, title) {
+        try {
+            if (this.o.map.l)
+                this.o.map.m.removeLayer(this.o.map.l)
+        } catch (e) {}
+
         var layer = {};
         layer.layers = uid
         layer.layertitle = title
@@ -192,6 +200,9 @@ define(['jquery',
         layer.openlegend = true;
         layer.defaultgfi = true;
         var l = new FM.layer(layer);
+
+        // caching the layer (to be overwritten)
+        this.o.map.l = l;
         this.o.map.m.addLayer(l);
     }
 
@@ -243,7 +254,7 @@ define(['jquery',
 
         var layer = {};
         layer.layers = "fenix:CPBS_CPHS_TMercator"
-        layer.layertitle = "CPBS CPHS"
+        layer.layertitle = "Irrigation Canals"
         layer.urlWMS = this.o.url_geoserver_wms;
         layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
@@ -253,32 +264,32 @@ define(['jquery',
         m.addLayer(l);
 
         var layer = {};
-        layer.layers = "fenix:Perimetre_de_gestion_TMercator"
-        layer.layertitle = "Perimetre de gestion"
+        layer.layers = "fenix:winter_crop_classification"
+        layer.layertitle = "Winter crop classification"
         layer.urlWMS = this.o.url_geoserver_wms;
-        layer.opacity='0.55';
+        layer.opacity = '0.7';
+        layer.openlegend = true;
         //layer.hideLayerInControllerList = true;
         //layer.visibility = false
         layer.zindex= 203;
-        var l = new FM.layer(layer);
-        m.addLayer(l);
+        this.o.map.l = new FM.layer(layer);
+        m.addLayer(this.o.map.l);
 
         return m;
     }
 
-
     FNX_HISTOGRAM_ANALYSIS.prototype.histogram_analysis = function(id, uid, title) {
         console.log(id + " " + uid);
         var obj = {
-            chart : {
-                id : id,
+            chart: {
+                id: id,
                 c:  {
                     title: {
                         text: title
                     }
                 }
             },
-            l : {
+            l: {
                 layer: {
                     layers: uid
                 }

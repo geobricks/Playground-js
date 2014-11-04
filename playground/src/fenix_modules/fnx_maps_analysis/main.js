@@ -26,7 +26,7 @@ define(['jquery',
                 id : "pgeo_analysis_map",
                 lat: 32.650000,
                 lng: -8.433333,
-                zoom: 9
+                zoom: 10
             },
 
             "chart_id" : "pgeo_analysis_chart",
@@ -36,6 +36,7 @@ define(['jquery',
 
             // layers to be added and queried
             "cached_layers" : [],
+            "cached_selected_values": [],
 //            "cached_layers" : [
 //                {
 //                    id : "",
@@ -59,6 +60,7 @@ define(['jquery',
         var t = $(template).filter('#structure').html();
         $("#" + this.CONFIG.placeholder).html(t)
         this.loadingwindow = new loadingwindow()
+        this.chart_template = chart_template;
         this.create_gui()
     };
 
@@ -118,8 +120,27 @@ define(['jquery',
         var _this = this;
         $("#" + id).change(function () {
             var values = $(this).val()
-            if (values) {
-                _this.get_all_layers(values);
+
+            // check the values to the selected order
+            var used_values = []
+            for ( var i=0; i < values.length; i++) {
+                if ($.inArray(values[i], _this.CONFIG.cached_selected_values) <= -1) {
+                    // the value it's no on the list
+                    _this.CONFIG.cached_selected_values.push(values[i])
+                }
+            }
+
+            // clean the array
+            for ( var i=0; i<_this.CONFIG.cached_selected_values.length; i++) {
+                if ($.inArray(_this.CONFIG.cached_selected_values[i], values) <= -1) {
+                    _this.CONFIG.cached_selected_values.splice(i, 1);
+                    break;
+                }
+            }
+
+            // call the get_layers function
+            if (_this.CONFIG.cached_selected_values) {
+                _this.get_all_layers(_this.CONFIG.cached_selected_values);
             }
             else {
                 // TODO: remove all layers
@@ -130,9 +151,9 @@ define(['jquery',
 
     FM_ANALYSIS.prototype.create_map = function(id) {
         var options = {
-            plugins: { geosearch : false, mouseposition: false, controlloading : false, zoomControl: 'bottomright'},
-            guiController: { overlay : true,  baselayer: true,  wmsLoader: true },
-            gui: {disclaimerfao: true }
+            plugins: { geosearch: false, mouseposition: false, controlloading : false, zoomControl: 'bottomright'},
+            guiController: { overlay: true,  baselayer: true,  wmsLoader: true },
+            gui: { disclaimerfao: true }
         }
 
         var mapOptions = { zoomControl:false,attributionControl: false };
@@ -154,7 +175,7 @@ define(['jquery',
 
         var layer = {};
         layer.layers = "fenix:CPBS_CPHS_TMercator"
-        layer.layertitle = "CPBS CPHS"
+        layer.layertitle = "Irrigation Canals"
         layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
         layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
@@ -165,7 +186,7 @@ define(['jquery',
 
         var layer = {};
         layer.layers = "fenix:Perimetre_de_gestion_TMercator"
-        layer.layertitle = "Perimetre de gestion"
+        layer.layertitle = "Irrigation Perimeter"
         layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
         layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
@@ -195,6 +216,10 @@ define(['jquery',
 
         m.map.on('click', function (e) {
             _this.query_products(_this.CONFIG.cached_layers, e.latlng.lat, e.latlng.lng)
+
+            var popup = new L.Popup();
+            popup.setLatLng(e.latlng).setContent("<h5 class='text-primary'>Selected pixel</h5>");
+            m.map.openPopup(popup);
         });
 
 //        m.map.on('mousemove', function (e) {
@@ -220,10 +245,6 @@ define(['jquery',
 //            // TODO: remove chart
 //        });
 
-        // TODO: on click
-        //this.query_products(_this.CONFIG.cached_layers, e.latlng.lat, e.latlng.lng)
-
-
         // caching map
         this.CONFIG.m = m;
     };
@@ -246,11 +267,18 @@ define(['jquery',
             };
             //var url = "http://168.202.28.214:5005/search/layer/product/EARTHSTAT"
             url = Mustache.render(url, t);
-            this.get_layers(url, m, ids[i])
+
+            if ( i == ids.length-1) {
+                console.log("here ");
+                console.log(ids[i]);
+                this.get_layers(url, m, ids[i], true)
+            }
+            else
+                this.get_layers(url, m, ids[i], false)
         }
     }
 
-    FM_ANALYSIS.prototype.get_layers = function(url, m, id) {
+    FM_ANALYSIS.prototype.get_layers = function(url, m, id, addlayer) {
         var _id = id;
         var _this = this
         $.ajax({
@@ -265,7 +293,7 @@ define(['jquery',
                         _this.CONFIG.cached_layers[k].layers = response;
                     }
                 }
-                var map_layer = _this.add_layer(m, response[response.length-1])
+                var map_layer = _this.add_layer(m, response[response.length-1], addlayer)
                 if ( !changed ) {
                     _this.CONFIG.cached_layers.push({
                         "id": _id,
@@ -279,14 +307,15 @@ define(['jquery',
         });
     }
 
-    FM_ANALYSIS.prototype.add_layer = function(m, layer_def) {
+    FM_ANALYSIS.prototype.add_layer = function(m, layer_def, addlayer) {
         var layer = {};
         layer.layers = layer_def.uid
         layer.layertitle = layer_def.title[this.CONFIG.lang.toLocaleUpperCase()]
         layer.urlWMS = this.CONFIG.url_geoserver_wms
         layer.openlegend = true;
         var l = new FM.layer(layer);
-        m.addLayer(l);
+        if ( addlayer )
+            m.addLayer(l);
         return l;
     }
 
@@ -339,17 +368,31 @@ define(['jquery',
                     }
                     catch (e) { console.error("Error parsing the chart value: " + e);}
                 }
-                chart.yAxis[_this.CONFIG.cached_yaxis_count].update({
-                    text: ""
+                var default_measurementunit = 'Index'
+                var measurementunit = (cached_layer.layers[0].measurementunit != null && cached_layer.layers[0].measurementunit !='')? cached_layer.layers[0].measurementunit: default_measurementunit;
+
+                // Workaround for Morocco Demo
+                var measurementunit = (cached_layer.id.toLowerCase().indexOf("evapotrans")  > 0 )? 'mm': measurementunit;
+                var measurementunit = (cached_layer.id.toLowerCase().indexOf("temperature") > 0 )? '°C': measurementunit;
+
+                // creating yaxis and serie
+                var name = cached_layer.id;
+                var yaxis_index = $.inArray(name, _this.CONFIG.cached_selected_values);
+                var color = Highcharts.getOptions().colors[yaxis_index]
+                chart.yAxis[yaxis_index].update({
+                    title: {
+                        text: measurementunit,
+                        style: {
+                            color: color
+                        }
+                    }
                 });
                 var serie = {
-                    name : cached_layer.id,
+                    name : name,
                     data : values,
-                    yAxis: _this.CONFIG.cached_yaxis_count++
-                    //lineWidth: 0
-                    //type : "scatter"
+                    yAxis: yaxis_index,
+                    color: color
                 }
-                console.log(serie);
                 chart.addSeries(serie, true);
             },
             error : function(err, b, c) {
@@ -361,14 +404,13 @@ define(['jquery',
 
     FM_ANALYSIS.prototype.create_empty_chart = function(id, number_of_yaxis) {
         var _this = this;
-        var p = $.parseJSON(chart_template);
+        var p = $.parseJSON(this.chart_template);
         var custom_p = {
             chart: {
                 renderTo: id,
                 ignoreHiddenSeries : false
             },
             title: {
-//                text: 'Timeserie of the selected pixel',
                 enabled: true,
                 style: {
                     fontFamily: 'Roboto',
@@ -382,13 +424,12 @@ define(['jquery',
 
         for(var i=0; i < number_of_yaxis; i++) {
             custom_p.yAxis.push({
-                title: {
-//                    text: 'boh',
-                    style: {
-                        color: Highcharts.getOptions().colors[i]
-                    }
-                }
-                //,opposite: true
+//                title: {
+//                    style: {
+//                        //color: Highcharts.getOptions().colors[i]
+//                    }
+//                }
+//                //,opposite: true
             })
         }
         custom_p = $.extend(true, {}, p, custom_p);
