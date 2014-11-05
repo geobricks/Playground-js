@@ -258,7 +258,7 @@ define(['jquery',
         layer.urlWMS = this.o.url_geoserver_wms;
         layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
-        //layer.visibility = false
+        layer.visibility = false
         layer.zindex= 202;
         var l = new FM.layer(layer);
         m.addLayer(l);
@@ -267,7 +267,7 @@ define(['jquery',
         layer.layers = "fenix:winter_crop_classification"
         layer.layertitle = "Winter crop classification"
         layer.urlWMS = this.o.url_geoserver_wms;
-        layer.opacity = '0.7';
+        layer.opacity = '1';
         layer.openlegend = true;
         //layer.hideLayerInControllerList = true;
         //layer.visibility = false

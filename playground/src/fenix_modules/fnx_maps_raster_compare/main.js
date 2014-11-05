@@ -476,7 +476,7 @@ define(['jquery',
         layer.urlWMS = "http://168.202.28.214:9090/geoserver/wms"
         layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
-        //layer.visibility = false
+        layer.visibility = false
         layer.zindex= 201;
         var l = new FM.layer(layer);
         m.addLayer(l);

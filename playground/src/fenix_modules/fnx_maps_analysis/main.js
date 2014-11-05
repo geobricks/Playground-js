@@ -169,7 +169,7 @@ define(['jquery',
         layer.urlWMS = "http://fenixapps2.fao.org/geoserver-demo"
         layer.styles = "gaul0_line"
         layer.opacity='0.7';
-        layer.zindex= 200;
+        //layer.zindex= 200;
         var l = new FM.layer(layer);
         m.addLayer(l);
 
@@ -180,7 +180,7 @@ define(['jquery',
         layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
         //layer.visibility = false
-        layer.zindex= 202;
+        //layer.zindex= 202;
         var l = new FM.layer(layer);
         m.addLayer(l);
 
@@ -191,7 +191,7 @@ define(['jquery',
         layer.opacity='0.55';
         //layer.hideLayerInControllerList = true;
         //layer.visibility = false
-        layer.zindex= 203;
+        //layer.zindex= 203;
         var l = new FM.layer(layer);
         m.addLayer(l);
 
@@ -293,7 +293,9 @@ define(['jquery',
                         _this.CONFIG.cached_layers[k].layers = response;
                     }
                 }
-                var map_layer = _this.add_layer(m, response[response.length-1], addlayer)
+                /** TODO: this one -8 is for Michela's demo **/
+                var layer_def = (response[0].uid.toLowerCase().indexOf("ndvi") > 0 )?  response[response.length-8]:  response[response.length-1]
+                var map_layer = _this.add_layer(m, layer_def, addlayer)
                 if ( !changed ) {
                     _this.CONFIG.cached_layers.push({
                         "id": _id,
@@ -372,6 +374,7 @@ define(['jquery',
                 var measurementunit = (cached_layer.layers[0].measurementunit != null && cached_layer.layers[0].measurementunit !='')? cached_layer.layers[0].measurementunit: default_measurementunit;
 
                 // Workaround for Morocco Demo
+                var measurementunit = (cached_layer.id.toLowerCase().indexOf("ndvi")  > 0 )? 'NDVI': measurementunit;
                 var measurementunit = (cached_layer.id.toLowerCase().indexOf("evapotrans")  > 0 )? 'mm': measurementunit;
                 var measurementunit = (cached_layer.id.toLowerCase().indexOf("temperature") > 0 )? '°C': measurementunit;
 
@@ -379,13 +382,19 @@ define(['jquery',
                 var name = cached_layer.id;
                 var yaxis_index = $.inArray(name, _this.CONFIG.cached_selected_values);
                 var color = Highcharts.getOptions().colors[yaxis_index]
+                var opposite = false;
+                if ( yaxis_index > 0 ) {
+                    opposite = true;
+                }
+
                 chart.yAxis[yaxis_index].update({
                     title: {
                         text: measurementunit,
                         style: {
                             color: color
                         }
-                    }
+                    },
+                    opposite: opposite
                 });
                 var serie = {
                     name : name,

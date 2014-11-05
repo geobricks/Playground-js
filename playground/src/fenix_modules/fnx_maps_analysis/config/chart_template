@@ -1,7 +1,6 @@
 {
     "chart": {
         "type": "line",
-        "alignTicks": true,
         "backgroundColor": "#FFFFFF",
         "spacing": [20, 1, 1, 1],
         "plotBorderColor": "#ffffff",
@@ -74,7 +73,7 @@
         "itemStyle": {
             "cursor": "pointer",
             "color": "#666666",
-            "fontSize": "11px",
+            "fontSize": "12px",
             "fontWeight": 300
         },
         "itemHiddenStyle": {
@@ -95,6 +94,17 @@
         }
     },
     "plotOptions": {
+                "series": {
+                    "lineWidth": 1,
+                    "states": {
+                        "hover": {
+                            "lineWidth": 1
+                        }
+                    },
+                                    "marker": {
+                                        "enabled": false
+                                    }
+                }
     },
     "title": {
         "enabled": true,
@@ -105,13 +115,11 @@
     },
     "xAxis": {
        "type": "datetime",
-       "dateTimeLabelFormats": {
-            "day": "%H"
-        },
+       "tickInterval": 2678400000,
         "labels": {
             "rotation": -45,
             "style": {
-                "fontSize": "7px",
+                "fontSize": 11,
                 "fontFamily": "Roboto"
             }
        }
