@@ -53,7 +53,7 @@ define(['jquery',
             "default_product_list": ["Doukkala - wheat seasonal", "Doukkola - NDVI", "Doukkola - Temperature", "Doukkala - reference evapotransipiration", "Doukkala - actual evapotransipiration", "Doukkala - potential evapotransipiration", "Doukkola - Precipitation"],
             "default_product": {
                 "product_code": "Doukkala - wheat seasonal",
-               "layer_code": "fenix:actual_-_biomprod"
+               "layer_code": "fenix:actual_-_transpiration"
             }
         };
     }
@@ -95,6 +95,10 @@ define(['jquery',
         // create map
         this.o.map.m = this.create_map(this.o.map.id)
     };
+
+    FNX_HISTOGRAM_ANALYSIS.prototype.force_map_refresh = function() {
+        this.o.map.m.map.invalidateSize();
+    }
 
     FNX_HISTOGRAM_ANALYSIS.prototype.build_dropdown_products = function(id, layer_dd_ID, mapObj, default_product, default_product_list) {
         if ( default_product_list) {
@@ -177,10 +181,12 @@ define(['jquery',
         $('#' + id).append(html);
         $('#' + id).trigger("chosen:updated");
 
-        if ( default_layer ) {
-            $('#' + id).val(default_layer).trigger("chosen:updated");
-            this.layer_selected(mapObj, default_layer, $("#" + id + " :selected").text())
-        }
+        try {
+            if (default_layer) {
+                $('#' + id).val(default_layer).trigger("chosen:updated");
+                this.layer_selected(mapObj, default_layer, $("#" + id + " :selected").text())
+            }
+        }catch (e) {}
     }
 
     FNX_HISTOGRAM_ANALYSIS.prototype.add_histogram = function(id, uid, title) {
