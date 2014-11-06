@@ -41,15 +41,15 @@ define(['jquery',
             m : null,
             l : null,
 
-            l_gaul0_highlight: null
+            l_gaul0_highlight: null,
 
             // distribution query
 //            url_distribution_raster: "http://168.202.28.214:5005/distribution/raster/spatial_query",
-//            spatial_query: '{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})"}'
-//
+            spatial_query: '{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})"}'
+
 
 //            url_distribution_raster: "http://localhost:5005/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
-//            spatial_query: '{"vector":{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})"}}'
+//           spatial_query: '{"vector":{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})"}}'
 
         }
 
@@ -245,9 +245,11 @@ define(['jquery',
 
         var export_layers = function(uids, codes, email_address) {
             loadingWindow.showPleaseWait()
-            var url = CONFIG.url_distribution_raster_spatial_query;
-            var spatial_query = CONFIG.url_spatialquery_db_spatial;
-            spatial_query = spatial_query.replace(/{{CODES}}/gi, codes)
+            var url = CONFIG.url_distribution_rasters_spatial_query;
+            //url = url.replace(/{{LAYERS}}/gi, uids)
+            var spatial_query = CONFIG.spatial_query;
+            spatial_query = spatial_query.replace(/{{CODES}}/gi, codes);
+            //url = url.replace(/{{SPATIAL_QUERY}}/gi, spatial_query);
             var data = {
                 "raster" : {
                     "uids" : uids

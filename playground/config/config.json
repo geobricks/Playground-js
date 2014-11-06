@@ -1,26 +1,28 @@
 {
-    "url_geoserver_wms": "http://168.202.28.214:9090/geoserver/wms",
+    "url_geoserver_wms_OLD": "http://168.202.28.214:9090/geoserver/wms",
+    "url_geoserver_wms": "http://168.202.39.41:20100/geoserver/wms",
 
     "#COMMENT" : "SEARCH",
-    "url_search_all_products": "//168.202.28.214:5019/search/metadata/layer/distinct/layers/",
-    "url_search_layer_product": "//168.202.28.214:5019/search/metadata/layer/product/",
-    "url_search_layer_product_type": "//168.202.28.214:5019/search/metadata/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
+    "url_search_all_products": "//168.202.28.214:5020/search/metadata/layer/distinct/layers/",
+    "url_search_layer_product": "//168.202.28.214:5020/search/metadata/layer/product/",
+    "url_search_layer_product_type": "//168.202.28.214:5020/search/metadata/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
 
     "#COMMENT" : "SPATIAL_QUERIES",
-    "url_spatialquery_db_spatial": "//168.202.28.214:5019/spatialquery/db/spatial/",
+    "url_spatialquery_db_spatial": "//168.202.28.214:5020/spatialquery/db/spatial/",
 
     "#COMMENT" : "STATS",
-    "url_stats_raster_spatial_query": "//168.202.28.214:5019/stats/raster/spatial_query",
-    "url_stats_rasters_spatial_query": "//168.202.28.214:5019/stats/rasters/spatial_query",
-    "url_stats_rasters_lat_lon": "//168.202.28.214:5019/stats/rasters/{{LAYERS}}/lat/{{LAT}}/lon/{{LON}}",
-    "url_stats_rasters_scatter_plot": "//168.202.28.214:5019/stats/rasters/scatter_plot/{{LAYERS}}",
-    "url_stats_rasters_scatter_plot_workers": "//168.202.28.214:5019/stats/rasters/scatter_plot/{{LAYERS}}/workers/1",
-    "url_stats_raster": "//168.202.28.214:5019/stats/raster/{{LAYERS}}",
-    "url_stats_raster_histogram": "//168.202.28.214:5019/stats/raster/{{LAYERS}}/hist",
-    "url_stats_scatter_analysis": "//168.202.28.214:5019/stats/rasters/scatter_analysis",
+    "url_stats_raster_spatial_query": "//168.202.28.214:5020/stats/raster/spatial_query",
+    "url_stats_rasters_spatial_query": "//168.202.28.214:5020/stats/rasters/spatial_query",
+    "url_stats_rasters_lat_lon": "//168.202.28.214:5020/stats/rasters/{{LAYERS}}/lat/{{LAT}}/lon/{{LON}}",
+    "url_stats_rasters_scatter_plot": "//168.202.28.214:5020/stats/rasters/scatter_plot/{{LAYERS}}",
+    "url_stats_rasters_scatter_plot_workers": "//168.202.28.214:5020/stats/rasters/scatter_plot/{{LAYERS}}/workers/1",
+    "url_stats_raster": "//168.202.28.214:5020/stats/raster/{{LAYERS}}",
+    "url_stats_raster_histogram": "//168.202.28.214:5020/stats/raster/{{LAYERS}}/hist",
+    "url_stats_scatter_analysis": "//168.202.28.214:5020/stats/rasters/scatter_analysis",
 
     "#COMMENT" : "DISTRIBUTION",
-    "url_distribution_raster_spatial_query": "//168.202.28.214:5019/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
+    "#url_distribution_raster_spatial_query": "//168.202.28.214:5020/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
+    "url_distribution_rasters_spatial_query": "//168.202.28.214:5020/distribution/rasters/spatial_query",
 
     "#COMMENT" : "CSS2SLD - POST",
     "url_css2sld": "//fenixapps2.fao.org/geoservices/CSS2SLD"
