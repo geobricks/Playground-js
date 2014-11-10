@@ -105,7 +105,12 @@ define(['jquery',
                     $('#' + id).append(html);
 
                     try {
-                        $('#' + dropdowndID).chosen({disable_search_threshold:6, width: '100%'});
+                        $('#' + dropdowndID).chosen(
+                            {
+                                disable_search_threshold:6,
+                                width: '100%',
+                                placeholder_text_single: "Select a product"
+                            });
                     }  catch (e) {}
 
                     $( "#" + dropdowndID ).change(function () {
@@ -187,7 +192,12 @@ define(['jquery',
                     $('#' + id).append(html);
 
                     try {
-                        $('#' + dropdowndID).chosen({disable_search_threshold:6, width: '100%'});
+                        $('#' + dropdowndID).chosen(
+                            {
+                                disable_search_threshold:6,
+                                width: '100%',
+                                placeholder_text_multiple: "Select a country"
+                            });
                     }  catch (e) {}
 
                     $( "#" + dropdowndID ).change(function () {

@@ -147,7 +147,7 @@ require.config({
 
 require(['jquery',
          'mustache',
-         'text!html/templates.html',
+         'text!html/templates_dev.html',
          'backbone',
          'loglevel',
          'text!config/config_dev.json',

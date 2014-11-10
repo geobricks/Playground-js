@@ -15,7 +15,12 @@
     <div class='col-xs-6 col-sm-8 col-md-8 col-lg-10' id="pgeo_dist_layers">
         <select id="pgeo_dist_layers_select" style="width:100%; height:35px;" multiple=""></select>
         <script>
-            $("#pgeo_dist_layers_select").chosen({disable_search_threshold:6, height:'100%', width: '100%'});
+            $("#pgeo_dist_layers_select").chosen(
+                    {
+                        disable_search_threshold:6, height:'100%',
+                        width: '100%',
+                        placeholder_text_multiple: "Select a layer"
+                    });
         </script>
     </div>
     <div class='col-xs-3 col-sm-2 col-md-2 col-lg-1'>
