@@ -29,6 +29,10 @@ define(['jquery',
             placeholder: 'main_content_placeholder',
             template_id: 'map',
 
+            areas: {
+                query: "SELECT adm0_code, adm0_name FROM spatial.gaul0_3857 WHERE disp_area = 'NO' ORDER BY adm0_name"
+            },
+
 //            url_geoserver_wms: 'http://168.202.28.214:9090/geoserver/wms',
 //
 //            url_search_all_products: "http://168.202.28.214:5005/search/layer/distinct/layers/",
@@ -89,7 +93,11 @@ define(['jquery',
                     var html = '<select id="'+ dropdowndID+'" style="width:100%;">';
                     html += '<option value=""></option>';
                     for(var i=0; i < response.length; i++) {
-                        html += '<option value="' + response[i] + '">' + response[i] + '</option>';
+                        // TODO: check in the response if it's a product that can be visualized (i.e. 4326 no), instead of check 4326
+                        // TODO: which field of the metadata is it?
+                        if ( response[i].indexOf("4326") <= -1) {
+                            html += '<option value="' + response[i] + '">' + response[i] + '</option>';
+                        }
                     }
                     html += '</select>';
 
@@ -125,15 +133,16 @@ define(['jquery',
 
                     $( "#" + id ).change(function () {
                         var values = $(this).val()
+
                         if ( CONFIG.l ) {
                             CONFIG.m.removeLayer(CONFIG.l)
                         }
                         if ( values ) {
                             var layer = {};
                             layer.layers = values[values.length - 1]
-                            layer.layertitle = values[values.length - 1]
+                            layer.layertitle = $("#" + id + " :selected").text()
                             layer.urlWMS = CONFIG.url_geoserver_wms
-                            layer.opacity = '1';
+                            layer.opacity = '0.75';
                             layer.defaultgfi = true;
                             layer.openlegend = true;
                             CONFIG.l = new FM.layer(layer);
@@ -159,7 +168,7 @@ define(['jquery',
         }
 
         var build_dropdown_gaul = function(id) {
-            var query = "SELECT adm0_code, adm0_name FROM spatial.gaul0_3857 WHERE disp_area = 'NO' ORDER BY adm0_name"
+            var query = CONFIG.areas.query;
             var url = CONFIG.url_spatialquery_db_spatial + query
             $.ajax({
                 type : 'GET',
@@ -168,7 +177,7 @@ define(['jquery',
                     response = (typeof response == 'string')? $.parseJSON(response): response;
                     var dropdowndID = id + "_select"
                     var html = '<select id="'+ dropdowndID+'"  multiple="" style="width:100%;">';
-                    html += '<option value=""></option>';
+                    html += '<option value="world">World</option>';
                     for(var i=0; i < response.length; i++) {
                         html += '<option value="' + response[i][0] + '">' + response[i][1] + '</option>';
                     }
@@ -184,10 +193,12 @@ define(['jquery',
                     $( "#" + dropdowndID ).change(function () {
                         var values = $(this).val()
                         if ( values ) {
-                            var codes = get_string_codes(values)
-                            CONFIG.l_gaul0_highlight.layer.cql_filter = "adm0_code IN (" + codes + ")";
-                            CONFIG.l_gaul0_highlight.redraw()
-                            zoom_to(codes)
+                            if ( $(this).val() != "world") {
+                                var codes = get_string_codes(values)
+                                CONFIG.l_gaul0_highlight.layer.cql_filter = "adm0_code IN (" + codes + ")";
+                                CONFIG.l_gaul0_highlight.redraw()
+                                zoom_to(codes)
+                            }
                         }
                         else {
                             CONFIG.l_gaul0_highlight.layer.cql_filter = "adm0_code IN ('0')";
@@ -202,7 +213,7 @@ define(['jquery',
 
         var build_map = function(id) {
             var options = {
-                plugins: { geosearch : true, mouseposition: false, controlloading : true, zoomControl: 'bottomright'},
+                plugins: { geosearch : false, mouseposition: false, controlloading : false, zoomControl: 'bottomright'},
                 guiController: { overlay : true,  baselayer: true,  wmsLoader: true },
                 gui: {disclaimerfao: true }
             }
@@ -212,7 +223,7 @@ define(['jquery',
             CONFIG.m.createMap();
 
             var layer = {};
-            layer.layers = "gaul0_3857_test"
+            layer.layers = "gaul0_3857"
             layer.layertitle = "Administrative unit1"
             layer.urlWMS = CONFIG.url_geoserver_wms
             layer.opacity='0.7';
@@ -227,7 +238,7 @@ define(['jquery',
             layer.layertitle = "Boundaries"
             layer.urlWMS = "http://fenixapps2.fao.org/geoserver-demo"
             layer.styles = "gaul0_line"
-            layer.opacity='0.7';
+            layer.opacity='0.9';
             layer.zindex= 550;
             CONFIG.l_gaul0 = new FM.layer(layer);
             CONFIG.m.addLayer(CONFIG.l_gaul0);
@@ -245,38 +256,46 @@ define(['jquery',
 
         var export_layers = function(uids, codes, email_address) {
             loadingWindow.showPleaseWait()
-            var url = CONFIG.url_distribution_rasters_spatial_query;
-            //url = url.replace(/{{LAYERS}}/gi, uids)
-            var spatial_query = CONFIG.spatial_query;
-            spatial_query = spatial_query.replace(/{{CODES}}/gi, codes);
-            //url = url.replace(/{{SPATIAL_QUERY}}/gi, spatial_query);
-            var data = {
-                "raster" : {
-                    "uids" : uids
-                },
-                "vector" : spatial_query
+
+            if ( codes == "'world'") {
+                var url = CONFIG.url_distribution_download_raster.replace(/{{LAYERS}}/gi, uids)
+                loadingWindow.hidePleaseWait()
+                window.open(url, '_blank');
             }
-            // TODO: check if is a valid email address
-            if (email_address != "") {
-                data.email_address = email_address
-            }
-            console.log(url);
-            console.log(spatial_query);
-            $.ajax({
-                type : 'POST',
-                url : url,
-                data: JSON.stringify(data),
-                contentType: 'application/json;charset=UTF-8',
-                success : function(response) {
-                    loadingWindow.hidePleaseWait()
-                    response = (typeof response == 'string')? $.parseJSON(response): response;
-                    window.open(response.url,'_blank');
-                },
-                error : function(err, b, c) {
-                    loadingWindow.hidePleaseWait()
-                    console.log(err);
+            else {
+                var url = CONFIG.url_distribution_rasters_spatial_query;
+                //url = url.replace(/{{LAYERS}}/gi, uids)
+                var spatial_query = CONFIG.spatial_query;
+                spatial_query = spatial_query.replace(/{{CODES}}/gi, codes);
+                //url = url.replace(/{{SPATIAL_QUERY}}/gi, spatial_query);
+                var data = {
+                    "raster": {
+                        "uids": uids
+                    },
+                    "vector": spatial_query
                 }
-            });
+                // TODO: check if is a valid email address
+                if (email_address != "") {
+                    data.email_address = email_address
+                }
+                console.log(url);
+                console.log(spatial_query);
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: JSON.stringify(data),
+                    contentType: 'application/json;charset=UTF-8',
+                    success: function (response) {
+                        loadingWindow.hidePleaseWait()
+                        response = (typeof response == 'string') ? $.parseJSON(response) : response;
+                        window.open(response.url, '_blank');
+                    },
+                    error: function (err, b, c) {
+                        loadingWindow.hidePleaseWait()
+                        console.log(err);
+                    }
+                });
+            }
         }
 
         var zoom_to = function(codes) {
