@@ -138,14 +138,19 @@ define(['jquery',
 
                     $( "#" + id ).change(function () {
                         var values = $(this).val()
+                        var text=[];
+                        $("#" + id + " :selected").each(function(){
+                            text[$(this).val()] = $(this).text();
+                        });
 
                         if ( CONFIG.l ) {
                             CONFIG.m.removeLayer(CONFIG.l)
                         }
                         if ( values ) {
                             var layer = {};
-                            layer.layers = values[values.length - 1]
-                            layer.layertitle = $("#" + id + " :selected").text()
+                            layer.layers = values[0]
+                            layer.layertitle = text[values[0]]
+                            console.log(layer.layertitle);
                             layer.urlWMS = CONFIG.url_geoserver_wms
                             layer.opacity = '0.75';
                             layer.defaultgfi = true;
@@ -228,20 +233,9 @@ define(['jquery',
                 gui: {disclaimerfao: true }
             }
 
-            var mapOptions = { zoomControl:false, attributionControl: false };
+            var mapOptions = { zoomControl:false, attributionControl: false, minZoom: 1 };
             CONFIG.m = new FM.Map(id, options, mapOptions);
             CONFIG.m.createMap();
-
-            var layer = {};
-            layer.layers = "gaul0_3857"
-            layer.layertitle = "Administrative unit1"
-            layer.urlWMS = CONFIG.url_geoserver_wms
-            layer.opacity='0.7';
-            layer.zindex= 500;
-            layer.style = 'gaul0_highlight_polygon';
-            layer.cql_filter="adm0_code IN (0)";
-            CONFIG.l_gaul0_highlight = new FM.layer(layer);
-            CONFIG.m.addLayer(CONFIG.l_gaul0_highlight);
 
             var layer = {};
             layer.layers = "fenix:gaul0_line_3857"
@@ -252,6 +246,19 @@ define(['jquery',
             layer.zindex= 550;
             CONFIG.l_gaul0 = new FM.layer(layer);
             CONFIG.m.addLayer(CONFIG.l_gaul0);
+
+            var layer = {};
+            layer.layers = "gaul0_3857"
+            layer.layertitle = "Administrative unit1"
+            layer.urlWMS = CONFIG.url_geoserver_wms
+            layer.opacity='0.7';
+            layer.zindex= 500;
+            layer.style = 'gaul0_highlight_polygon';
+            layer.style = 'gaul0_highlight_polygon';
+            layer.cql_filter="adm0_code IN (0)";
+            layer.hideLayerInControllerList = true;
+            CONFIG.l_gaul0_highlight = new FM.layer(layer);
+            CONFIG.m.addLayer(CONFIG.l_gaul0_highlight);
         }
 
         var collector_to_build_stats = function() {
