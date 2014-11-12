@@ -1,28 +1,29 @@
 define(['jquery',
     'mustache',
     'text!fnx_maps_distribution/html/template.html',
+    'FNX_MAPS_LOADING_WINDOW',
     'fenix-map',
     'highcharts',
-    'bootstrap'], function ($, Mustache, templates) {
+    'bootstrap'], function ($, Mustache, templates, loadingWindow) {
 
     var global = this;
     global.Distribution = function() {
 
-        var loadingWindow;
-        loadingWindow = loadingWindow || (function () {
-            var pleaseWaitDiv = $('' +
-                '<div class="modal" id="pleaseWaitDialog" style="background-color: rgba(54, 25, 25, 0.1);" data-backdrop="static" data-keyboard="false">' +
-                '<div class="modal-body text-success"><h1>Processing...</h1><i class="fa fa-refresh fa-spin fa-5x"></i></div>' +
-                '</div>');
-            return {
-                showPleaseWait: function() {
-                    pleaseWaitDiv.modal();
-                },
-                hidePleaseWait: function () {
-                    pleaseWaitDiv.modal('hide');
-                }
-            };
-        })();
+//        var loadingWindow;
+//        loadingWindow = loadingWindow || (function () {
+//            var pleaseWaitDiv = $('' +
+//                '<div class="modal" id="pleaseWaitDialog" style="background-color: rgba(54, 25, 25, 0.1);" data-backdrop="static" data-keyboard="false">' +
+//                '<div class="modal-body text-success"><h1>Processing...</h1><i class="fa fa-refresh fa-spin fa-5x"></i></div>' +
+//                '</div>');
+//            return {
+//                showPleaseWait: function() {
+//                    pleaseWaitDiv.modal();
+//                },
+//                hidePleaseWait: function () {
+//                    pleaseWaitDiv.modal('hide');
+//                }
+//            };
+//        })();
 
         var CONFIG = {
             lang: 'EN',
@@ -30,7 +31,7 @@ define(['jquery',
             template_id: 'map',
 
             areas: {
-                query: "SELECT adm0_code, adm0_name FROM spatial.gaul0_3857 WHERE disp_area = 'NO' ORDER BY adm0_name"
+                query: "SELECT adm0_code, adm0_name FROM spatial.gaul0_2014_2013_3857 WHERE disp_area = 'NO' ORDER BY adm0_name"
             },
 
 //            url_geoserver_wms: 'http://168.202.28.214:9090/geoserver/wms',
@@ -49,9 +50,11 @@ define(['jquery',
 
             // distribution query
 //            url_distribution_raster: "http://168.202.28.214:5005/distribution/raster/spatial_query",
-            spatial_query: '{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})"}'
 
+            spatial_query: '{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_2014_2013_3857 WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_2014_2013_3857 WHERE adm0_code IN ({{CODES}})"}'
+            //spatial_query: '{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857 WHERE adm0_code IN ({{CODES}})"}'
 
+// OLD
 //            url_distribution_raster: "http://localhost:5005/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
 //           spatial_query: '{"vector":{ "query_extent" : "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), {{SRID}})) FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})", "query_layer" : "SELECT * FROM {{SCHEMA}}.gaul0_3857_test WHERE adm0_code IN ({{CODES}})"}}'
 
@@ -60,26 +63,27 @@ define(['jquery',
         var build = function(config) {
             CONFIG = $.extend(true, {}, CONFIG, config);
 
-            console.log($("#ew_chart_title").text())
+            loadingWindow = new loadingWindow()
 
-                var template = $(templates).filter('#' + CONFIG.template_id).html();
-                $('#' + CONFIG.placeholder).html(templates);
 
-                build_dropdown_products('pgeo_dist_prod')
+            var template = $(templates).filter('#' + CONFIG.template_id).html();
+            $('#' + CONFIG.placeholder).html(templates);
 
-                build_dropdown_gaul('pgeo_dist_areas')
+            build_dropdown_products('pgeo_dist_prod')
 
-                // build map
-                build_map('pgeo_dist_map')
+            build_dropdown_gaul('pgeo_dist_areas')
 
-                 $("#pgeo_dist_export_button").bind( "click", function() {
-                     var areas = $("#pgeo_dist_areas_select").chosen().val();
-                     var uids =  $("#pgeo_dist_layers_select").chosen().val();
-                     if ( uids[0] == "") uids.splice(0, 1)
-                     var codes = get_string_codes(areas)
-                     var email_address = $("#pgeo_dist_email_address").val();
-                     export_layers(uids, codes, email_address)
-                });
+            // build map
+            build_map('pgeo_dist_map')
+
+            $("#pgeo_dist_export_button").bind( "click", function() {
+                var areas = $("#pgeo_dist_areas_select").chosen().val();
+                var uids =  $("#pgeo_dist_layers_select").chosen().val();
+                if ( uids[0] == "") uids.splice(0, 1)
+                var codes = get_string_codes(areas)
+                var email_address = $("#pgeo_dist_email_address").val();
+                export_layers(uids, codes, email_address)
+            });
         }
 
         var build_dropdown_products = function(id) {
@@ -137,44 +141,60 @@ define(['jquery',
                     $('#' + id).trigger("chosen:updated");
 
                     $( "#" + id ).change(function () {
-                        var values = $(this).val()
-                        var text=[];
-                        $("#" + id + " :selected").each(function(){
-                            text[$(this).val()] = $(this).text();
-                        });
-
-                        if ( CONFIG.l ) {
-                            CONFIG.m.removeLayer(CONFIG.l)
-                        }
-                        if ( values ) {
-                            var layer = {};
-                            layer.layers = values[0]
-                            layer.layertitle = text[values[0]]
-                            console.log(layer.layertitle);
-                            layer.urlWMS = CONFIG.url_geoserver_wms
-                            layer.opacity = '0.75';
-                            layer.defaultgfi = true;
-                            layer.openlegend = true;
-                            CONFIG.l = new FM.layer(layer);
-                            CONFIG.m.addLayer(CONFIG.l);
-                        }
+                        console.log("QUA");
+                        on_change_layer(id)
                     });
 
-                    console.log("#" + id);
                     var select_all = id.replace("_select", "_select_all")
                     var deselect_all = id.replace("_select", "_deselect_all")
                     $("#"+ select_all ).bind("click", function() {
                         $("#" + id + ">option").prop('selected', true);
                         $('#' + id).trigger("chosen:updated");
+                        on_change_layer(id)
                     });
 
                     $("#" + deselect_all).bind("click", function() {
                         $("#" + id + ">option").prop('selected', false);
                         $('#' + id).trigger("chosen:updated");
+                        on_change_layer(id)
                     });
                 },
                 error : function(err, b, c) {}
             });
+        }
+
+        var on_change_layer = function(id) {
+            console.log(id);
+            var values = $("#" + id + ' option:selected');
+            console.log(values);
+
+            if (CONFIG.l) {
+                CONFIG.m.removeLayer(CONFIG.l)
+            }
+
+            if ( values.length > 0 ) {
+
+                if (values[0].value == '') {
+                    console.log(values[0]);
+                    values.splice(0, 1);
+                }
+
+                for (var i = 0; i < values.length; i++) {
+                    console.log(values[i].text + " ||| " + values[i].value);
+                }
+
+                if (values) {
+                    var layer = {};
+                    layer.layers = values[0].value
+                    layer.layertitle = values[0].text
+                    layer.urlWMS = CONFIG.url_geoserver_wms
+                    layer.opacity = '0.75';
+                    layer.defaultgfi = true;
+                    layer.openlegend = true;
+                    CONFIG.l = new FM.layer(layer, CONFIG.m, {noWrap: true});
+                    CONFIG.m.addLayer(CONFIG.l);
+                }
+            }
         }
 
         var build_dropdown_gaul = function(id) {
@@ -233,9 +253,22 @@ define(['jquery',
                 gui: {disclaimerfao: true }
             }
 
-            var mapOptions = { zoomControl:false, attributionControl: false, minZoom: 1 };
+            var mapOptions = {
+                zoomControl:false,
+                attributionControl: false,
+                minZoom: 1,
+                tileLayer: {
+                    // This map option disables world wrapping. by default, it is false.
+                    continuousWorld: false,
+                    // This option disables loading tiles outside of the world bounds.
+                    noWrap: true
+                },
+                continuousWorld : false,
+                noWrap: true
+            };
             CONFIG.m = new FM.Map(id, options, mapOptions);
             CONFIG.m.createMap();
+            console.log(CONFIG.m.map);
 
             var layer = {};
             layer.layers = "fenix:gaul0_line_3857"
@@ -244,8 +277,10 @@ define(['jquery',
             layer.styles = "gaul0_line"
             layer.opacity='0.9';
             layer.zindex= 550;
-            CONFIG.l_gaul0 = new FM.layer(layer);
+            CONFIG.l_gaul0 = new FM.layer(layer, CONFIG.m, {noWrap : true});
             CONFIG.m.addLayer(CONFIG.l_gaul0);
+
+
 
             var layer = {};
             layer.layers = "gaul0_3857"
@@ -257,7 +292,7 @@ define(['jquery',
             layer.style = 'gaul0_highlight_polygon';
             layer.cql_filter="adm0_code IN (0)";
             layer.hideLayerInControllerList = true;
-            CONFIG.l_gaul0_highlight = new FM.layer(layer);
+            CONFIG.l_gaul0_highlight = new FM.layer(layer, CONFIG.m, {noWrap : true});
             CONFIG.m.addLayer(CONFIG.l_gaul0_highlight);
         }
 
@@ -316,7 +351,7 @@ define(['jquery',
         }
 
         var zoom_to = function(codes) {
-            var query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), 4326)) FROM spatial.gaul0_3857 WHERE adm0_code IN ("+ codes +")"
+            var query = "SELECT ST_AsGeoJSON(ST_Transform(ST_SetSRID(ST_Extent(geom), 3857), 4326)) FROM spatial.gaul0_2014_2013_3857 WHERE adm0_code IN ("+ codes +")"
             var url = CONFIG.url_spatialquery_db_spatial
             url += query;
             $.ajax({
