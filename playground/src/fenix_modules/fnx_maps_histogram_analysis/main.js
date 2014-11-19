@@ -13,6 +13,11 @@ define(['jquery',
 
     function FNX_HISTOGRAM_ANALYSIS() {
         this.o = {
+            "common" : {
+                "lang" : "en",
+                "url" :""
+            },
+
             lang : 'en',
             "placeholder": "main_content_placeholder",
             "template_id": "structure",

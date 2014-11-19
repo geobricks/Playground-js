@@ -19,6 +19,7 @@
     "url_stats_raster": "//168.202.28.214:5020/stats/raster/{{LAYERS}}",
     "url_stats_raster_histogram": "//168.202.28.214:5020/stats/raster/{{LAYERS}}/hist",
     "url_stats_scatter_analysis": "//168.202.28.214:5020/stats/rasters/scatter_analysis",
+    "url_stats_rasters_mapalgebra_layers_minmax": "//168.202.28.214:5020/stats/rasters/mapalgebra/layers/{{LAYERS}}/minmax/{{MINMAX}}",
 
     "#COMMENT" : "DISTRIBUTION",
     "#url_distribution_raster_spatial_query_OLD": "//168.202.28.214:5020/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",

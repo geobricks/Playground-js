@@ -196,6 +196,10 @@ define(['jquery',
                 mapObj.m.removeLayer(mapObj.layer_scatter)
         } catch (e) {}
         try {
+            if (mapObj.layer_scatter_mapalgebra)
+                mapObj.m.removeLayer(mapObj.layer_scatter_mapalgebra)
+        } catch (e) {}
+        try {
             if ( mapObj.default_layer)
                 mapObj.m.removeLayer(mapObj.layer_histogram)
         } catch (e) {}
@@ -207,6 +211,9 @@ define(['jquery',
         try {
             mapObj.m.removeLayer(mapObj.layer_scatter)
         }catch (e){}
+        try {
+            mapObj.m.removeLayer(mapObj.layer_scatter_mapalgebra)
+        } catch (e) {}
         try {
             mapObj.m.removeLayer(mapObj.layer_histogram)
         }catch (e){}
@@ -238,6 +245,15 @@ define(['jquery',
         //layer.hideLayerInControllerList = true; // to don't show the layer on the layer's list
         mapObj.layer_histogram = new FM.layer(layer, mapObj.m);
         mapObj.m.addLayer(mapObj.layer_histogram);
+
+        var layer = {};
+        layer.layers = uid;
+        layer.layertitle = "Scatter Merged - " + layertitle;
+        layer.urlWMS = this.o.url_geoserver_wms // in theory that too should be applied on the fly
+        layer.style = "mask"
+        //layer.hideLayerInControllerList = true; // to don't show the layer on the layer's list
+        mapObj.layer_scatter_mapalgebra = new FM.layer(layer, mapObj.m);
+        mapObj.m.addLayer(mapObj.layer_scatter_mapalgebra);
     }
 
     FNX_RASTER_COMPARE.prototype.select_product = function() {
@@ -353,8 +369,37 @@ define(['jquery',
                 renderTo: this.o.chart_scatter.id,
                 events: {
                     redraw: function (e) {
+                        var min1 = this.xAxis[0].originalMin;
+                        var max1 = this.xAxis[0].originalMax;
+                        if (this.xAxis[0].min !=  this.xAxis[0].originalMin || this.xAxis[0].max  !=  this.xAxis[0].originalMax) {
+                            min1 = (this.xAxis[0].min >= this.xAxis[0].originalMin) ? this.xAxis[0].min : this.xAxis[0].originalMin
+                            max1 = (this.xAxis[0].max <= this.xAxis[0].originalMax) ? this.xAxis[0].max : this.xAxis[0].originalMax
+                        }
 
-                        // TODO: make it nicer the selection of the SLD to apply
+                        var min2 = this.yAxis[0].originalMin;
+                        var max2 = this.yAxis[0].originalMax;
+                        if (this.yAxis[0].min !=  this.yAxis[0].originalMin || this.yAxis[0].max !=  this.yAxis[0].originalMax) {
+                            min2 = (this.yAxis[0].min >= this.yAxis[0].originalMin) ? this.yAxis[0].min : this.yAxis[0].originalMin
+                            max2 = (this.yAxis[0].max <= this.yAxis[0].originalMax) ? this.yAxis[0].max : this.yAxis[0].originalMax
+                        }
+
+                        console.log(min1);
+                        console.log(max1);
+                        console.log(min2);
+                        console.log(max2);
+
+                        // TODO: check if reset image
+
+                        _this.create_layer_mapalgebra(map1, map2, min1, max1, min2, max2)
+
+
+
+
+
+
+
+                          // OLD
+//                        // TODO: make it nicer the selection of the SLD to apply
                         if (this.xAxis[0].min !=  this.xAxis[0].originalMin || this.xAxis[0].max  !=  this.xAxis[0].originalMax) {
                             var min = (this.xAxis[0].min >= this.xAxis[0].originalMin)? this.xAxis[0].min : this.xAxis[0].originalMin
                             var max = (this.xAxis[0].max <= this.xAxis[0].originalMax)? this.xAxis[0].max : this.xAxis[0].originalMax
@@ -404,6 +449,43 @@ define(['jquery',
         c = $.extend(true, {}, this.chart_scatter_template, c);
         this.o.chart_scatter.chartObj = new Highcharts.Chart(c);
     }
+
+    FNX_RASTER_COMPARE.prototype.create_layer_mapalgebra =  function(map1, map2, min1, max1, min2, max2) {
+        console.log("HERE");
+        console.log(min1);
+        console.log(max1);
+        console.log(min2);
+        console.log(max2);
+
+        var uids = map1.layer_scatter_mapalgebra.layer.layers + "," + map2.layer_scatter_mapalgebra.layer.layers;
+        var minmax = min1 + "," + max1 + "," + min2 + "," + max2
+        var url = this.o.url_stats_rasters_mapalgebra_layers_minmax.replace("{{LAYERS}}", uids).replace("{{MINMAX}}", minmax )
+        var _this = this;
+        $.ajax({
+            type : 'GET',
+            url  : url,
+            success : function(response) {
+                console.log(response.uid);
+                // TODO: remove the style hardcoded
+                map1.layer_scatter_mapalgebra.leafletLayer.wmsParams.style = "mask";
+                map1.layer_scatter_mapalgebra.leafletLayer.wmsParams.layers = response.uid;
+                map1.layer_scatter_mapalgebra.leafletLayer.redraw()
+
+                // TODO: remove the style hardcoded
+                map2.layer_scatter_mapalgebra.leafletLayer.wmsParams.style = "mask";
+                map2.layer_scatter_mapalgebra.leafletLayer.wmsParams.layers = response.uid;
+                map2.layer_scatter_mapalgebra.leafletLayer.redraw()
+            },
+            error : function(err, b, c) {
+                _this.loadingwindow.hidePleaseWait()
+                alert(err.message);
+            }
+        });
+
+    }
+
+
+
 
     FNX_RASTER_COMPARE.prototype.applyStyle = function(m, l, style) {
         var data = {
