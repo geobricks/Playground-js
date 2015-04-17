@@ -1,11 +1,17 @@
 {
     "#url_geoserver_wms": "http://168.202.28.214:9090/geoserver/wms",
-    "url_geoserver_wms": "http://168.202.39.41:20200/geoserver/wms",
+    "#url_geoserver_wms": "http://lprapp16.fao.org:20100/geoserver/wms",
+    "url_geoserver_wms": "http://fenix.fao.org/demo/geoserver",
 
     "#COMMENT" : "SEARCH",
-    "url_search_all_products": "//168.202.28.214:5020/search/ghg/layer/distinct/layers/",
-    "url_search_layer_product": "//168.202.28.214:5020/search/ghg/layer/product/",
-    "url_search_layer_product_type": "//168.202.28.214:5020/search/ghg/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
+    "url_d3s_metadata_resource": "http://fenix.fao.org/v2/msd/resources/uid/{{UID}}",
+    "url_d3s_resources_find": "http://fenix.fao.org/v2/msd/resources/find",
+    "url_d3s_resources_find_order_by_date_parameters": "order=meContent.seCoverage.coverageTime.from:desc&logic=StandardFilter",
+
+
+    "#url_search_all_products": "//168.202.28.214:5020/search/ghg/layer/distinct/layers/",
+    "#url_search_layer_product": "//168.202.28.214:5020/search/ghg/layer/product/",
+    "#url_search_layer_product_type": "//168.202.28.214:5020/search/ghg/layer/product/{{PRODUCT}}/type/{{TYPE}}/",
 
     "#COMMENT" : "SPATIAL_QUERIES",
     "url_spatialquery_db_spatial": "//168.202.28.214:5020/spatialquery/db/spatial/",
@@ -23,7 +29,7 @@
     "#COMMENT" : "DISTRIBUTION",
     "#url_distribution_raster_spatial_query_OLD": "//168.202.28.214:5020/distribution/raster/{{LAYERS}}/spatial_query/{{SPATIAL_QUERY}}",
     "#url_distribution_rasters_spatial_query": "//168.202.28.214:5020/distribution/rasters/spatial_query",
-    "url_distribution_rasters_spatial_query": "//168.202.39.41:5020/distribution/rasters/spatial_query",
+    "url_distribution_rasters_spatial_query": "//fenix.fao.org/demo/geo/ghg/distribution/rasters/spatial_query",
     "url_distribution_download_raster": "//168.202.39.41:5020/distribution/download/raster/{{LAYERS}}",
 
     "#COMMENT" : "CSS2SLD - POST",

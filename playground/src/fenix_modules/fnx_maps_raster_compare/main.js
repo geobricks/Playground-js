@@ -73,7 +73,7 @@ define(['jquery',
             },
 
             // TODO: default product and layer to be shown if they exists
-            "default_product_list": ["Doukkala - wheat seasonal", "Doukkola - NDVI", "Doukkola - Temperature", "Doukkala - reference evapotransipiration", "Doukkala - actual evapotransipiration", "Doukkala - potential evapotransipiration", "Doukkola - Precipitation"],
+            "default_product_list": ["EARTHSTAT", "Doukkala - wheat seasonal", "Doukkola - NDVI", "Doukkola - Temperature", "Doukkala - reference evapotransipiration", "Doukkala - actual evapotransipiration", "Doukkala - potential evapotransipiration", "Doukkola - Precipitation"],
             "default_product1": {
                 "product_code": "Doukkala - wheat seasonal",
                 "layer_code": "fenix:actual_-_yield"
@@ -304,7 +304,7 @@ define(['jquery',
 
     FNX_RASTER_COMPARE.prototype.scatter_analysis = function(uids, map1, map2) {
         this.loadingwindow.showPleaseWait()
-        var url = this.o.url_stats_rasters_scatter_plot_workers.replace("{{LAYERS}}", uids)
+        var url = this.o.url_stats_rasters_scatter_plot.replace("{{LAYERS}}", uids)
         var _this = this;
         $.ajax({
             type : 'GET',
@@ -383,22 +383,13 @@ define(['jquery',
                             max2 = (this.yAxis[0].max <= this.yAxis[0].originalMax) ? this.yAxis[0].max : this.yAxis[0].originalMax
                         }
 
-                        console.log(min1);
-                        console.log(max1);
-                        console.log(min2);
-                        console.log(max2);
-
                         // TODO: check if reset image
 
                         _this.create_layer_mapalgebra(map1, map2, min1, max1, min2, max2)
 
 
 
-
-
-
-
-                          // OLD
+                          // OLD SCATTER FILTER
 //                        // TODO: make it nicer the selection of the SLD to apply
                         if (this.xAxis[0].min !=  this.xAxis[0].originalMin || this.xAxis[0].max  !=  this.xAxis[0].originalMax) {
                             var min = (this.xAxis[0].min >= this.xAxis[0].originalMin)? this.xAxis[0].min : this.xAxis[0].originalMin
@@ -451,12 +442,6 @@ define(['jquery',
     }
 
     FNX_RASTER_COMPARE.prototype.create_layer_mapalgebra =  function(map1, map2, min1, max1, min2, max2) {
-        console.log("HERE");
-        console.log(min1);
-        console.log(max1);
-        console.log(min2);
-        console.log(max2);
-
         var uids = map1.layer_scatter_mapalgebra.layer.layers + "," + map2.layer_scatter_mapalgebra.layer.layers;
         var minmax = min1 + "," + max1 + "," + min2 + "," + max2
         var url = this.o.url_stats_rasters_mapalgebra_layers_minmax.replace("{{LAYERS}}", uids).replace("{{MINMAX}}", minmax )
@@ -465,8 +450,18 @@ define(['jquery',
             type : 'GET',
             url  : url,
             success : function(response) {
-                console.log(response.uid);
+                //console.log(response.uid);
                 // TODO: remove the style hardcoded
+                try {
+                    if (response.url_wms) {
+                        map1.layer_scatter_mapalgebra.layer.urlWMS = response.url_wms;
+                        map1.layer_scatter_mapalgebra.leafletLayer.setUrl(response.url_wms);
+                        map2.layer_scatter_mapalgebra.layer.urlWMS = response.url_wms;
+                        map2.layer_scatter_mapalgebra.leafletLayer.setUrl(response.url_wms);
+                    }
+                }
+                catch (e){}
+
                 map1.layer_scatter_mapalgebra.leafletLayer.wmsParams.style = "mask";
                 map1.layer_scatter_mapalgebra.leafletLayer.wmsParams.layers = response.uid;
                 map1.layer_scatter_mapalgebra.leafletLayer.redraw()

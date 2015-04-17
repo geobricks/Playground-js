@@ -19,7 +19,7 @@ require.config({
 
         bootstrap               :   '//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min',
         backbone                :   '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min',
-        chosen                  :   '//fenixapps.fao.org/repository/js/chosen/1.0.0/chosen.jquery.min',
+        chosen                  :   '//fenixapps.fao.org/repository/js/chosen/1.2.0/chosen.jquery.min',
         'highcharts'            :   repository + 'highcharts/4.0.4/js/highcharts',
         'highcharts_exporting'  :   repository + 'highcharts/4.0.4/js/modules/exporting',
         "highcharts-heatmap"    :   'http://code.highcharts.com/maps/modules/heatmap',
@@ -54,9 +54,10 @@ require.config({
         // TODO: change link
         'wkt'                   :   'http://fenixapps.fao.org/repository/js/FENIX/fenix-map-js/2.1/wkt',
 
-        'fenix-map'             :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-min',
-        'fenix-map-config'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
-        'fenix-map-scatter-analysis'      :   'http://168.202.28.214:7070/fenix-map-js/fenix-map-config',
+        'fenix-map'             :   repository + 'fenix-map-js/ghg_demo/fenix-map-min',
+        'fenix-map-config'      :   repository + 'fenix-map-js/ghg_demo/fenix-map-config',
+        // TODO: wrong!!!!
+        'fenix-map-scatter-analysis'      :   repository + 'fenix-map-js/ghg_demo/fenix-map-config',
 
         FNX_MAPS_LOADING_WINDOW : fnx_modules + 'utils/fnx_maps_loading_window',
 

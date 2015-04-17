@@ -87,7 +87,7 @@ define(['jquery',
         }
 
         var build_dropdown_products = function(id) {
-            var url = CONFIG.url_search_all_products
+            var url = CONFIG.url_d3s_metadata_resource.replace("{{UID}}", "layer_products")
             $.ajax({
                 type : 'GET',
                 url : url,
@@ -96,12 +96,8 @@ define(['jquery',
                     var dropdowndID = id + "_select";
                     var html = '<select id="'+ dropdowndID+'" style="width:100%;">';
                     html += '<option value=""></option>';
-                    for(var i=0; i < response.length; i++) {
-                        // TODO: check in the response if it's a product that can be visualized (i.e. 4326 no), instead of check 4326
-                        // TODO: which field of the metadata is it?
-                        if ( response[i].indexOf("4326") <= -1) {
-                            html += '<option value="' + response[i] + '">' + response[i] + '</option>';
-                        }
+                    for(var i=0; i < response.data.length; i++) {
+                        html += '<option value="' + response.data[i].code + '">' + response.data[i].title["EN"] + '</option>';
                     }
                     html += '</select>';
 
@@ -126,24 +122,43 @@ define(['jquery',
         }
 
         var build_dropdown_layers = function(id, product) {
-            var url = CONFIG.url_search_layer_product + product;
             $("#" + id).empty()
+            var request_filter = {
+                    "meContent.resourceRepresentationType" : {
+                    "enumeration" : ["geographic"]
+                },
+                    "meContent.seCoverage.coverageSectors" : {
+                    "codes" : [
+                        {
+                            "uid" : "layer_products",
+                            "version" : "1.0",
+                            "codes" : [product]
+                        }
+                    ]
+                }
+            }
+            var url = CONFIG.url_d3s_resources_find + "?" + CONFIG.url_d3s_resources_find_order_by_date_parameters;
             $.ajax({
-                type : 'GET',
-                url : url,
+                type: 'POST',
+                url: url,
+                contentType: "application/json",
+                dataType: 'json',
+                data: JSON.stringify(request_filter),
+                crossDomain: true,
                 success : function(response) {
                     response = (typeof response == 'string')? $.parseJSON(response): response;
                     var html = '<option value=""></option>';
                     for(var i=0; i < response.length; i++) {
-                        html += '<option value="' + response[i].uid + '">' + response[i].title[CONFIG.lang.toLocaleUpperCase()] + '</option>';
+                         //TODO: remove the replace. Do it with the DSD?
+                        html += '<option value="' + response[i].uid.replace('@',":") + '">' + response[i].title[CONFIG.lang.toLocaleUpperCase()] + '</option>';
                     }
                     $('#' + id).append(html);
                     $('#' + id).trigger("chosen:updated");
 
                     $( "#" + id ).change(function () {
-                        console.log("QUA");
                         on_change_layer(id)
                     });
+
 
                     var select_all = id.replace("_select", "_select_all")
                     var deselect_all = id.replace("_select", "_deselect_all")
@@ -161,6 +176,41 @@ define(['jquery',
                 },
                 error : function(err, b, c) {}
             });
+
+
+            // var url = CONFIG.url_search_layer_product + product;
+            //$.ajax({
+            //    type : 'GET',
+            //    url : url,
+            //    success : function(response) {
+            //        response = (typeof response == 'string')? $.parseJSON(response): response;
+            //        var html = '<option value=""></option>';
+            //        for(var i=0; i < response.length; i++) {
+            //            html += '<option value="' + response[i].uid + '">' + response[i].title[CONFIG.lang.toLocaleUpperCase()] + '</option>';
+            //        }
+            //        $('#' + id).append(html);
+            //        $('#' + id).trigger("chosen:updated");
+            //
+            //        $( "#" + id ).change(function () {
+            //            on_change_layer(id)
+            //        });
+            //
+            //        var select_all = id.replace("_select", "_select_all")
+            //        var deselect_all = id.replace("_select", "_deselect_all")
+            //        $("#"+ select_all ).bind("click", function() {
+            //            $("#" + id + ">option").prop('selected', true);
+            //            $('#' + id).trigger("chosen:updated");
+            //            on_change_layer(id)
+            //        });
+            //
+            //        $("#" + deselect_all).bind("click", function() {
+            //            $("#" + id + ">option").prop('selected', false);
+            //            $('#' + id).trigger("chosen:updated");
+            //            on_change_layer(id)
+            //        });
+            //    },
+            //    error : function(err, b, c) {}
+            //});
         }
 
         var on_change_layer = function(id) {
@@ -323,6 +373,7 @@ define(['jquery',
                 var data = {
                     "raster": {
                         "uids": uids
+//                        ,"ftp_uids": ["fenix|maize_area1_4326"]
                     },
                     "vector": spatial_query
                 }
@@ -387,7 +438,7 @@ define(['jquery',
         var get_string_uids = function(values) {
             var codes= ""
             for( var i=0; i < values.length; i++) {
-                codes += "" + values[i] +";"
+                codes += "" + values[i] +","
             }
             return codes.substring(0, codes.length - 1);
         }

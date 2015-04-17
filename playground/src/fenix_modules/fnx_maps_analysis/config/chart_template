@@ -95,10 +95,10 @@
     },
     "plotOptions": {
                 "series": {
-                    "lineWidth": 1,
+                    "lineWidth": 2,
                     "states": {
                         "hover": {
-                            "lineWidth": 1
+                            "lineWidth": 2
                         }
                     },
                                     "marker": {

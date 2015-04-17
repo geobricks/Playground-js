@@ -19,7 +19,7 @@ require.config({
 
         bootstrap               :   '//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min',
         backbone                :   '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min',
-        chosen                  :   '//fenixapps.fao.org/repository/js/chosen/1.0.0/chosen.jquery.min',
+        chosen                  :   '//fenixapps.fao.org/repository/js/chosen/1.2.0/chosen.jquery.min',
         'highcharts'            :   repository + 'highcharts/4.0.4/js/highcharts',
         'highcharts_exporting'  :   repository + 'highcharts/4.0.4/js/modules/exporting',
         "highcharts-heatmap"    :   'http://code.highcharts.com/maps/modules/heatmap',
