@@ -233,7 +233,7 @@ define(['jquery',
             var layer = {};
             layer.layers = "gaul1_3857"
             layer.layertitle = "Administrative unit1"
-            layer.urlWMS = CONFIG.url_geoserver_wms
+            layer.urlWMS = "http://fenixapps2.fao.org/geoserver-demo"
             layer.opacity='0.7';
             layer.zindex= 500;
             layer.style = 'gaul1_highlight_polygon';

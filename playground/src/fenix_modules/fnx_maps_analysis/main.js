@@ -294,7 +294,7 @@ define(['jquery',
                     }
                 }
                 /** TODO: this one -8 is for Michela's demo **/
-                var layer_def = (response[0].uid.toLowerCase().indexOf("ndvi") > 0 )?  response[response.length-8]:  response[response.length-1]
+                var layer_def = (response[0].uid.toLowerCase().indexOf("ndvi") > 0 )?  response[response.length-6]:  response[response.length-1]
                 var map_layer = _this.add_layer(m, layer_def, addlayer)
                 if ( !changed ) {
                     _this.CONFIG.cached_layers.push({
