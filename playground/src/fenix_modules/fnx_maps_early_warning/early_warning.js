@@ -120,6 +120,7 @@ define(['jquery',
         }
 
         var build = function(config) {
+
             CONFIG = $.extend(true, {}, CONFIG, config);
 
             console.log(CONFIG);
@@ -278,8 +279,8 @@ define(['jquery',
                 contentType: 'application/json;charset=UTF-8',
                 dataType: "json",
                 success : function(response) {
-                    response = (typeof response == 'string')? $.parseJSON(response): response;
-                    build_stats_response(response, threshold_min, threshold_max, output_id)
+                    response = (typeof response === 'string')? $.parseJSON(response): response;
+                    build_stats_response(response, threshold_min, threshold_max, output_id);
                 },
                 error : function(err, b, c) {
                     loadingWindow.hidePleaseWait()
@@ -334,7 +335,7 @@ define(['jquery',
             for(var i=0; i < ids.length; i++) {
                 $("#" + suddifx_id + ids[i].code).bind("click", { id: ids[i]}, function(event) {
                     zoom_to(event.data.id.code);
-                    get_statistics(event.data.id.code, event.data.id.label, "TRMM")
+                    get_statistics(event.data.id.code, event.data.id.label, "TRMM");
                 });
             }
 
@@ -411,7 +412,7 @@ define(['jquery',
                 url : url,
                 success : function(response) {
                     response = (typeof response === 'string')? $.parseJSON(response): response;
-                    console.log(response);
+                    response.reverse();
                     var uids = []
                     for(var i=0; i < response.length; i++) {
                         var layer = response[i]
@@ -421,9 +422,7 @@ define(['jquery',
                     json_stats_gaul1.raster.uids = uids
                     json_stats_gaul1.raster.name = layer.title
                     json_stats_gaul1.vector.options.query_condition.where = json_stats_gaul1.vector.options.query_condition.where.replace("{{ADM1_CODE}}", gaul_code)
-                    console.log(json_stats_gaul1);
                     var url = CONFIG.url_stats_rasters_spatial_query
-                    console.log(url);
                     var LAYERS = response;
                     $.ajax({
                         type : 'POST',
@@ -433,7 +432,6 @@ define(['jquery',
                         success : function(response) {
                             response = (typeof response == 'string')? $.parseJSON(response): response;
                             //build_stats_response(response, threshold, output_id)
-                            console.log(response);
                             var STATS = response;
 
                             create_chart_stats(LAYERS, STATS)

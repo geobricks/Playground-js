@@ -20,7 +20,6 @@ define(['jquery',
             modules_buffer  :   [],
             prefix          :   null
         };
-
     }
 
     FNX_TABS_MANAGER.prototype.init = function(config) {
